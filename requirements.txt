@@ -1,22 +1,25 @@
-# This file may be used to create an environment using:
-# $ conda create --name <env> --file <this file>
-# platform: win-64
-blas=1.0=mkl
-certifi=2018.4.16=py27_0
-icc_rt=2017.0.4=h97af966_0
-intel-openmp=2018.0.3=0
-mkl=2018.0.3=1
-mkl_fft=1.0.2=py27h3f2f999_0
-numpy=1.14.5=py27h911edcf_4
-numpy-base=1.14.5=py27h0bb1d87_4
-pandas=0.23.3=py27h39f3610_0
-pip=10.0.1=py27_0
-python=2.7.15=he216670_0
-python-dateutil=2.7.3=py27_0
-pytz=2018.5=py27_0
-setuptools=39.2.0=py27_0
-six=1.11.0=py27_1
-vc=9=h7299396_1
-vs2008_runtime=9.00.30729.1=hfaea7d5_1
-wheel=0.31.1=py27_0
-wincertstore=0.2=py27hf04cefb_0
+backports.functools-lru-cache==1.5
+certifi==2018.4.16
+cloudpickle==0.5.3
+cycler==0.10.0
+dask==0.18.2
+decorator==4.3.0
+kiwisolver==1.0.1
+lime==0.1.1.31
+matplotlib==2.2.2
+mkl-fft==1.0.2
+networkx==2.1
+numpy==1.14.5
+pandas==0.23.3
+Pillow==5.2.0
+pyparsing==2.2.0
+python-dateutil==2.7.3
+pytz==2018.5
+PyWavelets==0.5.2
+scikit-image==0.14.0
+scikit-learn==0.19.2
+scipy==1.1.0
+six==1.11.0
+toolz==0.9.0
+wincertstore==0.2
+
