@@ -1,4 +1,4 @@
-from src.use_cases.data import Data
+from data import Data
 from sklearn.datasets import load_digits
 
 

@@ -3,7 +3,7 @@ import warnings
 from meem import SetupExplanatoryExamplesMeem
 warnings.filterwarnings(action='ignore', category=DeprecationWarning)
 
-from src.leafage.explanatory_examples import SetupVariables
+from explanatory_examples import SetupVariables
 #setup = SetupVariables("adult", 0.6, 11, "svc", "leafage", {"kernel": "linear", "probability": True}, {})
 #setup = SetupVariables("adult", 0.6, 11, "rf", "leafage", {}, {})
 setup = SetupVariables("iris", 1, 11, "lr")

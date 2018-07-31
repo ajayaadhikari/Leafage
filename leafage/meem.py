@@ -1,11 +1,11 @@
 import numpy as np
 from sklearn.linear_model import LogisticRegression
 
-from src.leafage.explanatory_examples import SetupExplanatoryExamples, Explanation
-from src.leafage.wrapper_lime import WrapperLime
-from src.leafage.faithfulness import Faithfulness
-from src.leafage.local_model import LocalModel
-from src.utils.MathFunctions import euclidean_distance
+from explanatory_examples import SetupExplanatoryExamples, Explanation
+from wrapper_lime import WrapperLime
+from faithfulness import Faithfulness
+from local_model import LocalModel
+from utils.MathFunctions import euclidean_distance
 
 import matplotlib.pyplot as plt
 

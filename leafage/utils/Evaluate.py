@@ -1,8 +1,8 @@
 from sklearn.model_selection import StratifiedKFold
-from sklearn.metrics import accuracy_score, confusion_matrix, f1_score
+from sklearn.metrics import accuracy_score, confusion_matrix
 import Classifiers
 import DimensionalityReduction
-from src.utils.Plots import plot_roc, plot_confusion_matrix
+from Plots import plot_roc, plot_confusion_matrix
 
 
 class EvaluationMetrics:

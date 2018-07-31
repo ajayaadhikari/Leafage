@@ -1,12 +1,7 @@
-import sklearn.ensemble
 from lime import lime_tabular
 import numpy as np
-from sklearn.preprocessing import LabelEncoder
 
-from src.leafage.local_model import LinearModel
-import copy
-
-from src.use_cases.data import LabelEncoderExtended
+from local_model import LinearModel
 
 
 class WrapperLime:

@@ -1,9 +1,8 @@
 from collections import Counter
 
-from src.utils.Evaluate import EvaluationMetrics
-from src.utils.MathFunctions import euclidean_distance
+from utils.Evaluate import EvaluationMetrics
+from utils.MathFunctions import euclidean_distance
 from sklearn.svm import SVC
-from sklearn.linear_model import RidgeClassifier, LogisticRegression
 
 from math import exp
 import numpy as np

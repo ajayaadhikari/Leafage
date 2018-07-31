@@ -1,4 +1,4 @@
-from src.use_cases.data import Data, PreProcess
+from data import Data, PreProcess
 import pandas as pd
 import numpy as np
 

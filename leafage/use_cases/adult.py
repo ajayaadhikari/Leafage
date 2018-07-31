@@ -1,6 +1,6 @@
 from sklearn.model_selection import train_test_split
 
-from src.use_cases.data import Data
+from data import Data
 from sklearn.preprocessing import LabelEncoder, OneHotEncoder
 import numpy as np
 

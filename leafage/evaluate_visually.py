@@ -4,9 +4,9 @@ import random
 
 from sklearn.exceptions import UndefinedMetricWarning
 
-from src.leafage.faithfulness import Faithfulness
-from src.leafage.meem import MeemBinaryClass
-from src.use_cases.data import Data
+from faithfulness import Faithfulness
+from meem import MeemBinaryClass
+from use_cases.data import Data
 
 random_state = 9
 

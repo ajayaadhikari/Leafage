@@ -1,9 +1,8 @@
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score
 
-import src.utils.Classifiers
-from src.use_cases.all_use_cases import different_data_sets
-from src.use_cases.data import Data
+import utils.Classifiers
+from use_cases.all_use_cases import different_data_sets
 import numpy as np
 
 
@@ -81,8 +80,8 @@ class SetupExplanatoryExamples:
 
         # Train the classifier
         encoded_train = input_encoder_black_box(train)
-        classifier = src.utils.Classifiers.train(self.setup_variables.classifier_name, encoded_train,
-                                                 labels_train, self.setup_variables.classifier_var)
+        classifier = utils.Classifiers.train(self.setup_variables.classifier_name, encoded_train,
+                                                         labels_train, self.setup_variables.classifier_var)
         predict_proba = lambda X: classifier.predict_proba(input_encoder_black_box(X))
         predict = lambda X: classifier.predict(input_encoder_black_box(X))
 

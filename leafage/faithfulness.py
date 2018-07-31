@@ -1,8 +1,8 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-from src.leafage.local_model import Distances, Neighbourhood
-from src.utils.Evaluate import EvaluationMetrics
+from local_model import Distances, Neighbourhood
+from utils.Evaluate import EvaluationMetrics
 
 
 class Faithfulness:
