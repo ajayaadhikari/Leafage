@@ -224,7 +224,7 @@ class Neighbourhood:
 
     @staticmethod
     def get_closest_enemy_instance(target_instances, target_instances_labels, distance_function, source, label):
-        return Neighbourhood.__get_closest_instances_of_label(target_instances, target_instances_labels, distance_function, 1, source, Neighbourhood.__get_enemy_class(label, target_instances_labels))[0]
+        return Neighbourhood.__get_closest_instances_of_label(target_instances, target_instances_labels, distance_function, 1, source, Neighbourhood.__get_enemy_class(label, target_instances_labels))[1]
 
     @staticmethod
     def __get_distance_to_closest_enemy_instance(target_instances, target_instances_labels, distance_function, source, label):

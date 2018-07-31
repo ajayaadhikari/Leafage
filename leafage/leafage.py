@@ -28,7 +28,6 @@ class LeafageBinaryClass:
 
     def explain(self, test_instance, test_instance_prediction, amount_of_examples=10):
         pre_process = lambda X: self.training_data.pre_process(X, scale=True)
-        inverse_pre_process = lambda X: self.training_data.inverse_pre_process(X, scale=True)
 
         scaled_training_set = self.training_data.scaled_feature_vector
         scaled_test_instance = pre_process([test_instance])[0]
@@ -56,10 +55,17 @@ class LeafageBinaryClass:
         examples_in_support = self.training_data.feature_vector[indices_examples_in_support]
         examples_against = self.training_data.feature_vector[indices_examples_against]
 
+        inverse_transform_label = lambda x: "rest" if x == -1 else self.training_data.target_vector_encoder.inverse_transform(x)
+        enemy_class = local_model.neighbourhood.enemy_class
+        fact_class = inverse_transform_label(test_instance_prediction)
+        foil_class = inverse_transform_label(enemy_class)
+
         a = Explanation(test_instance,
                         examples_in_support,
                         examples_against,
-                        local_model)
+                        local_model,
+                        fact_class,
+                        foil_class)
         return a
 
     def get_local_model(self, instance, prediction):
