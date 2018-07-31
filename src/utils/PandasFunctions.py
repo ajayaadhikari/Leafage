@@ -42,6 +42,8 @@ def sort_df(df, column_idx, key):
     order = sorted(range(len(temp)), key=lambda j: key(temp[j]))
     return df.ix[order]
 
+def number_of_nulls(df):
+    return df.isnull().sum()
 
 ###################################################################
 # Print the pandas df in a pretty format

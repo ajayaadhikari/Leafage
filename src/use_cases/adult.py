@@ -25,14 +25,14 @@ class Adult(Data):
         encoder = OneHotEncoder(categorical_features=categorical_features)
         encoder.fit(data_set)
 
-        Data.__init__(self, data_set, target_vector, feature_names, class_names, categorical_features, categorical_names,
-                      encoder)
+        Data.__init__(self, data_set, target_vector, feature_names, class_names, encoder)
 
     @staticmethod
     def reduce_size(ratio, dataset, target_vector):
         train, _, labels_train, _ = train_test_split(dataset,
                                                      target_vector,
-                                                     train_size=ratio)
+                                                     train_size=ratio,
+                                                     stratify=target_vector)
         return train, labels_train
 
     @staticmethod

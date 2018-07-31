@@ -1,7 +1,6 @@
 from collections import Counter
 
 from src.utils.Evaluate import EvaluationMetrics
-from src.utils.stopwatch import stopwatch
 from src.utils.MathFunctions import euclidean_distance
 from sklearn.svm import SVC
 from sklearn.linear_model import RidgeClassifier, LogisticRegression
@@ -15,16 +14,18 @@ class LocalModel:
     linear_classifier_variables = {"kernel": "linear"}
 
     def __init__(self, instance_to_explain, prediction, training_set,
-                 black_box_labels, pre_process_object, neighbourhood_strategy, training_data_preprocessed=True):
+                 black_box_labels, pre_process, neighbourhood_strategy,
+                 data_preprocessed=True):
 
-        if not training_data_preprocessed:
-            training_set = pre_process_object.transform(training_set)
+        if not data_preprocessed:
+            training_set = pre_process(training_set)
+            instance_to_explain = pre_process([instance_to_explain])[0]
 
-        self.instance_to_explain = pre_process_object.transform([instance_to_explain])[0]
+        self.instance_to_explain = instance_to_explain
         self.prediction = prediction
         self.training_set = training_set
         self.black_box_labels = black_box_labels
-        self.pre_process_object = pre_process_object
+        self.pre_process = pre_process
         self.neighbourhood_strategy = neighbourhood_strategy
 
         self.neighbourhood = Neighbourhood(self.instance_to_explain, self.prediction,
@@ -36,17 +37,15 @@ class LocalModel:
 
     def build_model(self):
         # Build local regression model
-        stopwatch.split("Start Build Local Classifier")
         local_classifier = self.linear_classifier_type(**self.linear_classifier_variables)
         local_classifier.fit(self.neighbourhood.instances, self.neighbourhood.labels, self.neighbourhood.weights)
-        stopwatch.split("End Build Local Classifier")
 
         # Move line such that it goes through the test instance
         moved_intercept = -1 * np.dot(self.instance_to_explain, np.transpose(local_classifier.coef_[0]))
 
         linear_model = LinearModel(local_classifier.coef_[0],
                                    local_classifier.intercept_,
-                                   self.pre_process_object,
+                                   self.pre_process,
                                    moved_intercept=moved_intercept,
                                    classes=local_classifier.classes_)
 
@@ -64,10 +63,10 @@ class LocalModel:
 
 
 class LinearModel:
-    def __init__(self, coefficients, original_intercept, pre_process_object, threshold=0, moved_intercept=None, classes=[0,1]):
+    def __init__(self, coefficients, original_intercept, pre_process, threshold=0, moved_intercept=None, classes=[0, 1]):
         self.coefficients = coefficients
         self.original_intercept = original_intercept
-        self.pre_process_object = pre_process_object
+        self.pre_process = pre_process
         self.threshold = threshold
         self.moved_intercept = moved_intercept
         self.classes = classes
@@ -77,7 +76,7 @@ class LinearModel:
             Get the predictions made by the local_model on the instances in the given neighbourhood
         """
         if pre_process:
-            instances = self.pre_process_object.transform(instances)
+            instances = self.pre_process(instances)
 
         local_model_predictions = []
         for instance in instances:
@@ -110,9 +109,7 @@ class Neighbourhood:
     def get_neighbourhood_oud(self, training_feature_vector, black_box_labels):
 
         # Get the weight of each training instance
-        stopwatch.split("Start Get weights")
         weights = [self.get_weight(instance) for instance in training_feature_vector]
-        stopwatch.split("End Get weights")
 
         indexed_weights = [(index, weights[index]) for index in range(len(weights))]
         filtered_weights = filter(lambda x: x[1] > Neighbourhood.min_weight, indexed_weights)
@@ -173,8 +170,8 @@ class Neighbourhood:
         instances_1 = big_neighbourhood[np.where(big_neighbourhood_labels == self.enemy_class)]
 
         # Get closest instance from the opposite class of each training instance
-        closest_instances_0 = map(lambda instance: Neighbourhood.__get_closest_instances(instances_1, unbiased_distance, 1, instance)[0], instances_0)
-        closest_instances_1 = map(lambda instance: Neighbourhood.__get_closest_instances(instances_0, unbiased_distance, 1, instance)[0], instances_1)
+        closest_instances_0 = map(lambda instance: Neighbourhood.__get_closest_instances(instances_1, unbiased_distance, 1, instance)[1][0], instances_0)
+        closest_instances_1 = map(lambda instance: Neighbourhood.__get_closest_instances(instances_0, unbiased_distance, 1, instance)[1][0], instances_1)
 
         # Get the distance to the closest instance from the opposite class of each training instance
         distances_to_closest_instance_0 = map(lambda i: unbiased_distance(instances_0[i], closest_instances_0[i]), range(len(instances_0)))
@@ -214,15 +211,17 @@ class Neighbourhood:
         distances = map(lambda x: distance_function(source, x), target_instances)
         sort_index = np.argsort(distances)[:amount]
 
-        return target_instances[sort_index]
+        return sort_index, np.array(target_instances[sort_index])
 
     @staticmethod
     def __get_closest_instances_of_label(target_instances, target_instances_labels, distance_function, amount, source, label):
         # Get the instances with the given label from the target_instances
-        label_index = np.where(target_instances_labels == label)
+        label_index = np.where(target_instances_labels == label)[0]
         filtered_instances = target_instances[label_index]
 
-        return Neighbourhood.__get_closest_instances(filtered_instances, distance_function, amount, source)
+        closest_instances_index, closest_instances = Neighbourhood.__get_closest_instances(filtered_instances, distance_function, amount, source)
+
+        return label_index[closest_instances_index], closest_instances
 
     @staticmethod
     def get_closest_enemy_instance(target_instances, target_instances_labels, distance_function, source, label):
@@ -233,15 +232,18 @@ class Neighbourhood:
         instance = Neighbourhood.get_closest_enemy_instance(target_instances, target_instances_labels, distance_function, source, label)
         return distance_function(instance, source)
 
-    def get_closest_instances(self, distance_function, amount, label):
+    def get_closest_instances(self, amount, distance_function, label, target_instances=None, labels=None):
+        if target_instances is None or labels is None:
+            target_instances = self.instances
+            labels = self.labels
         # Get the instances with the given label from the current neighbourhood
-        return self.__get_closest_instances_of_label(self.instances, self.labels, distance_function, amount, self.instance_to_explain, label)
+        return self.__get_closest_instances_of_label(target_instances, labels, distance_function, amount, self.instance_to_explain, label)
 
-    def get_examples_in_support(self, amount, distance_function):
-        return self.get_closest_instances(distance_function, amount, self.prediction)
+    def get_examples_in_support(self, amount, distance_function, target_instances=None, labels=None):
+        return self.get_closest_instances(amount, distance_function, self.prediction, target_instances, labels)
 
-    def get_examples_against(self, amount, distance_function):
-        return self.get_closest_instances(distance_function, amount, self.enemy_class)
+    def get_examples_against(self, amount, distance_function, target_instances=None, labels=None):
+        return self.get_closest_instances(amount, distance_function, self.enemy_class, target_instances, labels)
 
     def get_distance_to_closest_opposite_instance(self, distance_function):
         instance = self.get_examples_against(1, distance_function)[0]

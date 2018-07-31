@@ -9,7 +9,9 @@ class Faithfulness:
     midpoint = "closest_enemy_instance"
 
     def __init__(self, test_set, test_predictions, function_get_local_model, radii):
-        self.test_set = test_set
+        self.scale = lambda x: test_set.pre_process([x], scale=True)[0]
+        self.test_set = test_set.feature_vector
+        self.scaled_test_set = test_set.scaled_feature_vector
         self.test_predictions = test_predictions
         self.function_get_local_model = function_get_local_model
         self.radii = radii
@@ -17,17 +19,19 @@ class Faithfulness:
         print(self.amount_per_radius)
         print(self.accuracy_per_radius)
 
+    # Compute distances on scaled data
     def get_normalized_distances(self, instance, prediction):
         unbiased_distance_function = Distances.unbiased_distance_function
+        instance = self.scale(instance)
         if self.midpoint == "closest_enemy_instance":
-            closest_enemy = Neighbourhood.get_closest_enemy_instance(self.test_set,
+            closest_enemy = Neighbourhood.get_closest_enemy_instance(self.scaled_test_set,
                                                                      self.test_predictions,
                                                                      unbiased_distance_function,
                                                                      instance,
                                                                      prediction)
-            distances = map(lambda test_instance: unbiased_distance_function(test_instance, closest_enemy), self.test_set)
+            distances = map(lambda test_instance: unbiased_distance_function(test_instance, closest_enemy), self.scaled_test_set)
         else:
-            distances = map(lambda test_instance: unbiased_distance_function(test_instance, instance), self.test_set)
+            distances = map(lambda test_instance: unbiased_distance_function(test_instance, instance), self.scaled_test_set)
 
         max_distance = float(max(distances))
 
@@ -72,8 +76,8 @@ class Faithfulness:
             for e, a in zip(evaluation, amount):
                 sum_accuracy += e[i]
                 sum_amount += a[i]
-            accuracy_per_radius.append(sum_accuracy/float(len(self.test_set)))
-            amount_per_radius.append(sum_amount/float(len(self.test_set)))
+            accuracy_per_radius.append(sum_accuracy / float(len(self.test_set)))
+            amount_per_radius.append(sum_amount / float(len(self.test_set)))
         return accuracy_per_radius, amount_per_radius
 
     def plot(self):

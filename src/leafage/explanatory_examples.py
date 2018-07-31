@@ -9,12 +9,15 @@ import numpy as np
 
 class Explanation:
     def __init__(self,
-                 original_test_instance,
-                 original_example_instances,
-                 predicted_labels_example_instances):
-        self.original_test_instance = original_test_instance
-        self.original_example_instances = original_example_instances
-        self.predicted_labels_example_instances = predicted_labels_example_instances
+                 test_instance,
+                 examples_in_support,
+                 examples_against,
+                 local_model):
+
+        self.test_instance = test_instance,
+        self.examples_in_support = examples_in_support,
+        self.examples_against = examples_against
+        self.local_model = local_model
 
 
 class SetupVariables:
@@ -24,14 +27,12 @@ class SetupVariables:
                  random_state,
                  classifier_name,
                  classifier_var={},
-                 ee_method_var={},
                  neighbourhood_sampling_strategy="closest_boundary"):
         self.dataset_name = dataset_name
         self.train_size = train_size
         self.random_state = random_state
         self.classifier_name = classifier_name
         self.classifier_var = classifier_var
-        self.ee_method_var = ee_method_var
         self.neighbourhood_sampling_strategy = neighbourhood_sampling_strategy
         self.other = {}
         print("Strategy:%s" % neighbourhood_sampling_strategy)
@@ -60,35 +61,37 @@ class SetupExplanatoryExamples:
     def __init__(self,
                  setup_variables):
         self.setup_variables = setup_variables
+        self.test_faithfulness = self.setup_variables.train_size < 1
         self.data = different_data_sets[setup_variables.dataset_name]()
-        self.predict, self.predict_proba,  self.training_data, self.test, self.labels_test = self.setup()
+        self.predict, self.predict_proba, self.training_data, self.testing_data = self.setup()
 
     def setup(self):
         # Split in train en test
-        train, test, labels_train, labels_test = train_test_split(self.data.feature_vector,
-                                                                  self.data.target_vector,
-                                                                  train_size=self.setup_variables.train_size,
-                                                                  random_state=self.setup_variables.random_state,
-                                                                  stratify=self.data.target_vector)
-        encoder = self.data.encoder
-        np.random.seed(self.setup_variables.random_state)
-        if encoder is None:
-            # Train classifier
-            classifier = src.utils.Classifiers.train(self.setup_variables.classifier_name, train,
-                                                     labels_train, self.setup_variables.classifier_var)
-            predict_proba = classifier.predict_proba
-            predict = classifier.predict
+        if self.test_faithfulness:
+            train, test, labels_train, labels_test = train_test_split(self.data.feature_vector,
+                                                                      self.data.target_vector,
+                                                                      train_size=self.setup_variables.train_size,
+                                                                      random_state=self.setup_variables.random_state,
+                                                                      stratify=self.data.target_vector)
         else:
-            encoded_train = encoder.transform(train)
-            classifier = src.utils.Classifiers.train(self.setup_variables.classifier_name, encoded_train,
-                                                     labels_train, self.setup_variables.classifier_var)
-            predict_proba = lambda x: classifier.predict_proba(encoder.transform(x))
-            predict = lambda x: classifier.predict(encoder.transform(x))
+            train, labels_train = self.data.feature_vector, self.data.target_vector
+            test, labels_test = [],[]
+        input_encoder_black_box = self.data.input_encoder_black_box
+        np.random.seed(self.setup_variables.random_state)
 
-        print(accuracy_score(labels_test, predict(test)))
+        # Train the classifier
+        encoded_train = input_encoder_black_box(train)
+        classifier = src.utils.Classifiers.train(self.setup_variables.classifier_name, encoded_train,
+                                                 labels_train, self.setup_variables.classifier_var)
+        predict_proba = lambda X: classifier.predict_proba(input_encoder_black_box(X))
+        predict = lambda X: classifier.predict(input_encoder_black_box(X))
 
-        # Compute explanations on the training set
-        training_data = Data(train, labels_train, self.data.feature_names,
-                             self.data.class_names, self.data.categorical_features,
-                             self.data.categorical_names, self.data.preprocessing_method)
-        return predict, predict_proba, training_data, test, labels_test
+        if self.test_faithfulness:
+            print(accuracy_score(labels_test, predict(test)))
+            testing_data = self.data.copy(test, labels_test)
+        else:
+            testing_data = None
+
+        # Make a new data object of the training-set
+        training_data = self.data.copy(train, labels_train)
+        return predict, predict_proba, training_data, testing_data

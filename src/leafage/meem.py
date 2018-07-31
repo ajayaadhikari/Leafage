@@ -5,24 +5,9 @@ from src.leafage.explanatory_examples import SetupExplanatoryExamples, Explanati
 from src.leafage.wrapper_lime import WrapperLime
 from src.leafage.faithfulness import Faithfulness
 from src.leafage.local_model import LocalModel
-from src.utils.stopwatch import stopwatch
 from src.utils.MathFunctions import euclidean_distance
 
 import matplotlib.pyplot as plt
-
-
-class ExplanationMeem(Explanation):
-    def __init__(self,
-                 original_test_instance,
-                 original_example_instances,
-                 predicted_labels_example_instances,
-                 local_model):
-
-        Explanation.__init__(self,
-                             original_test_instance,
-                             original_example_instances,
-                             predicted_labels_example_instances)
-        self.local_model = local_model
 
 
 class MeemBinaryClass:
@@ -42,27 +27,40 @@ class MeemBinaryClass:
         pass
 
     def explain(self, test_instance, test_instance_prediction, amount_of_examples=10):
-        pre_process = lambda t: self.training_data.pre_process([t])[0]
-        inverse_pre_process = lambda t: self.training_data.inverse_pre_process([t])[0]
+        pre_process = lambda X: self.training_data.pre_process(X, scale=True)
+        inverse_pre_process = lambda X: self.training_data.inverse_pre_process(X, scale=True)
+
+        scaled_training_set = self.training_data.scaled_feature_vector
+        scaled_test_instance = pre_process([test_instance])[0]
 
         np.random.seed(self.random_state)
-        local_model = LocalModel(test_instance,
-                                   test_instance_prediction,
-                                   self.training_data.get_pre_processed_feature_vector(),
-                                   self.predicted_labels,
-                                   self.training_data.pre_process_object,
-                                   self.neighbourhood_sampling_strategy)
+        local_model = LocalModel(scaled_test_instance,
+                                 test_instance_prediction,
+                                 scaled_training_set,
+                                 self.predicted_labels,
+                                 pre_process,
+                                 self.neighbourhood_sampling_strategy)
         print("\t%s" % local_model.faithfulness.accuracy)
 
         # Get the closest instances
-        closest_examples = local_model.neighbourhood.get_closest_instances(local_model.distances.get_final_distance,
-                                                                             amount_of_examples,
-                                                                             test_instance_prediction)
+        indices_examples_in_support, _ = \
+            local_model.neighbourhood.get_examples_in_support(amount_of_examples,
+                                                              local_model.distances.get_final_distance,
+                                                              self.training_data.scaled_feature_vector,
+                                                              self.training_data.target_vector)
+        indices_examples_against, _ = \
+            local_model.neighbourhood.get_examples_against(amount_of_examples,
+                                                           local_model.distances.get_final_distance,
+                                                           self.training_data.scaled_feature_vector,
+                                                           self.training_data.target_vector)
+        examples_in_support = self.training_data.feature_vector[indices_examples_in_support]
+        examples_against = self.training_data.feature_vector[indices_examples_against]
 
-        return ExplanationMeem(test_instance,
-                               inverse_pre_process(closest_examples),
-                               None,
-                               local_model)
+        a = Explanation(test_instance,
+                        examples_in_support,
+                        examples_against,
+                        local_model)
+        return a
 
     def get_local_model(self, instance, prediction):
         return self.explain(instance, prediction, 1).local_model.linear_model
@@ -142,11 +140,11 @@ class MeemMultiClass:
         else:
             self.one_vs_rest = self.get_one_vs_all(self.training_data, self.predicted_labels)
 
-    def get_one_vs_all(self, feature_vector, predicted_labels):
+    def get_one_vs_all(self, training_data, predicted_labels):
         one_vs_all = {}
         for i, label in enumerate(predicted_labels):
-            new_predicted_labels = self.labels_one_vs_all(label, predicted_labels)
-            one_vs_all[label] = MeemBinaryClass(feature_vector, new_predicted_labels,
+            binary_predicted_labels = self.labels_one_vs_all(label, predicted_labels)
+            one_vs_all[label] = MeemBinaryClass(training_data, binary_predicted_labels,
                                                 self.random_state, self.neighbourhood_sampling_strategy)
         return one_vs_all
 
@@ -158,7 +156,7 @@ class MeemMultiClass:
         return np.array([target_label if x == target_label else -1 for x in predicted_labels])
 
     def get_one_vs_one(self, fact_class, foil_class):
-        indices_fact_foil = np.where(self.predicted_labels == fact_class or self.predicted_labels == foil_class)
+        indices_fact_foil = np.where(np.logical_or(self.predicted_labels == fact_class, self.predicted_labels == foil_class))
         new_feature_vector = self.training_data.feature_vector[indices_fact_foil]
         new_real_labels = self.training_data.target_vector[indices_fact_foil]
         new_predicted_labels = self.predicted_labels[indices_fact_foil]
@@ -189,6 +187,13 @@ class MeemMultiClass:
                                                     radii)
         return meem_faithfulness, lime_faithfulness
 
+    def explain(self, test_instance, probabilities_per_class):
+        sorted_indices = np.argsort(probabilities_per_class)
+        fact_class = sorted_indices[-1]
+        foil_class = sorted_indices[-2]
+        binary_meem = self.get_one_vs_one(fact_class, foil_class)
+        return binary_meem.explain(test_instance, fact_class)
+
 
 class SetupExplanatoryExamplesMeem(SetupExplanatoryExamples):
     def __init__(self, setup_variables):
@@ -198,22 +203,14 @@ class SetupExplanatoryExamplesMeem(SetupExplanatoryExamples):
                                                    self.setup_variables.random_state,
                                                    self.lime_local_model,
                                                    self.setup_variables.neighbourhood_sampling_strategy)
-        self.meem_faithfulness, self.lime_faithfulness = self.explanatory_examples.get_faithfulness(self.test,
-                                                                                          self.predict(self.test),
-                                                                                          np.arange(0.1, 1.1, 0.1))
+        if self.setup_variables.train_size < 1:
+            self.meem_faithfulness, self.lime_faithfulness = self.explanatory_examples.get_faithfulness(self.testing_data,
+                                                                                                    self.predict(self.testing_data.feature_vector),
+                                                                                                    np.arange(0.1, 1.1, 0.1))
 
-    def explain_test_set(self, amount_of_examples=5):
-        return map(lambda index: self.explain(index=index, amount_of_examples=amount_of_examples), range(len(self.test)))
-
-    def explain(self, instance=None, index=None, amount_of_examples=5):
+    def explain(self, test_instance):
         # Get the instances to explain
-        if instance is not None:
-            test_example = instance
-        elif index is not None:
-            test_example = self.test[index]
-        else:
-            test_example = self.test[0]
-        return self.explanatory_examples.explain(test_example, amount_of_examples, 1)
+        return self.explanatory_examples.explain(test_instance, self.predict_proba([test_instance])[0])
 
     def lime_local_model(self, training_data, classes):
         lime = WrapperLime(training_data, self.predict_proba, classes)

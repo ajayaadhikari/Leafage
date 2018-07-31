@@ -7,7 +7,6 @@ from sklearn.exceptions import UndefinedMetricWarning
 from src.leafage.faithfulness import Faithfulness
 from src.leafage.meem import MeemBinaryClass
 from src.use_cases.data import Data
-from src.utils.stopwatch import stopwatch
 
 random_state = 9
 
@@ -263,8 +262,6 @@ if __name__ == "__main__":
     import warnings
     warnings.filterwarnings("ignore", category=UndefinedMetricWarning)
 
-    stopwatch.turn_off_print()
-    stopwatch.start()
     a = TwoDimensionExample()
     a.test_evaluation()
 
