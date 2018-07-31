@@ -1,6 +1,6 @@
 import warnings
 
-from meem import SetupExplanatoryExamplesMeem
+from leafage import SetupExplanatoryExamplesLeafage
 warnings.filterwarnings(action='ignore', category=DeprecationWarning)
 
 from explanatory_examples import SetupVariables
@@ -8,7 +8,7 @@ from explanatory_examples import SetupVariables
 #setup = SetupVariables("adult", 0.6, 11, "rf", "leafage", {}, {})
 setup = SetupVariables("iris", 1, 11, "lr")
 
-c = SetupExplanatoryExamplesMeem(setup)
+c = SetupExplanatoryExamplesLeafage(setup)
 explanation = c.explain(c.training_data.feature_vector[0])
 a = 4
 # c.evaluation.plot()

@@ -5,7 +5,7 @@ import random
 from sklearn.exceptions import UndefinedMetricWarning
 
 from faithfulness import Faithfulness
-from meem import MeemBinaryClass
+from leafage import LeafageBinaryClass
 from use_cases.data import Data
 
 random_state = 9
@@ -199,8 +199,8 @@ class TwoDimensionExample:
         #self.plot_points()
         self.plot_black_box_curve()
 
-        meem = MeemBinaryClass(self.get_data(), self.labels, random_state)
-        local_model = meem.explain(test_point, self.get_label(test_point)).local_model
+        leafage = LeafageBinaryClass(self.get_data(), self.labels, random_state)
+        local_model = leafage.explain(test_point, self.get_label(test_point)).local_model
 
         plot_local_model = PlotLocalModel(self.x_spacing, self.y_spacing, local_model)
         self.plot_point(test_point)
@@ -210,20 +210,20 @@ class TwoDimensionExample:
 
     def test_evaluation(self):
         #train, test, labels_train, labels_test = train_test_split(self.points, self.labels, train_size=0.5)
-        meem = MeemBinaryClass(self.get_data(), self.labels, random_state)
-        evaluation = Faithfulness(self.points, self.labels, meem.get_local_model, np.arange(0.36, 1, 0.05))
+        leafage = LeafageBinaryClass(self.get_data(), self.labels, random_state)
+        evaluation = Faithfulness(self.points, self.labels, leafage.get_local_model, np.arange(0.36, 1, 0.05))
 
         evaluation.evaluate(self)
 
     def vary_distance_to_boundary(self):
         #Get the local linear boundary
 
-        meem = MeemBinaryClass(self.get_data(), self.labels, random_state)
+        leafage = LeafageBinaryClass(self.get_data(), self.labels, random_state)
         explanation = []
         range_ = np.arange(self.xmin, self.xmax,0.5)
         for i in range_:
             test_point = [i, 3.7]
-            explanation.append(meem.explain(test_point, self.get_label(test_point)).local_model)
+            explanation.append(leafage.explain(test_point, self.get_label(test_point)).local_model)
         #
         distances = []
         sigma = []
@@ -239,12 +239,12 @@ class TwoDimensionExample:
     def plot_contours(self):
         points = [[-12, -3], [-7, 7], [-1, 15], [10, 5]]
 
-        meem = MeemBinaryClass(self.get_data(), self.labels, random_state)
+        leafage = LeafageBinaryClass(self.get_data(), self.labels, random_state)
         #self.plot_training_points()
         self.plot_black_box_curve()
 
         for point in points:
-            local_model = meem.explain(point, self.get_label(point), t=self).local_model
+            local_model = leafage.explain(point, self.get_label(point), t=self).local_model
             contour = PlotLocalModel(self.x_spacing, self.y_spacing, local_model)
             self.plot_local_model(point)
             contour.plot_local_model("original")

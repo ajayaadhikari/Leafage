@@ -10,7 +10,7 @@ from utils.MathFunctions import euclidean_distance
 import matplotlib.pyplot as plt
 
 
-class MeemBinaryClass:
+class LeafageBinaryClass:
     # Static variables
     distance_measure = euclidean_distance
     linear_classifier = LogisticRegression
@@ -119,7 +119,7 @@ class MeemBinaryClass:
         plt.show()
 
 
-class MeemMultiClass:
+class LeafageMultiClass:
     def __init__(self, training_data, predicted_labels, random_state,
                  lime_get_local_model, neighbourhood_sampling_strategy):
         self.training_data = training_data
@@ -133,10 +133,10 @@ class MeemMultiClass:
         if len(self.labels) == 1:
             print("Data with only one class %s" % self.labels[0])
         elif self.is_binary():
-            meem_binary = MeemBinaryClass(self.training_data, predicted_labels,
-                                          random_state, self.neighbourhood_sampling_strategy)
-            self.one_vs_rest[self.labels[0]] = meem_binary
-            self.one_vs_rest[self.labels[1]] = meem_binary
+            leafage_binary = LeafageBinaryClass(self.training_data, predicted_labels,
+                                             random_state, self.neighbourhood_sampling_strategy)
+            self.one_vs_rest[self.labels[0]] = leafage_binary
+            self.one_vs_rest[self.labels[1]] = leafage_binary
         else:
             self.one_vs_rest = self.get_one_vs_all(self.training_data, self.predicted_labels)
 
@@ -144,8 +144,8 @@ class MeemMultiClass:
         one_vs_all = {}
         for i, label in enumerate(predicted_labels):
             binary_predicted_labels = self.labels_one_vs_all(label, predicted_labels)
-            one_vs_all[label] = MeemBinaryClass(training_data, binary_predicted_labels,
-                                                self.random_state, self.neighbourhood_sampling_strategy)
+            one_vs_all[label] = LeafageBinaryClass(training_data, binary_predicted_labels,
+                                                   self.random_state, self.neighbourhood_sampling_strategy)
         return one_vs_all
 
     @staticmethod
@@ -160,21 +160,21 @@ class MeemMultiClass:
         new_feature_vector = self.training_data.feature_vector[indices_fact_foil]
         new_real_labels = self.training_data.target_vector[indices_fact_foil]
         new_predicted_labels = self.predicted_labels[indices_fact_foil]
-        return MeemBinaryClass(self.training_data.copy(new_feature_vector, new_real_labels),
-                               new_predicted_labels, self.random_state, self.neighbourhood_sampling_strategy)
+        return LeafageBinaryClass(self.training_data.copy(new_feature_vector, new_real_labels),
+                                  new_predicted_labels, self.random_state, self.neighbourhood_sampling_strategy)
 
     def is_binary(self):
         return len(self.labels) == 2
 
     def get_faithfulness(self, test_set, test_set_predictions, radii):
-        meem_faithfulness = {}
+        leafage_faithfulness = {}
         lime_faithfulness = {}
 
         for label in self.labels:
             print("Label %s vs rest" % label)
             one_vs_rest_predictions = self.labels_one_vs_all(label, test_set_predictions)
-            print("Evaluate MEEM!")
-            meem_faithfulness[label] = Faithfulness(test_set,
+            print("Evaluate Leafage!")
+            leafage_faithfulness[label] = Faithfulness(test_set,
                                                     one_vs_rest_predictions,
                                                     self.one_vs_rest[label].get_local_model,
                                                     radii)
@@ -185,28 +185,28 @@ class MeemMultiClass:
                                                     one_vs_rest_predictions,
                                                     lime_get_local_model,
                                                     radii)
-        return meem_faithfulness, lime_faithfulness
+        return leafage_faithfulness, lime_faithfulness
 
     def explain(self, test_instance, probabilities_per_class):
         sorted_indices = np.argsort(probabilities_per_class)
         fact_class = sorted_indices[-1]
         foil_class = sorted_indices[-2]
-        binary_meem = self.get_one_vs_one(fact_class, foil_class)
-        return binary_meem.explain(test_instance, fact_class)
+        leafage_binary = self.get_one_vs_one(fact_class, foil_class)
+        return leafage_binary.explain(test_instance, fact_class)
 
 
-class SetupExplanatoryExamplesMeem(SetupExplanatoryExamples):
+class SetupExplanatoryExamplesLeafage(SetupExplanatoryExamples):
     def __init__(self, setup_variables):
         SetupExplanatoryExamples.__init__(self, setup_variables)
-        self.explanatory_examples = MeemMultiClass(self.training_data,
-                                                   self.predict(self.training_data.feature_vector),
-                                                   self.setup_variables.random_state,
-                                                   self.lime_local_model,
-                                                   self.setup_variables.neighbourhood_sampling_strategy)
+        self.explanatory_examples = LeafageMultiClass(self.training_data,
+                                                      self.predict(self.training_data.feature_vector),
+                                                      self.setup_variables.random_state,
+                                                      self.lime_local_model,
+                                                      self.setup_variables.neighbourhood_sampling_strategy)
         if self.setup_variables.train_size < 1:
-            self.meem_faithfulness, self.lime_faithfulness = self.explanatory_examples.get_faithfulness(self.testing_data,
-                                                                                                    self.predict(self.testing_data.feature_vector),
-                                                                                                    np.arange(0.1, 1.1, 0.1))
+            self.leafage_faithfulness, self.lime_faithfulness = self.explanatory_examples.get_faithfulness(self.testing_data,
+                                                                                                           self.predict(self.testing_data.feature_vector),
+                                                                                                           np.arange(0.1, 1.1, 0.1))
 
     def explain(self, test_instance):
         # Get the instances to explain
