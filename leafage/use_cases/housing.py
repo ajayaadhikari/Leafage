@@ -20,12 +20,7 @@ class HousingDataSet(Data):
         # Set the column names as the feature names
         feature_names = list(df)[:-1]
 
-        # Get encoder to convert the categorical features through one hot encoding
-        # This is needed for the classifier which only excepts numerical values
-        pre_process = PreProcess(feature_vector)
-
-        Data.__init__(self, feature_vector, target_vector,
-                      feature_names, input_encoder_black_box=pre_process.transform, pre_process_object=pre_process)
+        Data.__init__(self, feature_vector, target_vector, feature_names)
 
     @staticmethod
     def split(sale_price):

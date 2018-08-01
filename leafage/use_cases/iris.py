@@ -27,7 +27,4 @@ class IrisDataSet(Data):
         feature_names = iris.feature_names
         feature_names.append("test")
 
-        pre_process = PreProcess(feature_vector)
-
-        Data.__init__(self, feature_vector, target_vector,
-                      feature_names, input_encoder_black_box=pre_process.transform, pre_process_object=pre_process)
+        Data.__init__(self, feature_vector, target_vector, feature_names)

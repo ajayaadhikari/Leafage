@@ -2,7 +2,7 @@ from sklearn.preprocessing import StandardScaler, LabelEncoder,OneHotEncoder
 import numpy as np
 
 
-class OneHotEncoderExtended(OneHotEncoder):
+class InvertibleOneHotEncoder(OneHotEncoder):
     # feature_vector should be an np.array with dtype=object if categorical features are present
     def __init__(self, X, categorical_features):
         OneHotEncoder.__init__(self, categorical_features=categorical_features, sparse=False)
@@ -31,7 +31,7 @@ class OneHotEncoderExtended(OneHotEncoder):
         return np.array([self.__inverse_transform_single(x) for x in X])
 
 
-class LabelEncoderExtended:
+class FeatureVectorLabelEncoder:
     # feature_vector should be an np.array with dtype=object if categorical features are present
     def __init__(self, feature_vector, categorical_features):
         self.categorical_features = categorical_features
@@ -77,11 +77,11 @@ class PreProcess:
         self.categorical_features = self.get_categorical_features(feature_vector)
         self.has_categorical_features = len(self.categorical_features) != 0
 
-        self.label_encoder = LabelEncoderExtended(feature_vector, self.categorical_features)
+        self.label_encoder = FeatureVectorLabelEncoder(feature_vector, self.categorical_features)
         train_label_encoded = self.label_encoder.transform(feature_vector)
 
         if self.has_categorical_features:
-            self.one_hot_encoder = OneHotEncoderExtended(train_label_encoded, self.categorical_features)
+            self.one_hot_encoder = InvertibleOneHotEncoder(train_label_encoded, self.categorical_features)
             train_one_hot_encoded = self.one_hot_encoder.transform(train_label_encoded)
         else:
             train_one_hot_encoded = train_label_encoded
@@ -122,20 +122,23 @@ class PreProcess:
 
 
 class Data:
-    # feature_vector should be an np.array and with dtype=object
-    # Columns with values of type "str" will be interpreted as categorical features
-    # If target_vector_encoder is not None, then target_vector is expected to be already label encoded
     def __init__(self,
                  feature_vector,
                  target_vector,
                  feature_names,
-                 input_encoder_black_box=lambda x: x,
                  target_vector_encoder=None,
                  pre_process_object=None):
+        """
+        Columns with values of type string will be interpreted as categorical features
+        :param feature_vector: Should be of type np.array and with dtype=object
+        :param target_vector
+        :param feature_names
+        :param target_vector_encoder: One relevant when using self.copy
+        :param pre_process_object: One relevant when using self.copy
+        """
 
         self.feature_vector = feature_vector
         self.feature_names = feature_names
-        self.input_encoder_black_box = input_encoder_black_box
 
         if target_vector_encoder is None:
             self.target_vector_encoder = LabelEncoder()
@@ -161,7 +164,6 @@ class Data:
         return Data(new_feature_vector,
                     new_target_vector,
                     self.feature_names,
-                    input_encoder_black_box=self.input_encoder_black_box,
                     target_vector_encoder=self.target_vector_encoder,
                     pre_process_object=self.pre_process_object)
 

@@ -3,7 +3,7 @@ from iris import IrisDataSet
 from adult import Adult
 from housing import HousingDataSet
 
-different_data_sets = {"iris": IrisDataSet,
+all_data_sets = {"iris": IrisDataSet,
                        "digits": DigitsDataset,
                        "adult": Adult,
                        "housing": HousingDataSet}

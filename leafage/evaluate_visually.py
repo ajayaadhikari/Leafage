@@ -6,7 +6,7 @@ from sklearn.exceptions import UndefinedMetricWarning
 
 from faithfulness import Faithfulness
 from leafage import LeafageBinaryClass
-from use_cases.data import Data
+from leafage.use_cases.data import Data
 
 random_state = 9
 
