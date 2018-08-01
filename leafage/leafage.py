@@ -51,9 +51,9 @@ class Leafage:
                                                            np.arange(0.1, 1.1, 0.1),
                                                            self.lime_local_model)
 
-    def explain(self, test_instance):
+    def explain(self, test_instance, amount_of_examples):
         # Get the instances to explain
-        return self.explanatory_examples.explain(test_instance, self.predict_proba([test_instance])[0])
+        return self.explanatory_examples.explain(test_instance, self.predict_proba([test_instance])[0], amount_of_examples)
 
     def lime_local_model(self, training_data, classes):
         lime = WrapperLime(training_data, self.predict_proba, classes)
@@ -127,12 +127,12 @@ class LeafageMultiClass:
                                                     radii)
         return leafage_faithfulness, lime_faithfulness
 
-    def explain(self, test_instance, probabilities_per_class):
+    def explain(self, test_instance, probabilities_per_class, amount_of_examples):
         sorted_indices = np.argsort(probabilities_per_class)
         fact_class = sorted_indices[-1]
         foil_class = sorted_indices[-2]
         leafage_binary = self.get_one_vs_one(fact_class, foil_class)
-        return leafage_binary.explain(test_instance, fact_class)
+        return leafage_binary.explain(test_instance, fact_class, amount_of_examples)
 
 
 class LeafageBinaryClass:
@@ -164,7 +164,7 @@ class LeafageBinaryClass:
                                  self.predicted_labels,
                                  pre_process,
                                  self.neighbourhood_sampling_strategy)
-        print("\t%s" % local_model.faithfulness.accuracy)
+        #print("\t%s" % local_model.faithfulness.accuracy)
 
         # Get the closest instances
         indices_examples_in_support, _ = \
@@ -190,7 +190,8 @@ class LeafageBinaryClass:
                         examples_against,
                         local_model,
                         fact_class,
-                        foil_class)
+                        foil_class,
+                        self.training_data.feature_names)
         return a
 
     def get_local_model(self, instance, prediction):

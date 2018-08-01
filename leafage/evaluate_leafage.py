@@ -5,20 +5,23 @@ from scenario import Scenario
 
 warnings.filterwarnings(action='ignore', category=DeprecationWarning)
 
+
 def housing_from_use_cases():
     #setup = SetupVariables("adult", 0.6, 11, "svc", "leafage", {"kernel": "linear", "probability": True}, {})
     #setup = SetupVariables("adult", 0.6, 11, "rf", "leafage", {}, {})
     scenario = Scenario("load_from_use_cases", "housing", 1, 11, "lr")
     leafage = scenario.leafage
-    explanation = leafage.explain(leafage.training_data.feature_vector[0])
+    explanation = scenario.get_explanation(leafage.training_data.feature_vector[0],5)
     a = 4
     # c.evaluation.plot()
     # c.explanatory_examples.visualize(c.test[0])
 
+
 def housing_from_file():
-    scenario = Scenario("load_from_file", "../data/housing/pre_processed_train.csv", 1, 11, "lr")
+    scenario = Scenario("load_from_file", "../data/housing/pre_processed_train.csv", "lr")
     leafage = scenario.leafage
-    explanation = leafage.explain(leafage.training_data.feature_vector[0])
+    explanation = scenario.get_explanation(scenario.data.feature_vector[0], amount_of_examples=5)
     a = 4
+
 
 housing_from_file()
