@@ -23,7 +23,8 @@ class Explanation:
         self.foil_class = foil_class
 
 
-class SetupVariables:
+class Scenario:
+
     def __init__(self,
                  dataset_name,
                  train_size,
