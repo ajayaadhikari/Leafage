@@ -27,7 +27,7 @@ class HousingDataSet(Data):
         target_vector = self.split(df.iloc[:, -1].values)
 
         # Set the column names as the feature names
-        feature_names = list(df)[:-1]
+        feature_names = list(df)[1:-1]
 
         Data.__init__(self, feature_vector, target_vector, feature_names)
 

@@ -9,9 +9,9 @@ warnings.filterwarnings(action='ignore', category=DeprecationWarning)
 def housing_from_use_cases():
     #setup = SetupVariables("adult", 0.6, 11, "svc", "leafage", {"kernel": "linear", "probability": True}, {})
     #setup = SetupVariables("adult", 0.6, 11, "rf", "leafage", {}, {})
-    scenario = Scenario("load_from_use_cases", "housing", 1, 11, "lr")
+    scenario = Scenario("load_from_use_cases", "housing", "lr")
     leafage = scenario.leafage
-    explanation = scenario.get_explanation(leafage.training_data.feature_vector[0],5)
+    explanation = scenario.get_explanation(leafage.training_data.feature_vector[0], 5)
     a = 4
     # c.evaluation.plot()
     # c.explanatory_examples.visualize(c.test[0])
@@ -24,4 +24,4 @@ def housing_from_file():
     a = 4
 
 
-housing_from_file()
+housing_from_use_cases()

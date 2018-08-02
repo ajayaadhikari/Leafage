@@ -184,19 +184,45 @@ class LeafageBinaryClass:
         enemy_class = local_model.neighbourhood.enemy_class
         fact_class = inverse_transform_label(test_instance_prediction)
         foil_class = inverse_transform_label(enemy_class)
+        coefficients = self.normalize(self.filter_coefficients(local_model.linear_model.coefficients, scaled_test_instance))
 
         a = Explanation(test_instance,
                         examples_in_support,
                         examples_against,
-                        local_model,
+                        coefficients,
                         fact_class,
                         foil_class,
-                        self.training_data.feature_names)
+                        self.training_data.feature_names,
+                        local_model)
         return a
+
+    def filter_coefficients(self, one_hot_encoded_coefficients, one_hot_encoded_instance):
+        """
+        Remove from coefficients the indices that do not correspond to the categorical value of the given instance
+        """
+        has_categorical_features = self.training_data.pre_process_object.has_categorical_features
+        if has_categorical_features:
+            one_hot_encoder = self.training_data.pre_process_object.one_hot_encoder
+            end_index = one_hot_encoder.feature_indices_[-1]
+            instance_categorical_values_indices = np.where(one_hot_encoded_instance[0:end_index] == 1)
+            coefficients_categorical_features = one_hot_encoded_coefficients[instance_categorical_values_indices]
+
+            result = one_hot_encoded_coefficients[end_index:].tolist()
+            categorical_features = self.training_data.pre_process_object.categorical_features
+            for new_value, index in zip(coefficients_categorical_features, categorical_features):
+                result.insert(index, new_value)
+            return result
+        else:
+            return one_hot_encoded_coefficients
+
+    @staticmethod
+    def normalize(container):
+        total = float(sum(container))
+        return np.array([x/total for x in container])
+
 
     def get_local_model(self, instance, prediction):
         return self.explain(instance, prediction, 1).local_model.linear_model
-
 
     def visualize_2(self, explanation, amount_of_features=10):
         positive_color = "yellowgreen"

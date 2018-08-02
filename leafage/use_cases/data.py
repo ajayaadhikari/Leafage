@@ -137,8 +137,8 @@ class Data:
         :param pre_process_object: One relevant when using self.copy
         """
 
-        self.feature_vector = feature_vector
-        self.feature_names = feature_names
+        self.feature_vector = np.array(feature_vector)
+        self.feature_names = np.array(feature_names)
 
         if target_vector_encoder is None:
             self.target_vector_encoder = LabelEncoder()
