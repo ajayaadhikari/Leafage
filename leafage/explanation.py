@@ -1,6 +1,8 @@
 import pandas as pd
+from plotly.offline import download_plotlyjs, iplot, init_notebook_mode
 import plotly.plotly as py
 import plotly.graph_objs as go
+import plotly.figure_factory as ff
 import numpy as np
 
 
@@ -25,6 +27,7 @@ class Explanation:
 
         self.local_model = local_model
         self.__sort_columns_according_to_importance()
+        self.notebook_initialized = False
 
     def visualize_feature_importance(self, amount_of_features=5, target="notebook", path=None):
         """
@@ -39,21 +42,17 @@ class Explanation:
     def visualize_examples(self, amount_of_features=5, target="notebook", path=None, type="examples_in_support"):
         """
         Visualize a table of closest examples from the training-set
-        :param amount_of_features:
+        :param amount_of_features: Amount of top features to include per example
         :param target: Denotes how to export the image. Should be either "notebook" or "write_to_file"
         :param path: If target="to_file", this parameter denotes where to save the image e.g. "../output/test.png"
         :param type: Should be either "examples_in_support" or "examples_against"
         """
         if type == "examples_in_support":
             hc = 'rgba(0,184,0,1)'
-            cc = 'rgba(143,255,143,1)'
-            figure = self.__visualize_table(amount_of_features, self.examples_in_support, self.fact_class,
-                                            header_background_color=hc, cell_background_color=cc)
+            figure = self.__visualize_table_ff(amount_of_features, self.examples_in_support, hc)
         elif type == "examples_against":
             hc = 'rgba(255,20,20,1)'
-            cc = 'rgba(255,170,170,1)'
-            figure = self.__visualize_table(amount_of_features, self.examples_against, self.foil_class,
-                                            header_background_color=hc, cell_background_color=cc)
+            figure = self.__visualize_table_ff(amount_of_features, self.examples_against, hc)
         else:
             raise ValueError("%s not supported" % target)
 
@@ -88,13 +87,13 @@ class Explanation:
         indices_negative = np.where(coefficients < 0)
         coefficients = np.abs(coefficients)
 
-        get_x_values = lambda indices: ["<b>%s</b><br><b>%s</b>" % (i,j) for i,j in zip(feature_names[indices], feature_values[indices])]
+        x_values = np.array(["<b>%s</b><br>%s" % (i,j) for i,j in zip(feature_names, feature_values)])
 
-        trace_positive = go.Bar(x=get_x_values(indices_positive),
+        trace_positive = go.Bar(x=x_values[indices_positive],
                                 y=coefficients[indices_positive],
                                 marker=dict(color="green"),
                                 name="Supports %s" % self.fact_class)
-        trace_negative = go.Bar(x=get_x_values(indices_negative),
+        trace_negative = go.Bar(x=x_values[indices_negative],
                                 y=coefficients[indices_negative],
                                 marker=dict(color="red"),
                                 name="Supports %s" % self.foil_class)
@@ -102,12 +101,27 @@ class Explanation:
         data = [trace_positive, trace_negative]
         layout = go.Layout(title="The top %s most important features for the classification" % amount_of_features,
                            yaxis=dict(title='Importance'),
-                           xaxis=dict(title="Features", categoryorder="array", categoryarray=feature_names))
+                           xaxis=dict(title="Features", categoryorder="array", categoryarray=x_values))
         figure = go.Figure(data=data, layout=layout)
         return figure
 
     @staticmethod
+    def __visualize_table_ff(amount_of_features, df, header_background_color):
+        color_scale = [[0, header_background_color], [.5, '#f2e5ff'], [1, '#ffffff']]
+        df = df.iloc[:, 0:amount_of_features]
+        figure = ff.create_table(df, colorscale=color_scale)
+        return figure
+
+    @staticmethod
     def __visualize_table(amount_of_features, df, class_name, header_background_color=None, cell_background_color=None):
+
+        # examples_against
+        # hc = 'rgba(255,20,20,1)'
+        # cc = 'rgba(255,170,170,1)'
+        # examples_in_support
+        # hc = rgba(0,184,0,1)'
+        # cc = 'rgba(143,255,143,1)'
+
         if header_background_color is None:
             header_background_color = 'rgba(0,184,0,1)'
         if cell_background_color is None:
@@ -136,9 +150,11 @@ class Explanation:
     def __make_bold(container):
         return ["<b>%s</b>" % x for x in container]
 
-    @staticmethod
-    def __visualize_notebook(figure):
-        py.iplot(figure)
+    def __visualize_notebook(self, figure):
+        if not self.notebook_initialized:
+            init_notebook_mode()
+            self.notebook_initialized = True
+        iplot(figure)
 
     @staticmethod
     def __visualize_png(figure, path):
