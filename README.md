@@ -1,7 +1,7 @@
 # Leafage
 
 Leafage is a library to extract explanations for the predictions of black-box machine learning methods.
-LEAFaGE stands for Local Example And Feature-based model-Agnostic Explanation.
+LEAFAGE stands for Local Example And Feature-based model-AGnostic Explanation.
 
 An example of the usage of the library is shown in Usage.ipynb.
 
