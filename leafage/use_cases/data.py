@@ -1,6 +1,8 @@
 from sklearn.preprocessing import StandardScaler, LabelEncoder,OneHotEncoder
 import numpy as np
 
+import warnings
+warnings.filterwarnings(action='ignore', category=DeprecationWarning)
 
 class InvertibleOneHotEncoder(OneHotEncoder):
     # feature_vector should be an np.array with dtype=object if categorical features are present

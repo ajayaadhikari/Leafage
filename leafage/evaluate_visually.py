@@ -6,7 +6,7 @@ from sklearn.exceptions import UndefinedMetricWarning
 
 from faithfulness import Faithfulness
 from leafage import LeafageBinaryClass
-from leafage.use_cases.data import Data
+from use_cases.data import Data
 
 random_state = 9
 
@@ -47,6 +47,11 @@ class PlotLocalModel:
 
         self.X, self.Y = np.meshgrid(x_spacing, y_spacing)
 
+    def get_biased_distance(self):
+        return self.perform_pair_wise(self.X,
+                                      self.Y,
+                                      lambda x, y: self.local_model.distances.get_biased_distance([x, y]))
+
     def get_unbiased_distance(self):
         return self.perform_pair_wise(self.X,
                                       self.Y,
@@ -83,6 +88,8 @@ class PlotLocalModel:
             Z = self.get_weights()
         elif distance_type == "black_box_distance":
             Z = self.get_black_box_distance()
+        elif distance_type == "biased_distance":
+            Z = self.get_biased_distance()
         else:
             Z = self.get_final_distance()
 
@@ -138,7 +145,7 @@ class TwoDimensionExample:
         plt.ylim([self.ymin - self.slack, self.ymax + self.slack])
         random.seed(random_state)
 
-        self.amount_of_points = (self.xmax-self.xmin)*2 + (self.ymax-self.ymin)*2
+        self.amount_of_points = (self.xmax-self.xmin)*8 + (self.ymax-self.ymin)*8
         self.amount_per_unit = 2
         self.x_spacing = np.linspace(self.xmin, self.xmax, (self.xmax - self.xmin) * self.amount_per_unit)
         self.y_spacing = np.linspace(self.ymin, self.ymax, (self.ymax - self.ymin) * self.amount_per_unit)
@@ -147,7 +154,7 @@ class TwoDimensionExample:
         self.labels = self.get_labels()
 
     def get_data(self):
-        return Data(self.points, self.labels, ["x", "y"], ["red", "black"], preprocessing_method=None)
+        return Data(self.points, self.labels, ["x", "y"])
 
     def sample_points(self):
         x_range = self.xmax - self.xmin
@@ -195,18 +202,27 @@ class TwoDimensionExample:
     def plot_black_box_curve(self):
         self.plot_curve(self.black_box_curve)
 
+    def plot_setting(self):
+        self.plot_black_box_curve()
+        self.plot_training_points()
+
+
     def plot_local_model(self, test_point):
         #self.plot_points()
         self.plot_black_box_curve()
 
-        leafage = LeafageBinaryClass(self.get_data(), self.labels, random_state)
+        leafage = LeafageBinaryClass(self.get_data(), self.labels, random_state, neighbourhood_sampling_strategy="closest_boundary")
         local_model = leafage.explain(test_point, self.get_label(test_point)).local_model
 
         plot_local_model = PlotLocalModel(self.x_spacing, self.y_spacing, local_model)
         self.plot_point(test_point)
+        #self.plot_training_points()
         self.plot_points(local_model.neighbourhood.instances, local_model.neighbourhood.labels)
-        #plot_local_model.plot_distance_function("weights")
+        plot_local_model.plot_distance_function("biased_distance")
         plot_local_model.plot_local_model()
+
+        plt.xlim([self.xmin - self.slack, self.xmax + self.slack])
+        plt.ylim([self.ymin - self.slack, self.ymax + self.slack])
 
     def test_evaluation(self):
         #train, test, labels_train, labels_test = train_test_split(self.points, self.labels, train_size=0.5)
@@ -257,12 +273,20 @@ class TwoDimensionExample:
             #ax.add_artist(c1)
             #contour.plot_local_model()
 
+# In explanation: no sorting
+# In leafage no scaling
 
 if __name__ == "__main__":
     import warnings
     warnings.filterwarnings("ignore", category=UndefinedMetricWarning)
 
     a = TwoDimensionExample()
-    a.test_evaluation()
+    from random import randint
+    random.seed(11)
+    test_points = [[randint(-5,5), randint(20,25)] for x in range(20)]
+    #a.plot_setting()
+    for i in test_points:
+        plt.figure()
+        a.plot_local_model(i)
 
     plt.show()

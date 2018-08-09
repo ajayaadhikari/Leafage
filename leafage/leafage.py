@@ -148,14 +148,14 @@ class LeafageBinaryClass:
         self.random_state = random_state
         self.neighbourhood_sampling_strategy = neighbourhood_sampling_strategy
 
-    def get_explanatory_examples(self, test_instance, number_examples=5):
-        pass
-
     def explain(self, test_instance, test_instance_prediction, amount_of_examples=10):
         pre_process = lambda X: self.training_data.pre_process(X, scale=True)
+        #pre_process = lambda X: self.training_data.pre_process(X, scale=False)
 
         scaled_training_set = self.training_data.scaled_feature_vector
         scaled_test_instance = pre_process([test_instance])[0]
+        #scaled_training_set = self.training_data.feature_vector
+        #scaled_test_instance = test_instance
 
         np.random.seed(self.random_state)
         local_model = LocalModel(scaled_test_instance,
@@ -164,7 +164,6 @@ class LeafageBinaryClass:
                                  self.predicted_labels,
                                  pre_process,
                                  self.neighbourhood_sampling_strategy)
-        #print("\t%s" % local_model.faithfulness.accuracy)
 
         # Get the closest instances
         indices_examples_in_support, _ = \
@@ -223,45 +222,3 @@ class LeafageBinaryClass:
 
     def get_local_model(self, instance, prediction):
         return self.explain(instance, prediction, 1).local_model.linear_model
-
-    def visualize_2(self, explanation, amount_of_features=10):
-        positive_color = "yellowgreen"
-        negative_color = "tomato"
-
-        amount_of_features = min(amount_of_features, len(explanation.original_test_instance))
-        columns = self.training_data.feature_names
-        labels = np.append(explanation.predicted_labels_example_instances,[1])
-        labels_colors = [negative_color if label == 0 else positive_color for label in labels]
-
-        data = np.vstack((explanation.original_test_instance, explanation.original_example_instances))[:, :amount_of_features]
-
-        # Sort the features according to the absolute value in descending order
-        sort_index = np.flip(np.argsort(np.abs(explanation.linear_model.linear_model_coefficients)), axis=0)[:amount_of_features]
-        sorted_coefficients = np.around(np.array(explanation.linear_model.linear_model_coefficients)[sort_index], decimals=2)
-        sorted_feature_names = np.array(self.training_data.feature_names)[sort_index]
-
-        # Set the negative coefficients as red and the positive as green
-        colors = [negative_color if coef < 0 else positive_color for coef in sorted_coefficients]
-        sorted_coefficients = np.abs(sorted_coefficients)
-
-        index = np.arange(amount_of_features) + 0.3
-        bar_width = 0.4
-
-        plt.bar(index, sorted_coefficients, bar_width, color=colors)
-
-        # Add a table at the bottom of the axes
-        the_table = plt.table(cellText=data,
-                              rowLabels=labels,
-                              colLabels=sorted_feature_names,
-                              rowColours=labels_colors,
-                              loc='bottom')
-
-        # Adjust layout to make room for the table:
-        plt.subplots_adjust(left=0.2, bottom=0.3)
-
-        plt.ylabel("Influence on the target variable")
-        plt.title('Influence on the prediction')
-        plt.xticks([])
-        plt.ylim([0, 1])
-
-        plt.show()

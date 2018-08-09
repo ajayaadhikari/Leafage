@@ -3,7 +3,6 @@ from collections import Counter
 from utils.Evaluate import EvaluationMetrics
 from utils.MathFunctions import euclidean_distance
 from sklearn.svm import SVC
-
 from math import exp
 import numpy as np
 
@@ -156,7 +155,7 @@ class Neighbourhood:
 
     def get_neighbourhood_of_closest_boundary(self, training_set, black_box_labels,):
         amount_per_class_big_neighbourhood = 20*len(training_set[0])
-        amount_per_class_small_neighbourhood = 5*len(training_set[0])
+        amount_per_class_small_neighbourhood = 3*len(training_set[0])
         unbiased_distance = Distances.unbiased_distance_function
 
         closest_enemy = Neighbourhood.get_closest_enemy_instance(training_set, black_box_labels, unbiased_distance, self.instance_to_explain, self.prediction)
@@ -278,6 +277,12 @@ class Distances:
         nominator = abs(np.dot(training_instance, np.transpose(self.coefficients)) + self.intercept)
         denominator = np.sqrt(np.dot(self.coefficients, np.transpose(self.coefficients)))
         return nominator/float(denominator)
+
+    def get_biased_distance(self, training_instance, dummy=None):
+        difference = np.power(training_instance - np.array(self.test_instance), 2)
+        dot_product = np.dot(np.abs(self.coefficients), difference.transpose())
+        square = np.sqrt(dot_product)
+        return square
 
     def get_unbiased_distance(self, training_instance, dummy=None):
         """
