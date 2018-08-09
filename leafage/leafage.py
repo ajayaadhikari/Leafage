@@ -1,32 +1,21 @@
 import numpy as np
 from sklearn.linear_model import LogisticRegression
-from sklearn.metrics import accuracy_score
-from sklearn.model_selection import train_test_split
 
 from explanation import Explanation
-from use_cases.all_use_cases import all_data_sets
 from wrapper_lime import WrapperLime
-from faithfulness import Faithfulness
 from local_model import LocalModel
 from utils.MathFunctions import euclidean_distance
-from utils import Classifiers
-
-import matplotlib.pyplot as plt
-
 
 class Leafage:
     def __init__(self,
                  training_data,
-                 testing_data,
                  predict,
                  predict_proba,
                  random_state,
                  neighbourhood_sampling_strategy):
         """
         Full form of LEAFAgE: Local Example And Feature-based model Agnostic Explanation.
-
         :param training_data: Should be of type use_cases.data.Data
-        :param testing_data: Should be of type use_cases.data.Data
         :param predict: Predict function of the black-box classifier
         :param predict_proba: Predict probability per class of the black-box classifier
         :param random_state
@@ -34,7 +23,6 @@ class Leafage:
         """
 
         self.training_data = training_data
-        self.testing_data = testing_data
         self.predict = predict
         self.predict_proba = predict_proba
         self.random_state = random_state
@@ -44,12 +32,6 @@ class Leafage:
                                                       self.predict(self.training_data.feature_vector),
                                                       self.random_state,
                                                       self.neighbourhood_sampling_strategy)
-        if self.testing_data is not None:
-            self.leafage_faithfulness, self.lime_faithfulness = \
-                self.explanatory_examples.get_faithfulness(self.testing_data,
-                                                           self.predict(self.testing_data.feature_vector),
-                                                           np.arange(0.1, 1.1, 0.1),
-                                                           self.lime_local_model)
 
     def explain(self, test_instance, amount_of_examples):
         # Get the instances to explain
@@ -105,27 +87,6 @@ class LeafageMultiClass:
 
     def is_binary(self):
         return len(self.labels) == 2
-
-    def get_faithfulness(self, test_set, test_set_predictions, radii, lime_get_local_model):
-        leafage_faithfulness = {}
-        lime_faithfulness = {}
-
-        for label in self.labels:
-            print("Label %s vs rest" % label)
-            one_vs_rest_predictions = self.labels_one_vs_all(label, test_set_predictions)
-            print("Evaluate Leafage!")
-            leafage_faithfulness[label] = Faithfulness(test_set,
-                                                    one_vs_rest_predictions,
-                                                    self.one_vs_rest[label].get_local_model,
-                                                    radii)
-            print("Evaluate LIME")
-            classes = sorted(np.unique(one_vs_rest_predictions))
-            lime_get_local_model = lime_get_local_model(self.training_data, classes)
-            lime_faithfulness[label] = Faithfulness(test_set,
-                                                    one_vs_rest_predictions,
-                                                    lime_get_local_model,
-                                                    radii)
-        return leafage_faithfulness, lime_faithfulness
 
     def explain(self, test_instance, probabilities_per_class, amount_of_examples):
         sorted_indices = np.argsort(probabilities_per_class)

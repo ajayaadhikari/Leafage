@@ -14,7 +14,6 @@ class Scenario:
                  dataset_source,
                  dataset,
                  classifier_name,
-                 train_size=1,
                  random_state=11,
                  classifier_hyper_parameters={},
                  neighbourhood_sampling_strategy="closest_boundary",
@@ -29,8 +28,6 @@ class Scenario:
                         if dataset_source="load_from_use_cases" then dataset should be in use_cases.all_use_cases.different_data_sets
                         if dataset_source="data_object" then dataset should be an object of utils.data.Data
         :param classifier_name: Short name of the classifier, should be in $leafage.utils.Classifiers
-        :param train_size: Denote in range of 0 to 1, the ratio of the training-set size. This is for evaluating the Leafage method.
-                           Set the train_size to 1 is you just want to get explanations
         :param random_state
         :param classifier_hyper_parameters: As a dictionary e.g. {"C": 5, "kernel": "linear"}
         :param neighbourhood_sampling_strategy: Either "closest boundary" or "closest instance"
@@ -39,22 +36,20 @@ class Scenario:
                                    and numerical features will be left untouched
         """
         self.dataset_source = dataset_source
-        self.train_size = train_size
         self.random_state = random_state
         self.classifier_name = classifier_name
         self.classifier_hyper_parameters = classifier_hyper_parameters
         self.neighbourhood_sampling_strategy = neighbourhood_sampling_strategy
         print("Strategy:%s" % neighbourhood_sampling_strategy)
 
-        self.test_faithfulness = self.train_size < 1
         self.data = self.__get_data(dataset)
 
         self.encoder_classifier = encoder_classifier
         if encoder_classifier is None:
             self.encoder_classifier = self.data.pre_process_object.transform
 
-        self.predict, self.predict_proba, self.training_data, self.testing_data = self.__setup()
-        self.leafage = Leafage(self.training_data, self.testing_data, self.predict, self.predict_proba,
+        self.predict, self.predict_proba = self.__setup()
+        self.leafage = Leafage(self.data, self.predict, self.predict_proba,
                                random_state, self.neighbourhood_sampling_strategy)
 
     def get_leafage_object(self):
@@ -72,43 +67,24 @@ class Scenario:
             return FileDataSet(dataset)
 
     def __setup(self):
-        # Split in train en test
-        if self.test_faithfulness:
-            train, test, labels_train, labels_test = train_test_split(self.data.feature_vector,
-                                                                      self.data.target_vector,
-                                                                      train_size=self.train_size,
-                                                                      random_state=self.random_state,
-                                                                      stratify=self.data.target_vector)
-        else:
-            train, labels_train = self.data.feature_vector, self.data.target_vector
-            test, labels_test = None, None
-
         # Train the classifier
         np.random.seed(self.random_state)
-        encoded_train = self.encoder_classifier(train)
+        encoded_train = self.encoder_classifier(self.data.feature_vector)
         classifier = Classifiers.train(self.classifier_name, encoded_train,
-                                       labels_train, self.classifier_hyper_parameters)
+                                       self.data.target_vector, self.classifier_hyper_parameters)
 
         # Get the predict and the predict_proba functions
         predict_proba = lambda X: classifier.predict_proba(self.encoder_classifier(X))
         predict = lambda X: classifier.predict(self.encoder_classifier(X))
 
-        if self.test_faithfulness:
-            print("Accuracy: %s" % accuracy_score(labels_test, predict(test)))
-            testing_data = self.data.copy(test, labels_test)
-        else:
-            testing_data = None
-
-        # Make a new data object of the training-set
-        training_data = self.data.copy(train, labels_train)
-        return predict, predict_proba, training_data, testing_data
+        return predict, predict_proba
 
     def __str__(self):
         """
         Get a unique name of this setup
         """
-        return "%s_%s_%s_%s" % (self.train_size, self.random_state, self.classifier_name,
-                                   str_dict_snake(self.classifier_hyper_parameters))
+        return "%s_%s_%s" % (self.random_state, self.classifier_name,
+                            str_dict_snake(self.classifier_hyper_parameters))
 
 
 import warnings
