@@ -5,7 +5,7 @@ import random
 from sklearn.exceptions import UndefinedMetricWarning
 
 from faithfulness import Faithfulness
-from leafage import LeafageBinaryClass
+from leafage import LeafageBinary
 from use_cases.data import Data
 
 random_state = 9
@@ -211,7 +211,7 @@ class TwoDimensionExample:
         #self.plot_points()
         self.plot_black_box_curve()
 
-        leafage = LeafageBinaryClass(self.get_data(), self.labels, random_state, neighbourhood_sampling_strategy="closest_boundary")
+        leafage = LeafageBinary(self.get_data(), self.labels, random_state, neighbourhood_sampling_strategy="closest_boundary")
         local_model = leafage.explain(test_point, self.get_label(test_point)).local_model
 
         plot_local_model = PlotLocalModel(self.x_spacing, self.y_spacing, local_model)
@@ -226,7 +226,7 @@ class TwoDimensionExample:
 
     def test_evaluation(self):
         #train, test, labels_train, labels_test = train_test_split(self.points, self.labels, train_size=0.5)
-        leafage = LeafageBinaryClass(self.get_data(), self.labels, random_state)
+        leafage = LeafageBinary(self.get_data(), self.labels, random_state)
         evaluation = Faithfulness(self.points, self.labels, leafage.get_local_model, np.arange(0.36, 1, 0.05))
 
         evaluation.evaluate(self)
@@ -234,7 +234,7 @@ class TwoDimensionExample:
     def vary_distance_to_boundary(self):
         #Get the local linear boundary
 
-        leafage = LeafageBinaryClass(self.get_data(), self.labels, random_state)
+        leafage = LeafageBinary(self.get_data(), self.labels, random_state)
         explanation = []
         range_ = np.arange(self.xmin, self.xmax,0.5)
         for i in range_:
@@ -255,7 +255,7 @@ class TwoDimensionExample:
     def plot_contours(self):
         points = [[-12, -3], [-7, 7], [-1, 15], [10, 5]]
 
-        leafage = LeafageBinaryClass(self.get_data(), self.labels, random_state)
+        leafage = LeafageBinary(self.get_data(), self.labels, random_state)
         #self.plot_training_points()
         self.plot_black_box_curve()
 

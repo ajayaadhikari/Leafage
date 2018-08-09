@@ -2,9 +2,9 @@ import numpy as np
 from sklearn.linear_model import LogisticRegression
 
 from explanation import Explanation
-from wrapper_lime import WrapperLime
 from local_model import LocalModel
 from utils.MathFunctions import euclidean_distance
+
 
 class Leafage:
     def __init__(self,
@@ -21,42 +21,21 @@ class Leafage:
         :param random_state
         :param neighbourhood_sampling_strategy: Either "closest boundary" or "closest instance"
         """
-
         self.training_data = training_data
         self.predict = predict
         self.predict_proba = predict_proba
         self.random_state = random_state
         self.neighbourhood_sampling_strategy = neighbourhood_sampling_strategy
 
-        self.explanatory_examples = LeafageMultiClass(self.training_data,
-                                                      self.predict(self.training_data.feature_vector),
-                                                      self.random_state,
-                                                      self.neighbourhood_sampling_strategy)
-
-    def explain(self, test_instance, amount_of_examples):
-        # Get the instances to explain
-        return self.explanatory_examples.explain(test_instance, self.predict_proba([test_instance])[0], amount_of_examples)
-
-    def lime_local_model(self, training_data, classes):
-        lime = WrapperLime(training_data, self.predict_proba, classes)
-        return lambda instance, _: lime.get_local_model(instance)
-
-
-class LeafageMultiClass:
-    def __init__(self, training_data, predicted_labels, random_state,
-                 neighbourhood_sampling_strategy):
-        self.training_data = training_data
-        self.predicted_labels = predicted_labels
-        self.random_state = random_state
-        self.labels = np.unique(predicted_labels)
-        self.neighbourhood_sampling_strategy = neighbourhood_sampling_strategy
+        self.predicted_labels = self.predict(self.training_data.feature_vector)
+        self.labels = np.unique(self.predicted_labels)
 
         self.one_vs_rest = {}
         if len(self.labels) == 1:
             print("Data with only one class %s" % self.labels[0])
         elif self.is_binary():
-            leafage_binary = LeafageBinaryClass(self.training_data, predicted_labels,
-                                             random_state, self.neighbourhood_sampling_strategy)
+            leafage_binary = LeafageBinary(self.training_data, self.predicted_labels,
+                                           random_state, self.neighbourhood_sampling_strategy)
             self.one_vs_rest[self.labels[0]] = leafage_binary
             self.one_vs_rest[self.labels[1]] = leafage_binary
         else:
@@ -66,8 +45,8 @@ class LeafageMultiClass:
         one_vs_all = {}
         for i, label in enumerate(predicted_labels):
             binary_predicted_labels = self.labels_one_vs_all(label, predicted_labels)
-            one_vs_all[label] = LeafageBinaryClass(training_data, binary_predicted_labels,
-                                                   self.random_state, self.neighbourhood_sampling_strategy)
+            one_vs_all[label] = LeafageBinary(training_data, binary_predicted_labels,
+                                              self.random_state, self.neighbourhood_sampling_strategy)
         return one_vs_all
 
     @staticmethod
@@ -82,13 +61,14 @@ class LeafageMultiClass:
         new_feature_vector = self.training_data.feature_vector[indices_fact_foil]
         new_real_labels = self.training_data.target_vector[indices_fact_foil]
         new_predicted_labels = self.predicted_labels[indices_fact_foil]
-        return LeafageBinaryClass(self.training_data.copy(new_feature_vector, new_real_labels),
-                                  new_predicted_labels, self.random_state, self.neighbourhood_sampling_strategy)
+        return LeafageBinary(self.training_data.copy(new_feature_vector, new_real_labels),
+                             new_predicted_labels, self.random_state, self.neighbourhood_sampling_strategy)
 
     def is_binary(self):
         return len(self.labels) == 2
 
-    def explain(self, test_instance, probabilities_per_class, amount_of_examples):
+    def explain(self, test_instance, amount_of_examples):
+        probabilities_per_class = self.predict_proba([test_instance])[0]
         sorted_indices = np.argsort(probabilities_per_class)
         fact_class = sorted_indices[-1]
         foil_class = sorted_indices[-2]
@@ -96,7 +76,7 @@ class LeafageMultiClass:
         return leafage_binary.explain(test_instance, fact_class, amount_of_examples)
 
 
-class LeafageBinaryClass:
+class LeafageBinary:
     # Static variables
     distance_measure = euclidean_distance
     linear_classifier = LogisticRegression
