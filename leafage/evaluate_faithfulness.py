@@ -136,7 +136,7 @@ def faithfulness_data_sets():
 
 
 def housing_from_use_cases():
-    scenario = Scenario("load_from_use_cases", "adult", "lr")
+    scenario = Scenario("load_from_use_cases", "housing", "lr")
     leafage = scenario.leafage
     explanation = scenario.get_explanation(leafage.training_data.feature_vector[0], 5)
     explanation.visualize_feature_importance(amount_of_features=10, target="write_to_file", path="../output/feature_importance2.png")

@@ -1,8 +1,4 @@
 import pandas as pd
-from plotly.offline import download_plotlyjs, iplot, init_notebook_mode
-import plotly.plotly as py
-import plotly.graph_objs as go
-import plotly.figure_factory as ff
 import numpy as np
 
 
@@ -28,6 +24,7 @@ class Explanation:
         self.local_model = local_model
         self.__sort_columns_according_to_importance()
         self.notebook_initialized = False
+        self.plotly_imports_set = False
 
     def visualize_feature_importance(self, amount_of_features=5, target="notebook", path=None):
         """
@@ -36,6 +33,7 @@ class Explanation:
         :param target: Should be either "notebook" or "write_to_file"
         :param path: If target="to_file", this parameter denotes where to save the image e.g. "../output/test.png"
         """
+        self.__set_plotly_imports()
         figure = self.__visualize_feature_importance(amount_of_features)
         self.__export(figure, target, path)
 
@@ -47,6 +45,7 @@ class Explanation:
         :param path: If target="to_file", this parameter denotes where to save the image e.g. "../output/test.png"
         :param type: Should be either "examples_in_support" or "examples_against"
         """
+        self.__set_plotly_imports()
         if type == "examples_in_support":
             hc = 'rgba(0,184,0,1)'
             figure = self.__visualize_table_ff(amount_of_features, self.examples_in_support, hc)
@@ -104,6 +103,15 @@ class Explanation:
                            xaxis=dict(title="Features", categoryorder="array", categoryarray=x_values))
         figure = go.Figure(data=data, layout=layout)
         return figure
+
+    def __set_plotly_imports(self):
+        if not self.plotly_imports_set:
+            global py, go, ff, iplot, download_plotlyjs, init_notebook_mode
+            from plotly.offline import download_plotlyjs, iplot, init_notebook_mode
+            import plotly.plotly as py
+            import plotly.graph_objs as go
+            import plotly.figure_factory as ff
+            self.plotly_imports_set = True
 
     @staticmethod
     def __visualize_table_ff(amount_of_features, df, header_background_color):
