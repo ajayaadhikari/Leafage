@@ -21,8 +21,9 @@ possible_classifiers = {"knn": KNeighborsClassifier,
                         "mlp": MLPClassifier}
 
 
-def train(name_classifier, features_train, labels_train, variables={}):
-    print("Training ||%s|| with variables %s" % (name_classifier, variables))
+def train(name_classifier, features_train, labels_train, variables={}, verbose=False):
+    if verbose:
+        print("Training ||%s|| with variables %s" % (name_classifier, variables))
 
     if name_classifier not in possible_classifiers.keys():
         raise(ValueError, "Classifier %s not support choose from: %s" % (name_classifier, possible_classifiers.keys()))

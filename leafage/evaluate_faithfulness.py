@@ -9,6 +9,7 @@ from use_cases.all_use_cases import all_data_sets
 import numpy as np
 import pandas as pd
 from custom_exceptions import OneClassValues
+from sklearn.metrics import accuracy_score
 
 setup_blackbox_models = [("lr", {}), ("svc", {"kernel": "linear", "probability": True}), ("lda", {}),
                          ("rf", {}), ("dt", {}),
@@ -22,7 +23,7 @@ class EvaluateFaithfulness:
     def __init__(self, dataset, train_size):
         self.data = dataset
         self.train_size = train_size
-        self.one_vs_one_data = self.get_one_vs_one()
+        self.one_vs_rest = self.get_one_vs_rest()
 
     def get_one_vs_one(self):
         classes = np.unique(self.data.target_vector)
@@ -46,6 +47,22 @@ class EvaluateFaithfulness:
             one_vs_one_data[(class_1, class_2)] = (training_data, testing_data)
 
         return one_vs_one_data
+
+    def get_one_vs_rest(self):
+        classes = np.unique(self.data.target_vector)
+        one_vs_all = {}
+        for class_name in classes:
+            binary_labels = np.array([class_name if x == class_name else -1 for x in self.data.target_vector])
+            train, test, labels_train, labels_test = train_test_split(self.data.feature_vector,
+                                                                      binary_labels,
+                                                                      train_size=self.train_size,
+                                                                      random_state=self.random_state,
+                                                                      stratify=binary_labels)
+            training_data = self.data.copy(train, labels_train)
+            testing_data = self.data.copy(test, labels_test)
+            one_vs_all[class_name] = (training_data, testing_data)
+
+        return one_vs_all
 
     def get_faithfulness(self, write_to_file=True):
         dfs = []
@@ -89,21 +106,22 @@ class EvaluateFaithfulness:
                             "accuracy", "std", "radius", "amount in radius"]
             return pd.DataFrame(data=table, columns=column_names)
 
-
-
         leafage_ce_all = []
         leafage_cb_all = []
         lime_all = []
         i = 0
-        for name in self.one_vs_one_data.keys():
+        for name in self.one_vs_rest.keys():
             i += 1
-            print("\t\tOne vs one %s/%s %s:" % (i, len(self.one_vs_one_data.keys()), name))
-            training_data, test_data = self.one_vs_one_data[name]
+            print("\t\tOne vs one %s/%s %s:" % (i, len(self.one_vs_rest.keys()), name))
+            training_data, test_data = self.one_vs_rest[name]
             classifier = train(classifier_name,
                                training_data.one_hot_encoded_feature_vector,
                                training_data.target_vector,
                                classifier_variables)
             predicted_training_labels = classifier.predict(training_data.one_hot_encoded_feature_vector)
+
+            test_accuracy = accuracy_score(test_data.target_vector, classifier.predict(test_data.one_hot_encoded_feature_vector))
+            print("\t\tBlack-box test accuracy: %s" % test_accuracy)
 
             leafage_ce = LeafageBinary(training_data, predicted_training_labels, self.random_state, "closest_enemy")
             leafage_cb = LeafageBinary(training_data, predicted_training_labels, self.random_state, "closest_boundary")
@@ -149,6 +167,7 @@ def housing_from_file():
     leafage = scenario.leafage
     explanation = scenario.get_explanation(scenario.data.feature_vector[0], amount_of_examples=5)
     a = 4
+
 
 if __name__ == "__main__":
     faithfulness_data_sets()

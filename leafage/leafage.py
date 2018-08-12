@@ -43,7 +43,7 @@ class Leafage:
 
     def get_one_vs_all(self, training_data, predicted_labels):
         one_vs_all = {}
-        for i, label in enumerate(predicted_labels):
+        for label in predicted_labels:
             binary_predicted_labels = self.labels_one_vs_all(label, predicted_labels)
             one_vs_all[label] = LeafageBinary(training_data, binary_predicted_labels,
                                               self.random_state, self.neighbourhood_sampling_strategy)
