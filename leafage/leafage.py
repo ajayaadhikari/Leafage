@@ -157,9 +157,8 @@ class LeafageBinary:
 
     @staticmethod
     def normalize(container):
-        total = float(sum(container))
+        total = float(sum(np.abs(container)))
         return np.array([x/total for x in container])
-
 
     def get_local_model(self, instance, prediction):
         return self.explain(instance, prediction, 1).local_model.linear_model

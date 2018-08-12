@@ -12,6 +12,6 @@ class DigitsDataset(Data):
 
         feature_names = map(lambda index: str((index / 8, index % 8)), range(64))
 
-        Data.__init__(self, feature_vector, target_vector, feature_names)
+        Data.__init__(self, feature_vector, target_vector, feature_names, name="Digits")
         print("\tDone!!")
 

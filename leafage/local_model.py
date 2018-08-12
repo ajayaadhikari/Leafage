@@ -1,5 +1,6 @@
 from collections import Counter
 
+from custom_exceptions import OneClassValues
 from utils.Evaluate import EvaluationMetrics
 from utils.MathFunctions import euclidean_distance
 from sklearn.svm import SVC
@@ -15,6 +16,8 @@ class LocalModel:
                  black_box_labels, pre_process, neighbourhood_strategy,
                  data_preprocessed=True):
 
+        if len(np.unique(black_box_labels)) <= 1:
+            raise OneClassValues()
         if not data_preprocessed:
             training_set = pre_process(training_set)
             instance_to_explain = pre_process([instance_to_explain])[0]
@@ -154,7 +157,7 @@ class Neighbourhood:
         return neighbourhood, neighbourhood_labels, weights
 
     def get_neighbourhood_of_closest_boundary(self, training_set, black_box_labels,):
-        amount_per_class_big_neighbourhood = 20*len(training_set[0])
+        amount_per_class_big_neighbourhood = 15*len(training_set[0])
         amount_per_class_small_neighbourhood = 3*len(training_set[0])
         unbiased_distance = Distances.unbiased_distance_function
 

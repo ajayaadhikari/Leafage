@@ -4,9 +4,9 @@ from adult import Adult
 from housing import HousingDataSet
 
 all_data_sets = {"iris": IrisDataSet,
-                       "digits": DigitsDataset,
-                       "adult": Adult,
-                       "housing": HousingDataSet}
+                 "digits": DigitsDataset,
+                 "adult": Adult,
+                 "housing": HousingDataSet}
 
 if __name__ == "__main__":
     a = HousingDataSet()

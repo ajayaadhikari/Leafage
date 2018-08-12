@@ -14,8 +14,8 @@ class Scenario:
                  dataset_source,
                  dataset,
                  classifier_name,
-                 random_state=11,
                  classifier_hyper_parameters={},
+                 random_state=11,
                  neighbourhood_sampling_strategy="closest_boundary",
                  encoder_classifier=None):
         """
@@ -28,8 +28,8 @@ class Scenario:
                         if dataset_source="load_from_use_cases" then dataset should be in use_cases.all_use_cases.different_data_sets
                         if dataset_source="data_object" then dataset should be an object of utils.data.Data
         :param classifier_name: Short name of the classifier, should be in $leafage.utils.Classifiers
-        :param random_state
         :param classifier_hyper_parameters: As a dictionary e.g. {"C": 5, "kernel": "linear"}
+        :param random_state
         :param neighbourhood_sampling_strategy: Either "closest boundary" or "closest instance"
         :param encoder_classifier: The encoder function that converts an instance such that it can be fed to the black-box classifier
                                    If None then the categorical features are one-hot-encoded before feeding to the classifier

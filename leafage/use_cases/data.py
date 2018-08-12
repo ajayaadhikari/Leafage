@@ -129,7 +129,8 @@ class Data:
                  target_vector,
                  feature_names,
                  target_vector_encoder=None,
-                 pre_process_object=None):
+                 pre_process_object=None,
+                 name="dataset"):
         """
         Columns with values of type string will be interpreted as categorical features
         :param feature_vector: Should be of type np.array and with dtype=object
@@ -137,10 +138,12 @@ class Data:
         :param feature_names
         :param target_vector_encoder: One relevant when using self.copy
         :param pre_process_object: One relevant when using self.copy
+        :param name: name of the dataset
         """
 
         self.feature_vector = np.array(feature_vector)
         self.feature_names = np.array(feature_names)
+        self.name = name
 
         if target_vector_encoder is None:
             self.target_vector_encoder = LabelEncoder()

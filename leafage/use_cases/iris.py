@@ -3,7 +3,7 @@ from sklearn.datasets import load_iris
 
 
 class IrisDataSet(Data):
-    def __init__2(self):
+    def __init__(self):
         iris = load_iris()
 
         feature_vector = iris.data
@@ -11,9 +11,9 @@ class IrisDataSet(Data):
 
         feature_names = iris.feature_names
 
-        Data.__init__(self, feature_vector, target_vector, feature_names)
+        Data.__init__(self, feature_vector, target_vector, feature_names, name="Iris")
 
-    def __init__(self):
+    def __init__2(self):
         import numpy as np
         iris = load_iris()
 
@@ -30,4 +30,4 @@ class IrisDataSet(Data):
         feature_names.append("test")
         feature_names.append("test2")
 
-        Data.__init__(self, feature_vector, target_vector, feature_names)
+        Data.__init__(self, feature_vector, target_vector, feature_names, name="Iris")
