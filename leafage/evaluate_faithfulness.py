@@ -64,16 +64,15 @@ class EvaluateFaithfulness:
 
         return one_vs_all
 
-    def get_faithfulness(self, write_to_file=True):
+    def get_faithfulness(self):
         dfs = []
         for classifier_name, variables in setup_blackbox_models:
             print("\tClassifier: %s" % classifier_name)
             dfs.append(self.get_faithfulness_classifier(classifier_name, variables))
 
         merged_df = pd.concat(dfs, ignore_index=True)
-        path = "../output/result_faithfulness/dataset_%s" % self.data.name
-        if write_to_file:
-            merged_df.to_csv("%s.csv" % path, index=False)
+        path = "../output/result_faithfulness/dataset_%s_%s.csv" % (self.data.name, self.train_size)
+        merged_df.to_csv(path, index=False)
         return merged_df
 
     def get_faithfulness_classifier(self, classifier_name, classifier_variables):
@@ -139,16 +138,16 @@ class EvaluateFaithfulness:
 
 
 def faithfulness_data_sets():
-    train_size = 0.5
+    train_size = 0.7
     all_df = []
-    for dataset in all_data_sets.values():
-        dataset = dataset()
-        print("Dataset %s" % dataset.name)
+    dataset_names = ["iris", "digits", "adult", "housing"]
+    for name in dataset_names:
+        dataset = all_data_sets[name]()
+        print("Dataset %s" % name)
         all_df.append(EvaluateFaithfulness(dataset, train_size).get_faithfulness())
 
     all_df = pd.concat(all_df, ignore_index=True)
     path = "../output/result_faithfulness/result"
-    all_df.to_excel("%s.xlsx" % path, index=False)
     all_df.to_csv("%s.csv" % path, index=False)
 
 
