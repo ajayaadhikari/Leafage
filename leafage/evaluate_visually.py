@@ -2,11 +2,15 @@ import matplotlib.pyplot as plt
 import numpy as np
 import random
 
+from sklearn.datasets import make_classification
 from sklearn.exceptions import UndefinedMetricWarning
 
 from faithfulness import Faithfulness
 from leafage import LeafageBinary
-from use_cases.data import Data
+from wrapper_lime import WrapperLime
+from use_cases.data import Data, PreProcess
+
+from utils.Classifiers import train
 
 random_state = 9
 
@@ -279,14 +283,59 @@ class TwoDimensionExample:
 if __name__ == "__main__":
     import warnings
     warnings.filterwarnings("ignore", category=UndefinedMetricWarning)
+    random_state = 16
+    plt.title("Two informative features, two clusters per class",
+              fontsize='small')
+    X, y = make_classification(n_samples=1000, n_features=2, n_redundant=0, n_informative=2, random_state=random_state)
+    X = PreProcess(X).transform(X, scale=True)
+    data = Data(X, y, ["x", "y"])
 
-    a = TwoDimensionExample()
-    from random import randint
-    random.seed(11)
-    test_points = [[randint(-5,5), randint(20,25)] for x in range(20)]
-    #a.plot_setting()
-    for i in test_points:
-        plt.figure()
-        a.plot_local_model(i)
+    xmin, xmax = X[:, 0].min() - 1, X[:, 0].max() + 1
+    ymin, ymax = X[:, 1].min() - 1, X[:, 1].max() + 1
+    x_spacing = np.arange(xmin, xmax, 0.1)
+    y_spacing = np.arange(ymin, ymax, 0.1)
+    plt.xlim([xmin, xmax])
+    plt.ylim([ymin, ymax])
+    xx, yy = np.meshgrid(x_spacing, y_spacing)
+
+    classifier = train("knn", X, y, {"n_neighbors": 10})
+    Z = classifier.predict(np.c_[xx.ravel(), yy.ravel()])
+    Y_predicted = classifier.predict(X)
+    Z = Z.reshape(xx.shape)
+
+    plt.contourf(xx, yy, Z, alpha=0.4)
+
+    plt.scatter(X[:, 0], X[:, 1], marker='o', c=Y_predicted,
+                s=20, edgecolor='k')
+
+    leafage = LeafageBinary(data, Y_predicted, random_state,
+                            neighbourhood_sampling_strategy="closest_boundary")
+
+    test_point = np.array([-1.5, 1])
+    plt.plot(test_point[0], test_point[1], "r^")
+    leafage_linear_model = leafage.get_local_model(test_point, classifier.predict([test_point])[0])
+    lime_linear_model = WrapperLime(data, classifier.predict_proba).get_local_model(test_point, None)
+
+    linear_model = lime_linear_model
+
+    line = Line(linear_model.coefficients[0],
+                linear_model.coefficients[1],
+                linear_model.original_intercept)
+
+    y = [line(t) for t in np.arange(xmin, xmax, 0.1)]
+    plt.plot(x_spacing, y)
 
     plt.show()
+
+    #a = TwoDimensionExample()
+    #from random import randint
+    #random.seed(11)
+    #test_points = [[randint(-5,5), randint(20,25)] for x in range(20)]
+    ##a.plot_setting()
+    #for i in test_points:
+    #    plt.figure()
+    #    a.plot_local_model(i)
+#
+    #plt.show()
+
+

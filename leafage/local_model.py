@@ -297,7 +297,7 @@ class Distances:
         """
             This distance measure combines the unbiased distance and the black-box distance
         """
-        return self.get_black_box_distance(training_instance) + self.get_unbiased_distance(training_instance)
+        return len(training_instance) * self.get_black_box_distance(training_instance) + self.get_unbiased_distance(training_instance)
 
     @staticmethod
     def get_weight(training_instance, test_instance, sigma):

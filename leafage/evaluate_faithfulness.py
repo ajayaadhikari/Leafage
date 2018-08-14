@@ -73,7 +73,6 @@ class EvaluateFaithfulness:
         merged_df = pd.concat(dfs, ignore_index=True)
         path = "../output/result_faithfulness/dataset_%s" % self.data.name
         if write_to_file:
-            merged_df.to_excel("%s.xlsx" % path, index=False)
             merged_df.to_csv("%s.csv" % path, index=False)
         return merged_df
 
