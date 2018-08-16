@@ -168,4 +168,4 @@ def housing_from_file():
 
 
 if __name__ == "__main__":
-    faithfulness_data_sets()
+    housing_from_use_cases()

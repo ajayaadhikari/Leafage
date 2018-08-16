@@ -40,7 +40,7 @@ class Scenario:
         self.classifier_name = classifier_name
         self.classifier_hyper_parameters = classifier_hyper_parameters
         self.neighbourhood_sampling_strategy = neighbourhood_sampling_strategy
-        print("Strategy:%s" % neighbourhood_sampling_strategy)
+        print("Strategy: Leafage %s" % neighbourhood_sampling_strategy)
 
         self.data = self.__get_data(dataset)
 
@@ -48,8 +48,8 @@ class Scenario:
         if encoder_classifier is None:
             self.encoder_classifier = self.data.pre_process_object.transform
 
-        self.predict, self.predict_proba = self.__setup()
-        self.leafage = Leafage(self.data, self.predict, self.predict_proba,
+        self.classifier = Classifier(self.__get_classifier(), self.encoder_classifier)
+        self.leafage = Leafage(self.data, self.classifier,
                                random_state, self.neighbourhood_sampling_strategy)
 
     def get_leafage_object(self):
@@ -66,18 +66,12 @@ class Scenario:
         else:
             return FileDataSet(dataset)
 
-    def __setup(self):
+    def __get_classifier(self):
         # Train the classifier
         np.random.seed(self.random_state)
         encoded_train = self.encoder_classifier(self.data.feature_vector)
-        classifier = Classifiers.train(self.classifier_name, encoded_train,
+        return Classifiers.train(self.classifier_name, encoded_train,
                                        self.data.target_vector, self.classifier_hyper_parameters)
-
-        # Get the predict and the predict_proba functions
-        predict_proba = lambda X: classifier.predict_proba(self.encoder_classifier(X))
-        predict = lambda X: classifier.predict(self.encoder_classifier(X))
-
-        return predict, predict_proba
 
     def __str__(self):
         """
@@ -86,6 +80,23 @@ class Scenario:
         return "%s_%s_%s" % (self.random_state, self.classifier_name,
                             str_dict_snake(self.classifier_hyper_parameters))
 
+
+class Classifier:
+    def __init__(self, classifier, encoder=None):
+        self.classifier = classifier
+        self.encoder = encoder
+
+    def predict(self, X):
+        if self.encoder is None:
+            return self.classifier.predict(X)
+        else:
+            return self.classifier.predict(self.encoder(X))
+
+    def predict_proba(self, X):
+        if self.encoder is None:
+            return self.classifier.predict_proba(X)
+        else:
+            return self.classifier.predict_proba(self.encoder(X))
 
 import warnings
 warnings.filterwarnings(action='ignore', category=DeprecationWarning)

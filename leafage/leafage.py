@@ -9,25 +9,22 @@ from utils.MathFunctions import euclidean_distance
 class Leafage:
     def __init__(self,
                  training_data,
-                 predict,
-                 predict_proba,
+                 classifier,
                  random_state,
                  neighbourhood_sampling_strategy):
         """
         Full form of LEAFAgE: Local Example And Feature-based model Agnostic Explanation.
         :param training_data: Should be of type use_cases.data.Data
-        :param predict: Predict function of the black-box classifier
-        :param predict_proba: Predict probability per class of the black-box classifier
+        :param classifier: Should contain predict and predict_proba functions
         :param random_state
         :param neighbourhood_sampling_strategy: Either "closest boundary" or "closest instance"
         """
         self.training_data = training_data
-        self.predict = predict
-        self.predict_proba = predict_proba
+        self.classifier = classifier
         self.random_state = random_state
         self.neighbourhood_sampling_strategy = neighbourhood_sampling_strategy
 
-        self.predicted_labels = self.predict(self.training_data.feature_vector)
+        self.predicted_labels = self.classifier.predict(self.training_data.feature_vector)
         self.labels = np.unique(self.predicted_labels)
 
         self.one_vs_rest = {}
@@ -68,7 +65,7 @@ class Leafage:
         return len(self.labels) == 2
 
     def explain(self, test_instance, amount_of_examples):
-        probabilities_per_class = self.predict_proba([test_instance])[0]
+        probabilities_per_class = self.classifier.predict_proba([test_instance])[0]
         sorted_indices = np.argsort(probabilities_per_class)
         fact_class = sorted_indices[-1]
         foil_class = sorted_indices[-2]
@@ -90,6 +87,7 @@ class LeafageBinary:
         self.neighbourhood_sampling_strategy = neighbourhood_sampling_strategy
 
     def explain(self, test_instance, test_instance_prediction, amount_of_examples=10):
+        test_instance = np.array(test_instance)
         pre_process = lambda X: self.training_data.pre_process(X, scale=True)
         #pre_process = lambda X: self.training_data.pre_process(X, scale=False)
 

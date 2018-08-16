@@ -43,7 +43,7 @@ class Parabola:
 
 
 class PlotLocalModel:
-    def __init__(self, x_spacing, y_spacing, local_model, contour_type="standard"):
+    def __init__(self, x_spacing, y_spacing, local_model, contour_type="color"):
         self.local_model = local_model
         self.contour_type = contour_type
         self.x_spacing = x_spacing
@@ -72,9 +72,9 @@ class PlotLocalModel:
                                       lambda x, y: self.local_model.distances.get_black_box_distance([x, y]))
 
     def get_final_distance(self):
-        return self.perform_pair_wise(self.get_unbiased_distance(),
-                                      self.get_black_box_distance(),
-                                      lambda x, y: x + y)
+        return self.perform_pair_wise(self.X,
+                                      self.Y,
+                                      lambda x, y: self.local_model.distances.get_final_distance([x, y]))
 
     @staticmethod
     def perform_pair_wise(matrix1, matrix2, function_):
@@ -85,7 +85,7 @@ class PlotLocalModel:
                 result[i].append(function_(matrix1[i][j], matrix2[i][j]))
         return np.array(result)
 
-    def plot_distance_function(self, distance_type="unbiased_distance"):
+    def plot_distance_function(self, distance_type="unbiased_distance", levels=None):
         if distance_type == "unbiased_distance":
             Z = self.get_unbiased_distance()
         elif distance_type == "weights":
@@ -149,7 +149,7 @@ class TwoDimensionExample:
         plt.ylim([self.ymin - self.slack, self.ymax + self.slack])
         random.seed(random_state)
 
-        self.amount_of_points = (self.xmax-self.xmin)*8 + (self.ymax-self.ymin)*8
+        self.amount_of_points = (self.xmax-self.xmin)*15 + (self.ymax-self.ymin)*15
         self.amount_per_unit = 2
         self.x_spacing = np.linspace(self.xmin, self.xmax, (self.xmax - self.xmin) * self.amount_per_unit)
         self.y_spacing = np.linspace(self.ymin, self.ymax, (self.ymax - self.ymin) * self.amount_per_unit)
@@ -166,6 +166,7 @@ class TwoDimensionExample:
         result = []
         for _ in range(self.amount_of_points):
             result.append([self.xmin + x_range * random.random(), self.ymin + y_range * random.random()])
+
         return np.array(result)
 
     def get_labels(self):
@@ -210,7 +211,6 @@ class TwoDimensionExample:
         self.plot_black_box_curve()
         self.plot_training_points()
 
-
     def plot_local_model(self, test_point):
         #self.plot_points()
         self.plot_black_box_curve()
@@ -220,9 +220,9 @@ class TwoDimensionExample:
 
         plot_local_model = PlotLocalModel(self.x_spacing, self.y_spacing, local_model)
         self.plot_point(test_point)
-        #self.plot_training_points()
+        self.plot_training_points()
         self.plot_points(local_model.neighbourhood.instances, local_model.neighbourhood.labels)
-        plot_local_model.plot_distance_function("biased_distance")
+        plot_local_model.plot_distance_function("final_distance")
         plot_local_model.plot_local_model()
 
         plt.xlim([self.xmin - self.slack, self.xmax + self.slack])
@@ -280,7 +280,7 @@ class TwoDimensionExample:
 # In explanation: no sorting
 # In leafage no scaling
 
-if __name__ == "__main__":
+def new_first():
     import warnings
     warnings.filterwarnings("ignore", category=UndefinedMetricWarning)
     random_state = 16
@@ -292,31 +292,35 @@ if __name__ == "__main__":
 
     xmin, xmax = X[:, 0].min() - 1, X[:, 0].max() + 1
     ymin, ymax = X[:, 1].min() - 1, X[:, 1].max() + 1
+
     x_spacing = np.arange(xmin, xmax, 0.1)
     y_spacing = np.arange(ymin, ymax, 0.1)
     plt.xlim([xmin, xmax])
     plt.ylim([ymin, ymax])
     xx, yy = np.meshgrid(x_spacing, y_spacing)
 
-    classifier = train("knn", X, y, {"n_neighbors": 10})
+    #classifier = train("knn", X, y, {"n_neighbors": 1})
+    classifier = train("nb_g", X, y, {}) # First one
     Z = classifier.predict(np.c_[xx.ravel(), yy.ravel()])
     Y_predicted = classifier.predict(X)
     Z = Z.reshape(xx.shape)
 
-    plt.contourf(xx, yy, Z, alpha=0.4)
+    #plt.contourf(xx, yy, Z, alpha=0.4)
+    plt.contour(xx, yy, Z, alpha=0.4)
 
-    plt.scatter(X[:, 0], X[:, 1], marker='o', c=Y_predicted,
-                s=20, edgecolor='k')
+    #plt.scatter(X[:, 0], X[:, 1], marker='o', c=Y_predicted,
+    #            s=20, edgecolor='k')
 
     leafage = LeafageBinary(data, Y_predicted, random_state,
                             neighbourhood_sampling_strategy="closest_boundary")
 
-    test_point = np.array([-1.5, 1])
+    test_point = np.array([-1, 2]) # First one
+    #test_point = np.array([-1, 2])
     plt.plot(test_point[0], test_point[1], "r^")
     leafage_linear_model = leafage.get_local_model(test_point, classifier.predict([test_point])[0])
     lime_linear_model = WrapperLime(data, classifier.predict_proba).get_local_model(test_point, None)
 
-    linear_model = lime_linear_model
+    linear_model = leafage_linear_model
 
     line = Line(linear_model.coefficients[0],
                 linear_model.coefficients[1],
@@ -325,9 +329,105 @@ if __name__ == "__main__":
     y = [line(t) for t in np.arange(xmin, xmax, 0.1)]
     plt.plot(x_spacing, y)
 
+    plt.title('Value of a house')
+    plt.ylabel('Area')
+    plt.xlabel('Age')
+    plt.xticks(range(-3,5), range(1, 9))
+    plt.yticks(range(-3,4), range(30, 37))
+
     plt.show()
 
+
+def new():
+    random_state = 20
+    random.seed(random_state)
+
+    import warnings
+    warnings.filterwarnings("ignore", category=UndefinedMetricWarning)
+    plt.figure()
+
+    X, y = make_classification(n_samples=1000, n_features=2, n_redundant=0, n_informative=2, random_state=random_state)
+    xmin, xmax = -4, 5
+    ymin, ymax = -4, 5
+
+    classifier = train("knn", X, y, {"n_neighbors": 10})
+
+
+    extra_points = []
+    for _ in range(1000):
+        extra_points.append([xmin + (xmax-xmin)*random.random(), ymin + (ymax-ymin)*random.random()])
+
+    extra_points_prediction = classifier.predict(extra_points)
+
+    X = np.concatenate((X, np.array(extra_points)))
+    y = np.concatenate((y, extra_points_prediction), axis=None)
+
+    data = Data(X, y, ["x", "y"])
+
+    #x_spacing = np.arange(xmin, xmax, 0.1)
+    #y_spacing = np.arange(ymin, ymax, 0.1)
+    x_spacing = np.linspace(xmin, xmax, (xmax - xmin) * 30)
+    y_spacing = np.linspace(ymin, ymax, (ymax - ymin) * 30)
+
+    plt.xlim([xmin, xmax])
+    plt.ylim([ymin, ymax])
+    xx, yy = np.meshgrid(x_spacing, y_spacing)
+
+    Z = classifier.predict(np.c_[xx.ravel(), yy.ravel()])
+    Y_predicted = classifier.predict(X)
+    Z = Z.reshape(xx.shape)
+
+    #plt.contourf(xx, yy, Z, alpha=0.4)
+    plt.contour(xx, yy, Z, alpha=0.4, level=[0])
+
+    #plt.scatter(X[:, 0], X[:, 1], marker='o', c=Y_predicted,
+    #            s=20, edgecolor='k')
+
+    leafage = LeafageBinary(data, Y_predicted, random_state,
+                            neighbourhood_sampling_strategy="closest_boundary")
+
+    test_point = np.array([-0.1, 1.8])
+    plt.plot(test_point[0], test_point[1], "r^")
+    leafage_local_model = leafage.explain(test_point, classifier.predict([test_point])[0]).local_model
+    leafage_linear_model = leafage_local_model.linear_model
+    #lime_linear_model = WrapperLime(data, classifier.predict_proba).get_local_model(test_point, None)
+
+    linear_model = leafage_linear_model
+
+    line = Line(linear_model.coefficients[0],
+                linear_model.coefficients[1],
+                linear_model.original_intercept)
+
+    y = [line(t) for t in x_spacing]
+    plt.plot(x_spacing, y)
+
+    #plot_local_model = PlotLocalModel(x_spacing, y_spacing, leafage_local_model)
+    #plot_local_model.plot_distance_function("final_distance")
+    Z2 = np.array([leafage_local_model.distances.get_final_distance(x) for x in np.c_[xx.ravel(), yy.ravel()]])
+    Z2 = Z2.reshape(xx.shape)
+
+    plt.contourf(xx, yy, Z2, 20, cmap='RdGy', levels=np.arange(0,6,0.3))
+    plt.colorbar()
+
+    plt.title('Value of a house')
+    plt.ylabel('Area')
+    plt.xlabel('Age')
+    #plt.xticks(range(-4, 6), range(1, 11))
+    #plt.yticks(range(-4, 6), range(30, 41))
+
+
+
+if __name__ == "__main__":
+
     #a = TwoDimensionExample()
+    #a.plot_local_model([10,12])
+   # plt.show()
+
+    new()
+
+    plt.show()
+
+
     #from random import randint
     #random.seed(11)
     #test_points = [[randint(-5,5), randint(20,25)] for x in range(20)]

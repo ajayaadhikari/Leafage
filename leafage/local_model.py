@@ -49,8 +49,10 @@ class LocalModel:
                                    self.pre_process,
                                    moved_intercept=moved_intercept,
                                    classes=local_classifier.classes_)
+        distance_to_enemy = self.neighbourhood.get_distance_to_closest_opposite_instance\
+                            (Distances.unbiased_distance_function, self.training_set)
 
-        return Distances(self.instance_to_explain, linear_model), linear_model
+        return Distances(self.instance_to_explain, linear_model, distance_to_enemy), linear_model
 
     def get_faithfulness(self):
         local_model_predictions = self.linear_model.get_predictions(self.neighbourhood.instances, pre_process=False)
@@ -158,7 +160,7 @@ class Neighbourhood:
 
     def get_neighbourhood_of_closest_boundary(self, training_set, black_box_labels,):
         amount_per_class_big_neighbourhood = 15*len(training_set[0])
-        amount_per_class_small_neighbourhood = 3*len(training_set[0])
+        amount_per_class_small_neighbourhood = 10*len(training_set[0])
         unbiased_distance = Distances.unbiased_distance_function
 
         closest_enemy = Neighbourhood.get_closest_enemy_instance(training_set, black_box_labels, unbiased_distance, self.instance_to_explain, self.prediction)
@@ -246,9 +248,9 @@ class Neighbourhood:
     def get_examples_against(self, amount, distance_function, target_instances=None, labels=None):
         return self.get_closest_instances(amount, distance_function, self.enemy_class, target_instances, labels)
 
-    def get_distance_to_closest_opposite_instance(self, distance_function):
-        instance = self.get_examples_against(1, distance_function)[0]
-        return distance_function(instance)
+    def get_distance_to_closest_opposite_instance(self, distance_function, target_instances=None, labels=None):
+        instance = self.get_examples_against(1, distance_function, target_instances, labels)[1]
+        return distance_function(instance, self.instance_to_explain)
 
     def is_valid(self):
         #min_amount = len(self.instance_to_explain)
@@ -266,10 +268,11 @@ class Neighbourhood:
 
 
 class Distances:
-    def __init__(self, test_instance, linear_model):
+    def __init__(self, test_instance, linear_model, distance_to_enemy):
         self.test_instance = test_instance
         self.coefficients = linear_model.coefficients
         self.intercept = linear_model.moved_intercept
+        self.distance_to_enemy = distance_to_enemy
 
     # Dummy for compatibility if two instances are given, second one will be ignored
     def get_black_box_distance(self, training_instance, dummy=None):
@@ -297,7 +300,13 @@ class Distances:
         """
             This distance measure combines the unbiased distance and the black-box distance
         """
-        return len(training_instance) * self.get_black_box_distance(training_instance) + self.get_unbiased_distance(training_instance)
+        d = len(training_instance)
+        unbiased_distance = self.get_unbiased_distance(training_instance)
+        black_box_distance = np.sqrt(d* self.get_black_box_distance(training_instance))
+        if unbiased_distance <= self.distance_to_enemy:
+            return black_box_distance
+        else:
+            return 0.5*unbiased_distance + 0.5*black_box_distance
 
     @staticmethod
     def get_weight(training_instance, test_instance, sigma):
