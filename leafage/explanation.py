@@ -113,6 +113,15 @@ class Explanation:
             import plotly.figure_factory as ff
             self.plotly_imports_set = True
 
+    def to_json(self):
+        jsonized = {'coefficients': list(self.coefficients),
+                    'examples_against': self.examples_against.to_json(),
+                    'examples_in_support': self.examples_in_support.to_json(),
+                    'fact_class': self.fact_class,
+                    'foil_class': self.foil_class
+                    }
+        return jsonized
+
     @staticmethod
     def __visualize_table_ff(amount_of_features, df, header_background_color):
         color_scale = [[0, header_background_color], [.5, '#f2e5ff'], [1, '#ffffff']]
