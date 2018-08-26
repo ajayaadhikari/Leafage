@@ -13,6 +13,8 @@ class WrapperLime:
         categorical_features = training_data.pre_process_object.categorical_features
         self.label_encoder = training_data.pre_process_object.label_encoder
 
+        self.classes = sorted(np.unique(training_data.target_vector))
+
         # Label encode the feature vector, lime only accepts numbers
         data_set = self.label_encoder.transform(training_data.feature_vector)
         categorical_names = self.label_encoder.get_categorical_names()
@@ -40,4 +42,4 @@ class WrapperLime:
         coef = map(lambda t: t[1], sorted(local_model.local_exp[1], key=lambda x: x[0]))
         intercept = local_model.intercept
         pre_process = lambda X: self.explainer.scaler.transform(self.label_encoder.transform(X))
-        return LinearModel(coef, intercept[1], pre_process, threshold=0.5)
+        return LinearModel(coef, intercept[1], pre_process, threshold=0.5, classes=self.classes)

@@ -43,12 +43,18 @@ class LocalModel:
 
         # Move line such that it goes through the test instance
         moved_intercept = -1 * np.dot(self.instance_to_explain, np.transpose(local_classifier.coef_[0]))
+        classes = local_classifier.classes_
 
-        linear_model = LinearModel(local_classifier.coef_[0],
+        coefficients = local_classifier.coef_[0]
+
+        if self.prediction == classes[0]:
+            coefficients = coefficients*-1
+
+        linear_model = LinearModel(coefficients,
                                    local_classifier.intercept_,
                                    self.pre_process,
                                    moved_intercept=moved_intercept,
-                                   classes=local_classifier.classes_)
+                                   classes=classes)
         distance_to_enemy = self.neighbourhood.get_distance_to_closest_opposite_instance\
                             (Distances.unbiased_distance_function, self.training_set)
 
@@ -93,7 +99,7 @@ class LinearModel:
 class Neighbourhood:
     min_weight = 0.01
 
-    def __init__(self, instance_to_explain, prediction, training_set, black_box_labels, sigma=5, strategy="closest_boundary"):
+    def __init__(self, instance_to_explain, prediction, training_set, black_box_labels, sigma=15, strategy="closest_boundary"):
         self.instance_to_explain = instance_to_explain
         self.prediction = prediction
         self.sigma = sigma
@@ -103,8 +109,12 @@ class Neighbourhood:
 
         if strategy == "closest_enemy":
             get_neighbourhood = self.get_neighbourhood_around_closest_enemy
-        else:
+        elif strategy == "closest_boundary":
             get_neighbourhood = self.get_neighbourhood_of_closest_boundary
+        elif strategy == "lime":
+            get_neighbourhood = self.get_neighbourhood_oud
+        else:
+            raise ValueError("%s not supported" % strategy)
 
         self.instances, self.labels, self.weights = get_neighbourhood(training_set, black_box_labels)
         self.valid = self.is_valid()
@@ -115,10 +125,10 @@ class Neighbourhood:
         weights = [self.get_weight(instance) for instance in training_feature_vector]
 
         indexed_weights = [(index, weights[index]) for index in range(len(weights))]
-        filtered_weights = filter(lambda x: x[1] > Neighbourhood.min_weight, indexed_weights)
+        #filtered_weights = filter(lambda x: x[1] > Neighbourhood.min_weight, indexed_weights)
 
         # Get the black-box labels of the corresponding instances of the filtered_weights
-        indices = [x[0] for x in filtered_weights]
+        indices = [x[0] for x in indexed_weights]
         neighbourhood = training_feature_vector[indices]
         neighbourhood_labels = black_box_labels[indices]
         neighbourhood_weights = np.array(weights)[indices]
@@ -160,7 +170,7 @@ class Neighbourhood:
 
     def get_neighbourhood_of_closest_boundary(self, training_set, black_box_labels,):
         amount_per_class_big_neighbourhood = 15*len(training_set[0])
-        amount_per_class_small_neighbourhood = 10*len(training_set[0])
+        amount_per_class_small_neighbourhood = 3*len(training_set[0])
         unbiased_distance = Distances.unbiased_distance_function
 
         closest_enemy = Neighbourhood.get_closest_enemy_instance(training_set, black_box_labels, unbiased_distance, self.instance_to_explain, self.prediction)
@@ -303,10 +313,8 @@ class Distances:
         d = len(training_instance)
         unbiased_distance = self.get_unbiased_distance(training_instance)
         black_box_distance = np.sqrt(d* self.get_black_box_distance(training_instance))
-        if unbiased_distance <= self.distance_to_enemy:
-            return black_box_distance
-        else:
-            return 0.5*unbiased_distance + 0.5*black_box_distance
+
+        return unbiased_distance + black_box_distance
 
     @staticmethod
     def get_weight(training_instance, test_instance, sigma):

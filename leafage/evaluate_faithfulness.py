@@ -10,6 +10,8 @@ import numpy as np
 import pandas as pd
 from custom_exceptions import OneClassValues
 from sklearn.metrics import accuracy_score
+from sklearn.datasets import make_classification
+
 
 setup_blackbox_models = [("lr", {}), ("svc", {"kernel": "linear", "probability": True}), ("lda", {}),
                          ("rf", {}), ("dt", {}),
@@ -81,8 +83,9 @@ class EvaluateFaithfulness:
         def combine(container):
             accuracy = np.around(np.mean([x.average_accuracy_per_radius for x in container], axis=0), 2)
             std = np.around(np.mean([x.std_accuracy_per_radius for x in container], axis=0), 2)
+            base_line = np.around(np.mean([x.average_base_line_per_radius for x in container], axis=0), 2)
             amount = np.around(np.mean([x.average_amount_per_radius for x in container], axis=0), 2)
-            return [accuracy.tolist(), std.tolist(), amount.tolist()]
+            return [accuracy.tolist(), std.tolist(), base_line.tolist(), amount.tolist()]
 
         def create_df(l_ce_all, l_cb_all, lime_all):
             l_ce_all, l_cb_all, lime_all = combine(l_ce_all), combine(l_cb_all), combine(lime_all)
@@ -95,13 +98,14 @@ class EvaluateFaithfulness:
             strategy_column = ["Leafage: closest enemy"]*len_radii + ["Leafage: closest boundary"]*len_radii + ["lime"]*len_radii
             accuracy_column = l_ce_all[0] + l_cb_all[0] + lime_all[0]
             std_column = l_ce_all[1] + l_cb_all[1] + lime_all[1]
+            base_line_column = l_ce_all[2] + l_cb_all[2] + lime_all[2]
             radii_column = radii.tolist()*3
-            amount_column = l_ce_all[2] + l_cb_all[2] + lime_all[2]
+            amount_column = l_ce_all[3] + l_cb_all[3] + lime_all[3]
 
             table = np.array([dataset_name_column, classifier_name_column, strategy_column,
-                     accuracy_column, std_column, radii_column, amount_column]).transpose()
+                     accuracy_column, std_column, base_line_column, radii_column, amount_column]).transpose()
             column_names = ["Dataset name", "Classifier name", "Strategy",
-                            "accuracy", "std", "radius", "amount in radius"]
+                            "accuracy", "std", "majority_class",  "radius", "amount in radius"]
             return pd.DataFrame(data=table, columns=column_names)
 
         leafage_ce_all = []
@@ -128,19 +132,23 @@ class EvaluateFaithfulness:
             predicted_test_labels = classifier.predict(test_data.one_hot_encoded_feature_vector)
 
             try:
+                lime_all.append(Faithfulness(test_data, predicted_test_labels, lime.get_local_model, radii))
                 leafage_ce_all.append(Faithfulness(test_data, predicted_test_labels, leafage_ce.get_local_model, radii))
                 leafage_cb_all.append(Faithfulness(test_data, predicted_test_labels, leafage_cb.get_local_model, radii))
-                lime_all.append(Faithfulness(test_data, predicted_test_labels, lime.get_local_model, radii))
             except OneClassValues:
                 print("Classifier %s on dataset %s:%s only predicts one class" % (classifier_name, self.data.name, name))
 
         return create_df(leafage_ce_all, leafage_cb_all, lime_all)
 
 
+def create_artificial_datasets():
+    X, y = make_classification(n_samples=1000, n_features=2, n_redundant=0, n_informative=2)
+
+
 def faithfulness_data_sets():
     train_size = 0.7
     all_df = []
-    dataset_names = ["iris", "digits", "adult", "housing"]
+    dataset_names = ["iris", "wine", "breast_cancer", "digits"]
     for name in dataset_names:
         dataset = all_data_sets[name]()
         print("Dataset %s" % name)
@@ -168,4 +176,4 @@ def housing_from_file():
 
 
 if __name__ == "__main__":
-    housing_from_use_cases()
+    faithfulness_data_sets()

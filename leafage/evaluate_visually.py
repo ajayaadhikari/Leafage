@@ -149,7 +149,7 @@ class TwoDimensionExample:
         plt.ylim([self.ymin - self.slack, self.ymax + self.slack])
         random.seed(random_state)
 
-        self.amount_of_points = (self.xmax-self.xmin)*15 + (self.ymax-self.ymin)*15
+        self.amount_of_points = (self.xmax-self.xmin)*10 + (self.ymax-self.ymin)*10
         self.amount_per_unit = 2
         self.x_spacing = np.linspace(self.xmin, self.xmax, (self.xmax - self.xmin) * self.amount_per_unit)
         self.y_spacing = np.linspace(self.ymin, self.ymax, (self.ymax - self.ymin) * self.amount_per_unit)
@@ -215,18 +215,18 @@ class TwoDimensionExample:
         #self.plot_points()
         self.plot_black_box_curve()
 
-        leafage = LeafageBinary(self.get_data(), self.labels, random_state, neighbourhood_sampling_strategy="closest_boundary")
+        leafage = LeafageBinary(self.get_data(), self.labels, random_state, neighbourhood_sampling_strategy="lime")
         local_model = leafage.explain(test_point, self.get_label(test_point)).local_model
 
         plot_local_model = PlotLocalModel(self.x_spacing, self.y_spacing, local_model)
         self.plot_point(test_point)
-        self.plot_training_points()
         self.plot_points(local_model.neighbourhood.instances, local_model.neighbourhood.labels)
-        plot_local_model.plot_distance_function("final_distance")
-        plot_local_model.plot_local_model()
+        plot_local_model.plot_distance_function("weights")
+        self.plot_training_points()
+        #plot_local_model.plot_local_model()
 
-        plt.xlim([self.xmin - self.slack, self.xmax + self.slack])
-        plt.ylim([self.ymin - self.slack, self.ymax + self.slack])
+        plt.xlim([self.xmin, self.xmax])
+        plt.ylim([self.ymin, self.ymax])
 
     def test_evaluation(self):
         #train, test, labels_train, labels_test = train_test_split(self.points, self.labels, train_size=0.5)
@@ -277,15 +277,13 @@ class TwoDimensionExample:
             #ax.add_artist(c1)
             #contour.plot_local_model()
 
-# In explanation: no sorting
 # In leafage no scaling
 
-def new_first():
+
+def simple_decision_boundary():
     import warnings
     warnings.filterwarnings("ignore", category=UndefinedMetricWarning)
     random_state = 16
-    plt.title("Two informative features, two clusters per class",
-              fontsize='small')
     X, y = make_classification(n_samples=1000, n_features=2, n_redundant=0, n_informative=2, random_state=random_state)
     X = PreProcess(X).transform(X, scale=True)
     data = Data(X, y, ["x", "y"])
@@ -329,16 +327,17 @@ def new_first():
     y = [line(t) for t in np.arange(xmin, xmax, 0.1)]
     plt.plot(x_spacing, y)
 
-    plt.title('Value of a house')
-    plt.ylabel('Area')
-    plt.xlabel('Age')
+    #plt.title('Value of a house')
+    #plt.ylabel('Area')
+    #plt.xlabel('Age')
     plt.xticks(range(-3,5), range(1, 9))
     plt.yticks(range(-3,4), range(30, 37))
 
     plt.show()
 
 
-def new():
+def complex_decision_boundary():
+    test_point = np.array([1, 2])
     random_state = 20
     random.seed(random_state)
 
@@ -354,13 +353,15 @@ def new():
 
 
     extra_points = []
-    for _ in range(1000):
+    for _ in range(15000):
         extra_points.append([xmin + (xmax-xmin)*random.random(), ymin + (ymax-ymin)*random.random()])
 
     extra_points_prediction = classifier.predict(extra_points)
 
-    X = np.concatenate((X, np.array(extra_points)))
-    y = np.concatenate((y, extra_points_prediction), axis=None)
+    #X = np.concatenate((X, np.array(extra_points)))
+    #y = np.concatenate((y, extra_points_prediction), axis=None)
+    X = np.array(extra_points)
+    y = extra_points_prediction
 
     data = Data(X, y, ["x", "y"])
 
@@ -386,7 +387,6 @@ def new():
     leafage = LeafageBinary(data, Y_predicted, random_state,
                             neighbourhood_sampling_strategy="closest_boundary")
 
-    test_point = np.array([-0.1, 1.8])
     plt.plot(test_point[0], test_point[1], "r^")
     leafage_local_model = leafage.explain(test_point, classifier.predict([test_point])[0]).local_model
     leafage_linear_model = leafage_local_model.linear_model
@@ -399,43 +399,100 @@ def new():
                 linear_model.original_intercept)
 
     y = [line(t) for t in x_spacing]
-    plt.plot(x_spacing, y)
+    #plt.plot(x_spacing, y)
 
     #plot_local_model = PlotLocalModel(x_spacing, y_spacing, leafage_local_model)
     #plot_local_model.plot_distance_function("final_distance")
     Z2 = np.array([leafage_local_model.distances.get_final_distance(x) for x in np.c_[xx.ravel(), yy.ravel()]])
     Z2 = Z2.reshape(xx.shape)
 
-    plt.contourf(xx, yy, Z2, 20, cmap='RdGy', levels=np.arange(0,6,0.3))
+    plt.contourf(xx, yy, Z2, 20, cmap='RdGy', levels=np.arange(0,7,0.3))
     plt.colorbar()
 
-    plt.title('Value of a house')
-    plt.ylabel('Area')
-    plt.xlabel('Age')
-    #plt.xticks(range(-4, 6), range(1, 11))
-    #plt.yticks(range(-4, 6), range(30, 41))
+    plt.xticks(range(-4, 6), range(1, 11))
+    plt.yticks(range(-4, 6), range(30, 41))
 
+
+def linear_approximation():
+    test_point = np.array([1, 2])
+    random_state = 20
+    random.seed(random_state)
+
+    import warnings
+    warnings.filterwarnings("ignore", category=UndefinedMetricWarning)
+    plt.figure()
+
+    X, y = make_classification(n_samples=1000, n_features=2, n_redundant=0, n_informative=2, random_state=random_state)
+    xmin, xmax = -4, 5
+    ymin, ymax = -4, 5
+
+    classifier = train("knn", X, y, {"n_neighbors": 10})
+
+    extra_points = []
+    for _ in range(15000):
+        extra_points.append([xmin + (xmax-xmin)*random.random(), ymin + (ymax-ymin)*random.random()])
+
+    extra_points_prediction = classifier.predict(extra_points)
+
+    X = np.array(extra_points)
+    y = extra_points_prediction
+
+    data = Data(X, y, ["x", "y"])
+
+    x_spacing = np.linspace(xmin, xmax, (xmax - xmin) * 30)
+    y_spacing = np.linspace(ymin, ymax, (ymax - ymin) * 30)
+
+    plt.xlim([xmin, xmax])
+    plt.ylim([ymin, ymax])
+    xx, yy = np.meshgrid(x_spacing, y_spacing)
+
+    Z = classifier.predict(np.c_[xx.ravel(), yy.ravel()])
+    Y_predicted = classifier.predict(X)
+    Z = Z.reshape(xx.shape)
+
+    #plt.contourf(xx, yy, Z, alpha=0.4)
+    plt.contour(xx, yy, Z, alpha=0.4, level=[0])
+
+    #plt.scatter(X[:, 0], X[:, 1], marker='o', c=Y_predicted,
+    #            s=20, edgecolor='k')
+
+    leafage = LeafageBinary(data, Y_predicted, random_state,
+                            neighbourhood_sampling_strategy="closest_boundary")
+
+    plt.plot(test_point[0], test_point[1], "r^")
+    leafage_local_model = leafage.explain(test_point, classifier.predict([test_point])[0]).local_model
+    leafage_linear_model = leafage_local_model.linear_model
+    #lime_linear_model = WrapperLime(data, classifier.predict_proba).get_local_model(test_point, None)
+
+    linear_model = leafage_linear_model
+
+    #plot_local_model = PlotLocalModel(x_spacing, y_spacing, leafage_local_model)
+    #plot_local_model.plot_distance_function("final_distance")
+    Z2 = np.array([leafage_local_model.distances.get_final_distance(x) for x in np.c_[xx.ravel(), yy.ravel()]])
+    Z2 = Z2.reshape(xx.shape)
+
+    plt.contourf(xx, yy, Z2, 20, cmap='RdGy', levels=np.arange(0,14,0.6))
+    plt.colorbar()
+
+    line = Line(linear_model.coefficients[0],
+                linear_model.coefficients[1],
+                linear_model.original_intercept)
+
+    y = [line(t) for t in x_spacing]
+    plt.plot(x_spacing, y)
+
+    plt.xticks(range(-4, 6), range(1, 11))
+    plt.yticks(range(-4, 6), range(30, 41))
 
 
 if __name__ == "__main__":
+    #complex_decision_boundary()
+    #linear_approximation()
 
-    #a = TwoDimensionExample()
-    #a.plot_local_model([10,12])
-   # plt.show()
-
-    new()
-
+    a = TwoDimensionExample()
+    a.plot_local_model(np.array([-8,4]))
     plt.show()
 
 
-    #from random import randint
-    #random.seed(11)
-    #test_points = [[randint(-5,5), randint(20,25)] for x in range(20)]
-    ##a.plot_setting()
-    #for i in test_points:
-    #    plt.figure()
-    #    a.plot_local_model(i)
-#
-    #plt.show()
 
 

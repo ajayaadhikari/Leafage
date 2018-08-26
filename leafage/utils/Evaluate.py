@@ -1,9 +1,9 @@
 from sklearn.model_selection import StratifiedKFold
-from sklearn.metrics import accuracy_score, confusion_matrix
+from sklearn.metrics import accuracy_score, confusion_matrix, f1_score
 import Classifiers
 import DimensionalityReduction
 from Plots import plot_roc, plot_confusion_matrix
-
+from collections import Counter
 
 class EvaluationMetrics:
     def __init__(self,
@@ -23,7 +23,11 @@ class EvaluationMetrics:
         self.confusion_matrix = confusion_matrix(real_labels, predicted_labels, labels=labels_order_confusion_matrix)
         self.accuracy_weighted = accuracy_score(real_labels, predicted_labels, sample_weight=sample_weight)
         self.accuracy = accuracy_score(real_labels, predicted_labels)
+        self.base_line = self.get_base_line()
         #self.f1_score = f1_score(real_labels, predicted_labels, average=f1_averaging_strategy)
+
+    def get_base_line(self):
+        return max(Counter(self.real_labels).values())/float(len(self.real_labels))
 
     def plot_ROC(self, machine_learning_method=""):
         plot_roc(self.predicted_labels, self.predicted_probabilities, machine_learning_method)
