@@ -163,7 +163,7 @@ def housing_from_use_cases():
     scenario = Scenario("load_from_use_cases", "housing", "lr")
     leafage = scenario.leafage
     explanation = scenario.get_explanation(leafage.training_data.feature_vector[0], 5)
-    explanation.visualize_feature_importance(amount_of_features=10, target="write_to_file", path="../output/feature_importance2.png")
+    explanation.visualize_feature_importance(target="write_to_file", path="../output/feature_importance2.png")
     explanation.visualize_examples(target="write_to_file", path="../output/examples_in_support2.png", type="examples_in_support")
     explanation.visualize_examples(target="write_to_file", path="../output/examples_against2.png", type="examples_against")
 

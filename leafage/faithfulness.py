@@ -1,6 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
+from custom_exceptions import OneClassValues
 from local_model import Distances, Neighbourhood
 from utils.Evaluate import EvaluationMetrics
 
@@ -32,12 +33,7 @@ class Faithfulness:
     def get_normalized_distances(self, instance, prediction):
         unbiased_distance_function = Distances.unbiased_distance_function
         instance = self.scale(instance)
-        closest_enemy = Neighbourhood.get_closest_enemy_instance(self.scaled_test_set,
-                                                                 self.test_predictions,
-                                                                 unbiased_distance_function,
-                                                                 instance,
-                                                                 prediction)
-        distances = map(lambda test_instance: unbiased_distance_function(test_instance, closest_enemy), self.scaled_test_set)
+        distances = map(lambda test_instance: unbiased_distance_function(test_instance, instance), self.scaled_test_set)
 
         return np.array(map(lambda distance: distance/self.max_distance, distances))
 

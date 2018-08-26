@@ -124,6 +124,10 @@ class LeafageBinary:
         foil_class = inverse_transform_label(enemy_class)
         coefficients = self.normalize(self.filter_coefficients(local_model.linear_model.coefficients, scaled_test_instance))
 
+        classes = local_model.linear_model.classes
+        if test_instance_prediction == classes[0]:
+            coefficients = coefficients*-1
+
         a = Explanation(test_instance,
                         examples_in_support,
                         examples_against,

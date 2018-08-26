@@ -44,12 +44,7 @@ class LocalModel:
         # Move line such that it goes through the test instance
         moved_intercept = -1 * np.dot(self.instance_to_explain, np.transpose(local_classifier.coef_[0]))
         classes = local_classifier.classes_
-
         coefficients = local_classifier.coef_[0]
-
-        if self.prediction == classes[0]:
-            coefficients = coefficients*-1
-            classes = [classes[1], classes[0]]
 
         linear_model = LinearModel(coefficients,
                                    local_classifier.intercept_,
