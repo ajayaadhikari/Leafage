@@ -49,6 +49,7 @@ class LocalModel:
 
         if self.prediction == classes[0]:
             coefficients = coefficients*-1
+            classes = [classes[1], classes[0]]
 
         linear_model = LinearModel(coefficients,
                                    local_classifier.intercept_,
