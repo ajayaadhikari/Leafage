@@ -70,7 +70,11 @@ class EvaluateFaithfulness:
         dfs = []
         for classifier_name, variables in setup_blackbox_models:
             print("\tClassifier: %s" % classifier_name)
-            dfs.append(self.get_faithfulness_classifier(classifier_name, variables))
+            try:
+                df = self.get_faithfulness_classifier(classifier_name, variables)
+                dfs.append(df)
+            except OneClassValues:
+                print("Classifier %s on dataset %s: only predicts one class" % (classifier_name, self.data.name))
 
         merged_df = pd.concat(dfs, ignore_index=True)
         path = "../output/result_faithfulness/dataset_%s_%s.csv" % (self.data.name, self.train_size)
@@ -131,12 +135,9 @@ class EvaluateFaithfulness:
 
             predicted_test_labels = classifier.predict(test_data.one_hot_encoded_feature_vector)
 
-            try:
-                lime_all.append(Faithfulness(test_data, predicted_test_labels, lime.get_local_model, radii))
-                leafage_ce_all.append(Faithfulness(test_data, predicted_test_labels, leafage_ce.get_local_model, radii))
-                leafage_cb_all.append(Faithfulness(test_data, predicted_test_labels, leafage_cb.get_local_model, radii))
-            except OneClassValues:
-                print("Classifier %s on dataset %s:%s only predicts one class" % (classifier_name, self.data.name, name))
+            lime_all.append(Faithfulness(test_data, predicted_test_labels, lime.get_local_model, radii))
+            leafage_ce_all.append(Faithfulness(test_data, predicted_test_labels, leafage_ce.get_local_model, radii))
+            leafage_cb_all.append(Faithfulness(test_data, predicted_test_labels, leafage_cb.get_local_model, radii))
 
         return create_df(leafage_ce_all, leafage_cb_all, lime_all)
 
