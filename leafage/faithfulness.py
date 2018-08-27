@@ -7,8 +7,6 @@ from utils.Evaluate import EvaluationMetrics
 
 
 class Faithfulness:
-    midpoint = "closest_enemy_instance"
-
     def __init__(self, test_set, test_predictions, function_get_local_model, radii, verbose=False):
         self.scale = lambda x: test_set.pre_process([x], scale=True)[0]
         self.test_set = test_set.feature_vector
@@ -27,10 +25,10 @@ class Faithfulness:
     def get_max_distance(self):
         unbiased_distance_function = Distances.unbiased_distance_function
         max_distance = lambda x:  max([unbiased_distance_function(x, test_instance) for test_instance in self.scaled_test_set])
-        return max([max_distance(x) for x in self.test_set])
+        return max([max_distance(x) for x in self.scaled_test_set])
 
     # Compute distances on scaled data
-    def get_normalized_distances(self, instance, prediction):
+    def get_normalized_distances(self, instance):
         unbiased_distance_function = Distances.unbiased_distance_function
         instance = self.scale(instance)
         distances = map(lambda test_instance: unbiased_distance_function(test_instance, instance), self.scaled_test_set)
@@ -46,7 +44,7 @@ class Faithfulness:
 
     def evaluate_instance(self, instance, prediction, radii):
         local_model = self.function_get_local_model(instance, prediction)
-        normalized_distances = self.get_normalized_distances(instance, prediction)
+        normalized_distances = self.get_normalized_distances(instance)
         instances_within_radii = self.get_instances_within_radii(normalized_distances, radii)
 
         accuracy = []
