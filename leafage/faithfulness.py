@@ -3,13 +3,13 @@ from collections import Counter
 import numpy as np
 import matplotlib.pyplot as plt
 
-from custom_exceptions import OneClassValues
 from local_model import Distances, Neighbourhood
 from utils.Evaluate import EvaluationMetrics
 
 
 class Faithfulness:
     a = 0.95
+
     def __init__(self, test_set, test_predictions, function_get_local_model, radii, verbose=False):
         self.scale = lambda x: test_set.pre_process([x], scale=True)[0]
         self.test_set = test_set.feature_vector
@@ -19,7 +19,7 @@ class Faithfulness:
         self.radii = radii
         self.verbose = verbose
 
-        self.average_accuracy_per_radius, self.std_accuracy_per_radius, \
+        self.average_f1_score_per_radius, self.std_f1_score_per_radius, \
         self.average_base_line_per_radius, self.average_amount_per_radius = self.evaluate()
         if verbose:
             print(self)
@@ -50,13 +50,13 @@ class Faithfulness:
         normalized_distances = self.get_normalized_distances(instance)
         instances_within_radii = self.get_instances_within_radii(normalized_distances, radii)
 
-        accuracy = []
+        f1_score = []
         base_line = []
         amount = []
         for instances_within, black_box_predictions in instances_within_radii:
             local_predictions = local_model.get_predictions(instances_within)
             evaluation = EvaluationMetrics(black_box_predictions, local_predictions)
-            accuracy.append(evaluation.f1_score)
+            f1_score.append(evaluation.f1_score)
             base_line_value = Counter(black_box_predictions)[prediction]/float(len(black_box_predictions))
             base_line.append(base_line_value)
             amount.append(len(instances_within))
@@ -69,10 +69,11 @@ class Faithfulness:
 
         if stop_index == -1:
             print("Stop index is the last index")
-        accuracy.append(accuracy[stop_index])
-        base_line.append(base_line[stop_index])
+
+        base_line.append(EvaluationMetrics(instances_within_radii[stop_index][1], [prediction]*amount[stop_index]).f1_score)
+        f1_score.append(f1_score[stop_index])
         amount.append(amount[stop_index])
-        return accuracy, base_line, amount
+        return f1_score, base_line, amount
 
     def evaluate(self):
         accuracy = []
@@ -88,18 +89,18 @@ class Faithfulness:
             base_line.append(b)
             amount.append(am)
 
-        average_accuracy_per_radius = np.mean(accuracy, axis=0)
-        std_accuracy_per_radius = np.std(accuracy, axis=0)
+        average_f1_score_per_radius = np.mean(accuracy, axis=0)
+        std_f1_score_per_radius = np.std(accuracy, axis=0)
         average_base_line_per_radius = np.mean(base_line, axis=0)
         average_amount_per_radius = np.mean(amount, axis=0)
 
-        return average_accuracy_per_radius, std_accuracy_per_radius, average_base_line_per_radius, average_amount_per_radius
+        return average_f1_score_per_radius, std_f1_score_per_radius, average_base_line_per_radius, average_amount_per_radius
 
     def plot(self):
         plt.figure()
-        plt.scatter(self.radii, self.average_accuracy_per_radius)
+        plt.scatter(self.radii, self.average_f1_score_per_radius)
         plt.show()
 
     def __str__(self):
         return "Radii: %s\nAccuracy: %s\nStd: %s\nAmount: %s" % \
-               (self.radii, self.average_accuracy_per_radius, self.std_accuracy_per_radius, self.average_amount_per_radius)
+               (self.radii, self.average_f1_score_per_radius, self.std_f1_score_per_radius, self.average_amount_per_radius)

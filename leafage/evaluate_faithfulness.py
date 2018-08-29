@@ -85,11 +85,11 @@ class EvaluateFaithfulness:
         radii = np.arange(0.05, 1.05, 0.05)
 
         def combine(container):
-            accuracy = np.around(np.mean([x.average_accuracy_per_radius for x in container], axis=0), 2)
-            std = np.around(np.mean([x.std_accuracy_per_radius for x in container], axis=0), 2)
+            f1_score = np.around(np.mean([x.average_f1_score_per_radius for x in container], axis=0), 2)
+            std = np.around(np.mean([x.std_f1_score_per_radius for x in container], axis=0), 2)
             base_line = np.around(np.mean([x.average_base_line_per_radius for x in container], axis=0), 2)
             amount = np.around(np.mean([x.average_amount_per_radius for x in container], axis=0), 2)
-            return [accuracy.tolist(), std.tolist(), base_line.tolist(), amount.tolist()]
+            return [f1_score.tolist(), std.tolist(), base_line.tolist(), amount.tolist()]
 
         def create_df(l_ce_all, l_cb_all, lime_all):
             l_ce_all, l_cb_all, lime_all = combine(l_ce_all), combine(l_cb_all), combine(lime_all)
@@ -109,7 +109,7 @@ class EvaluateFaithfulness:
             table = np.array([dataset_name_column, classifier_name_column, strategy_column,
                      accuracy_column, std_column, base_line_column, radii_column, amount_column]).transpose()
             column_names = ["Dataset name", "Classifier name", "Strategy",
-                            "accuracy", "std", "majority_class",  "radius", "amount in radius"]
+                            "f1_score", "std", "class_of_z", "radius", "amount in radius"]
             return pd.DataFrame(data=table, columns=column_names)
 
         leafage_ce_all = []
