@@ -93,7 +93,7 @@ class EvaluateFaithfulness:
 
         def create_df(l_ce_all, l_cb_all, lime_all):
             l_ce_all, l_cb_all, lime_all = combine(l_ce_all), combine(l_cb_all), combine(lime_all)
-            len_radii = len(radii)
+            len_radii = len(radii)+1
             amount_of_rows = len_radii*3
 
             dataset_name_column = [self.data.name]*amount_of_rows
@@ -103,7 +103,7 @@ class EvaluateFaithfulness:
             accuracy_column = l_ce_all[0] + l_cb_all[0] + lime_all[0]
             std_column = l_ce_all[1] + l_cb_all[1] + lime_all[1]
             base_line_column = l_ce_all[2] + l_cb_all[2] + lime_all[2]
-            radii_column = radii.tolist()*3
+            radii_column = (radii.tolist()+[-1]) *3
             amount_column = l_ce_all[3] + l_cb_all[3] + lime_all[3]
 
             table = np.array([dataset_name_column, classifier_name_column, strategy_column,
@@ -164,7 +164,7 @@ def housing_from_use_cases():
     scenario = Scenario("load_from_use_cases", "housing", "lr")
     leafage = scenario.leafage
     explanation = scenario.get_explanation(leafage.training_data.feature_vector[0], 5)
-    explanation.visualize_feature_importance(target="write_to_file", path="../output/feature_importance2.png")
+    explanation.visualize_feature_importance(amount_of_features=10, target="write_to_file", path="../output/feature_importance2.png")
     explanation.visualize_examples(target="write_to_file", path="../output/examples_in_support2.png", type="examples_in_support")
     explanation.visualize_examples(target="write_to_file", path="../output/examples_against2.png", type="examples_against")
 

@@ -1,12 +1,16 @@
+from collections import Counter
+
 import matplotlib.pyplot as plt
 import numpy as np
 import random
 
 from sklearn.datasets import make_classification
 from sklearn.exceptions import UndefinedMetricWarning
+from sklearn.model_selection import train_test_split
 
 from faithfulness import Faithfulness
 from leafage import LeafageBinary
+from local_model import Distances
 from wrapper_lime import WrapperLime
 from use_cases.data import Data, PreProcess
 
@@ -160,17 +164,21 @@ class TwoDimensionExample:
     def get_data(self):
         return Data(self.points, self.labels, ["x", "y"])
 
-    def sample_points(self):
+    def sample_points(self, amount_of_points=None):
+        if amount_of_points is None:
+            amount_of_points = self.amount_of_points
         x_range = self.xmax - self.xmin
         y_range = self.ymax - self.ymin
         result = []
-        for _ in range(self.amount_of_points):
+        for _ in range(amount_of_points):
             result.append([self.xmin + x_range * random.random(), self.ymin + y_range * random.random()])
 
         return np.array(result)
 
-    def get_labels(self):
-        return np.array([self.get_label(x) for x in self.points])
+    def get_labels(self, points=None):
+        if points is None:
+            points = self.points
+        return np.array([self.get_label(x) for x in points])
 
     def get_label(self, point):
         if point[1] > self.black_box_curve(point[0]):
@@ -223,7 +231,77 @@ class TwoDimensionExample:
         self.plot_points(local_model.neighbourhood.instances, local_model.neighbourhood.labels)
         plot_local_model.plot_distance_function("weights")
         self.plot_training_points()
-        #plot_local_model.plot_local_model()
+        plot_local_model.plot_local_model()
+
+        plt.xlim([self.xmin, self.xmax])
+        plt.ylim([self.ymin, self.ymax])
+
+    def plot_neighbourhood(self, test_point):
+        normalized_radii = np.arange(0.04, 1.01, 0.01)
+
+        amount_of_points = (self.xmax - self.xmin) * 4 + (self.ymax - self.ymin) * 4
+        test = self.sample_points(amount_of_points)
+        labels_test = self.get_labels(test)
+
+        def get_normalized_distances():
+            unbiased_distance_function = Distances.unbiased_distance_function
+            distances = map(lambda test_instance: unbiased_distance_function(test_instance, test_point),
+                            test)
+            max_distance = float(max(distances))
+            normalized_distances = np.array(map(lambda distance: distance / max_distance, distances))
+            radii = [x*max_distance for x in normalized_radii]
+            radii_function = lambda x: unbiased_distance_function(test_point, x)/max_distance
+
+            return normalized_distances, radii, radii_function
+
+        normalized_distances, radii, radii_function = get_normalized_distances()
+
+        def visualize_radii():
+            x_spacing = np.arange(self.xmin-2, self.xmax+2, 0.1)
+            y_spacing = np.arange(self.ymin-2, self.ymax+2, 0.1)
+            xx, yy = np.meshgrid(x_spacing, y_spacing)
+            Z = np.array([radii_function(x) for x in np.c_[xx.ravel(), yy.ravel()]])
+            Z = Z.reshape(xx.shape)
+
+            plt.contourf(xx, yy, Z, 20, cmap='RdGy')
+            plt.colorbar()
+
+        def get_points():
+            result = []
+            for r in normalized_radii:
+                indices_filtered = np.where(normalized_distances <= r)
+                result.append((test[indices_filtered], labels_test[indices_filtered]))
+            return result
+
+        points_within_radius = get_points()
+        leafage = LeafageBinary(self.get_data(), self.labels, random_state, neighbourhood_sampling_strategy="closest_boundary")
+        local_model = leafage.explain(test_point, self.get_label(test_point)).local_model
+
+        def plot_accuracy_per_radius():
+            from sklearn.metrics import accuracy_score
+            local_accuracy = []
+            majority_accuracy = []
+            for i in range(len(normalized_radii)):
+                local_points = points_within_radius[i][0]
+                local_real_labels = points_within_radius[i][1]
+                local_predictions = local_model.linear_model.get_predictions(local_points)
+
+                local_accuracy.append(accuracy_score(local_real_labels, local_predictions))
+                majority_accuracy.append(max(Counter(local_real_labels).values())/float(len(local_real_labels)))
+            plt.plot(normalized_radii, majority_accuracy, alpha=0.7)
+            plt.plot(normalized_radii, local_accuracy, alpha=0.5)
+            plt.xlim([0, 1])
+            plt.ylim([0.4, 1.1])
+
+        plot_accuracy_per_radius()
+        plt.figure()
+        visualize_radii()
+        plot_local_model = PlotLocalModel(self.x_spacing, self.y_spacing, local_model)
+
+        self.plot_black_box_curve()
+        self.plot_points(test, labels_test)
+        self.plot_point(test_point)
+        plot_local_model.plot_local_model()
 
         plt.xlim([self.xmin, self.xmax])
         plt.ylim([self.ymin, self.ymax])
@@ -471,7 +549,7 @@ def linear_approximation():
     Z2 = np.array([leafage_local_model.distances.get_final_distance(x) for x in np.c_[xx.ravel(), yy.ravel()]])
     Z2 = Z2.reshape(xx.shape)
 
-    plt.contourf(xx, yy, Z2, 20, cmap='RdGy', levels=np.arange(0,14,0.6))
+    plt.contourf(xx, yy, Z2, 20, cmap='RdGy')
     plt.colorbar()
 
     line = Line(linear_model.coefficients[0],
@@ -490,7 +568,7 @@ if __name__ == "__main__":
     #linear_approximation()
 
     a = TwoDimensionExample()
-    a.plot_local_model(np.array([-8,4]))
+    a.plot_neighbourhood(np.array([-12,7]))
     plt.show()
 
 

@@ -1,3 +1,5 @@
+from collections import Counter
+
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -7,6 +9,7 @@ from utils.Evaluate import EvaluationMetrics
 
 
 class Faithfulness:
+    a = 0.95
     def __init__(self, test_set, test_predictions, function_get_local_model, radii, verbose=False):
         self.scale = lambda x: test_set.pre_process([x], scale=True)[0]
         self.test_set = test_set.feature_vector
@@ -15,7 +18,6 @@ class Faithfulness:
         self.function_get_local_model = function_get_local_model
         self.radii = radii
         self.verbose = verbose
-        self.max_distance = self.get_max_distance()
 
         self.average_accuracy_per_radius, self.std_accuracy_per_radius, \
         self.average_base_line_per_radius, self.average_amount_per_radius = self.evaluate()
@@ -32,8 +34,9 @@ class Faithfulness:
         unbiased_distance_function = Distances.unbiased_distance_function
         instance = self.scale(instance)
         distances = map(lambda test_instance: unbiased_distance_function(test_instance, instance), self.scaled_test_set)
+        max_distance = float(max(distances))
 
-        return np.array(map(lambda distance: distance/self.max_distance, distances))
+        return np.array(map(lambda distance: distance/max_distance, distances))
 
     def get_instances_within_radius(self, normalized_distances, radius):
         indices_filtered = np.where(normalized_distances <= radius)
@@ -53,9 +56,22 @@ class Faithfulness:
         for instances_within, black_box_predictions in instances_within_radii:
             local_predictions = local_model.get_predictions(instances_within)
             evaluation = EvaluationMetrics(black_box_predictions, local_predictions)
-            accuracy.append(evaluation.accuracy)
-            base_line.append(evaluation.base_line)
+            accuracy.append(evaluation.f1_score)
+            base_line_value = Counter(black_box_predictions)[prediction]/float(len(black_box_predictions))
+            base_line.append(base_line_value)
             amount.append(len(instances_within))
+
+        stop_index = -1
+        for i, base_line_value in zip(range(len(base_line)), base_line):
+            if base_line_value <= self.a:
+                stop_index = i
+                break
+
+        if stop_index == -1:
+            print("Stop index is the last index")
+        accuracy.append(accuracy[stop_index])
+        base_line.append(base_line[stop_index])
+        amount.append(amount[stop_index])
         return accuracy, base_line, amount
 
     def evaluate(self):

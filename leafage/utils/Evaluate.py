@@ -5,13 +5,14 @@ import DimensionalityReduction
 from Plots import plot_roc, plot_confusion_matrix
 from collections import Counter
 
+
 class EvaluationMetrics:
     def __init__(self,
                  real_labels,
                  predicted_labels,
                  predicted_probabilities=None,
                  labels_order_confusion_matrix=None,
-                 f1_averaging_strategy=None,
+                 f1_averaging_strategy="macro",
                  sample_weight=None):
 
         self.real_labels = real_labels
@@ -24,7 +25,8 @@ class EvaluationMetrics:
         self.accuracy_weighted = accuracy_score(real_labels, predicted_labels, sample_weight=sample_weight)
         self.accuracy = accuracy_score(real_labels, predicted_labels)
         self.base_line = self.get_base_line()
-        #self.f1_score = f1_score(real_labels, predicted_labels, average=f1_averaging_strategy)
+
+        self.f1_score = f1_score(real_labels, predicted_labels, average=f1_averaging_strategy)
 
     def get_base_line(self):
         return max(Counter(self.real_labels).values())/float(len(self.real_labels))
