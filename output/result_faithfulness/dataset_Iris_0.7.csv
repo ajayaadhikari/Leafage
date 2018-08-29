@@ -1,0 +1,442 @@
+Dataset name,Classifier name,Strategy,f1_score,std,class_of_z,radius,amount in radius
+Iris,lr,Leafage: closest enemy,0.97,0.14,1.0,0.05,1.33
+Iris,lr,Leafage: closest enemy,0.97,0.14,1.0,0.1,2.29
+Iris,lr,Leafage: closest enemy,0.95,0.14,0.98,0.15,4.06
+Iris,lr,Leafage: closest enemy,0.94,0.14,0.96,0.2,6.08
+Iris,lr,Leafage: closest enemy,0.93,0.12,0.93,0.25,8.67
+Iris,lr,Leafage: closest enemy,0.92,0.12,0.91,0.3,11.41
+Iris,lr,Leafage: closest enemy,0.92,0.09,0.89,0.35,14.27
+Iris,lr,Leafage: closest enemy,0.93,0.09,0.87,0.4,16.67
+Iris,lr,Leafage: closest enemy,0.9,0.09,0.85,0.45,19.21
+Iris,lr,Leafage: closest enemy,0.89,0.09,0.83,0.5,21.39
+Iris,lr,Leafage: closest enemy,0.88,0.09,0.82,0.55,23.7
+Iris,lr,Leafage: closest enemy,0.86,0.1,0.79,0.6,26.37
+Iris,lr,Leafage: closest enemy,0.86,0.1,0.77,0.65,28.9
+Iris,lr,Leafage: closest enemy,0.86,0.1,0.75,0.7,31.02
+Iris,lr,Leafage: closest enemy,0.86,0.08,0.74,0.75,33.26
+Iris,lr,Leafage: closest enemy,0.87,0.07,0.72,0.8,35.84
+Iris,lr,Leafage: closest enemy,0.88,0.07,0.7,0.85,38.54
+Iris,lr,Leafage: closest enemy,0.88,0.07,0.67,0.9,40.68
+Iris,lr,Leafage: closest enemy,0.89,0.06,0.65,0.95,42.5
+Iris,lr,Leafage: closest enemy,0.89,0.06,0.63,1.0,45.0
+Iris,lr,Leafage: closest enemy,0.82,0.11,0.46,-1,20.11
+Iris,lr,Leafage: closest boundary,0.98,0.12,1.0,0.05,1.33
+Iris,lr,Leafage: closest boundary,0.98,0.12,1.0,0.1,2.29
+Iris,lr,Leafage: closest boundary,0.97,0.11,0.98,0.15,4.06
+Iris,lr,Leafage: closest boundary,0.96,0.12,0.96,0.2,6.08
+Iris,lr,Leafage: closest boundary,0.95,0.08,0.93,0.25,8.67
+Iris,lr,Leafage: closest boundary,0.94,0.08,0.91,0.3,11.41
+Iris,lr,Leafage: closest boundary,0.94,0.07,0.89,0.35,14.27
+Iris,lr,Leafage: closest boundary,0.94,0.06,0.87,0.4,16.67
+Iris,lr,Leafage: closest boundary,0.92,0.07,0.85,0.45,19.21
+Iris,lr,Leafage: closest boundary,0.92,0.06,0.83,0.5,21.39
+Iris,lr,Leafage: closest boundary,0.92,0.07,0.82,0.55,23.7
+Iris,lr,Leafage: closest boundary,0.9,0.09,0.79,0.6,26.37
+Iris,lr,Leafage: closest boundary,0.91,0.08,0.77,0.65,28.9
+Iris,lr,Leafage: closest boundary,0.91,0.07,0.75,0.7,31.02
+Iris,lr,Leafage: closest boundary,0.92,0.06,0.74,0.75,33.26
+Iris,lr,Leafage: closest boundary,0.92,0.04,0.72,0.8,35.84
+Iris,lr,Leafage: closest boundary,0.92,0.03,0.7,0.85,38.54
+Iris,lr,Leafage: closest boundary,0.93,0.02,0.67,0.9,40.68
+Iris,lr,Leafage: closest boundary,0.94,0.02,0.65,0.95,42.5
+Iris,lr,Leafage: closest boundary,0.94,0.02,0.63,1.0,45.0
+Iris,lr,Leafage: closest boundary,0.86,0.1,0.46,-1,20.11
+Iris,lr,lime,0.89,0.24,1.0,0.05,1.33
+Iris,lr,lime,0.89,0.26,1.0,0.1,2.29
+Iris,lr,lime,0.87,0.26,0.98,0.15,4.06
+Iris,lr,lime,0.85,0.25,0.96,0.2,6.08
+Iris,lr,lime,0.84,0.24,0.93,0.25,8.67
+Iris,lr,lime,0.8,0.23,0.91,0.3,11.41
+Iris,lr,lime,0.8,0.22,0.89,0.35,14.27
+Iris,lr,lime,0.79,0.22,0.87,0.4,16.67
+Iris,lr,lime,0.77,0.2,0.85,0.45,19.21
+Iris,lr,lime,0.76,0.18,0.83,0.5,21.39
+Iris,lr,lime,0.72,0.16,0.82,0.55,23.7
+Iris,lr,lime,0.7,0.13,0.79,0.6,26.37
+Iris,lr,lime,0.69,0.12,0.77,0.65,28.9
+Iris,lr,lime,0.68,0.11,0.75,0.7,31.02
+Iris,lr,lime,0.67,0.09,0.74,0.75,33.26
+Iris,lr,lime,0.66,0.11,0.72,0.8,35.84
+Iris,lr,lime,0.65,0.12,0.7,0.85,38.54
+Iris,lr,lime,0.62,0.14,0.67,0.9,40.68
+Iris,lr,lime,0.62,0.14,0.65,0.95,42.5
+Iris,lr,lime,0.61,0.14,0.63,1.0,45.0
+Iris,lr,lime,0.57,0.14,0.46,-1,20.11
+Iris,svc,Leafage: closest enemy,1.0,0.0,1.0,0.05,1.33
+Iris,svc,Leafage: closest enemy,1.0,0.0,0.99,0.1,2.29
+Iris,svc,Leafage: closest enemy,0.98,0.05,0.98,0.15,4.06
+Iris,svc,Leafage: closest enemy,0.97,0.07,0.95,0.2,6.08
+Iris,svc,Leafage: closest enemy,0.96,0.08,0.94,0.25,8.67
+Iris,svc,Leafage: closest enemy,0.96,0.09,0.91,0.3,11.41
+Iris,svc,Leafage: closest enemy,0.94,0.1,0.89,0.35,14.27
+Iris,svc,Leafage: closest enemy,0.94,0.1,0.88,0.4,16.67
+Iris,svc,Leafage: closest enemy,0.93,0.1,0.85,0.45,19.21
+Iris,svc,Leafage: closest enemy,0.93,0.1,0.83,0.5,21.39
+Iris,svc,Leafage: closest enemy,0.91,0.12,0.81,0.55,23.7
+Iris,svc,Leafage: closest enemy,0.92,0.09,0.78,0.6,26.37
+Iris,svc,Leafage: closest enemy,0.92,0.08,0.76,0.65,28.9
+Iris,svc,Leafage: closest enemy,0.92,0.07,0.74,0.7,31.02
+Iris,svc,Leafage: closest enemy,0.92,0.07,0.73,0.75,33.26
+Iris,svc,Leafage: closest enemy,0.92,0.06,0.71,0.8,35.84
+Iris,svc,Leafage: closest enemy,0.91,0.06,0.69,0.85,38.54
+Iris,svc,Leafage: closest enemy,0.91,0.06,0.67,0.9,40.68
+Iris,svc,Leafage: closest enemy,0.91,0.06,0.65,0.95,42.5
+Iris,svc,Leafage: closest enemy,0.91,0.06,0.63,1.0,45.0
+Iris,svc,Leafage: closest enemy,0.94,0.08,0.46,-1,20.61
+Iris,svc,Leafage: closest boundary,0.99,0.05,1.0,0.05,1.33
+Iris,svc,Leafage: closest boundary,0.99,0.05,0.99,0.1,2.29
+Iris,svc,Leafage: closest boundary,0.99,0.08,0.98,0.15,4.06
+Iris,svc,Leafage: closest boundary,0.98,0.09,0.95,0.2,6.08
+Iris,svc,Leafage: closest boundary,0.98,0.08,0.94,0.25,8.67
+Iris,svc,Leafage: closest boundary,0.97,0.09,0.91,0.3,11.41
+Iris,svc,Leafage: closest boundary,0.98,0.07,0.89,0.35,14.27
+Iris,svc,Leafage: closest boundary,0.97,0.07,0.88,0.4,16.67
+Iris,svc,Leafage: closest boundary,0.96,0.08,0.85,0.45,19.21
+Iris,svc,Leafage: closest boundary,0.96,0.06,0.83,0.5,21.39
+Iris,svc,Leafage: closest boundary,0.95,0.09,0.81,0.55,23.7
+Iris,svc,Leafage: closest boundary,0.95,0.06,0.78,0.6,26.37
+Iris,svc,Leafage: closest boundary,0.96,0.05,0.76,0.65,28.9
+Iris,svc,Leafage: closest boundary,0.96,0.04,0.74,0.7,31.02
+Iris,svc,Leafage: closest boundary,0.96,0.04,0.73,0.75,33.26
+Iris,svc,Leafage: closest boundary,0.95,0.04,0.71,0.8,35.84
+Iris,svc,Leafage: closest boundary,0.95,0.04,0.69,0.85,38.54
+Iris,svc,Leafage: closest boundary,0.95,0.04,0.67,0.9,40.68
+Iris,svc,Leafage: closest boundary,0.95,0.04,0.65,0.95,42.5
+Iris,svc,Leafage: closest boundary,0.95,0.04,0.63,1.0,45.0
+Iris,svc,Leafage: closest boundary,0.95,0.09,0.46,-1,20.61
+Iris,svc,lime,0.73,0.43,1.0,0.05,1.33
+Iris,svc,lime,0.73,0.43,0.99,0.1,2.29
+Iris,svc,lime,0.73,0.41,0.98,0.15,4.06
+Iris,svc,lime,0.7,0.41,0.95,0.2,6.08
+Iris,svc,lime,0.68,0.4,0.94,0.25,8.67
+Iris,svc,lime,0.67,0.39,0.91,0.3,11.41
+Iris,svc,lime,0.66,0.38,0.89,0.35,14.27
+Iris,svc,lime,0.66,0.36,0.88,0.4,16.67
+Iris,svc,lime,0.62,0.35,0.85,0.45,19.21
+Iris,svc,lime,0.6,0.33,0.83,0.5,21.39
+Iris,svc,lime,0.58,0.29,0.81,0.55,23.7
+Iris,svc,lime,0.58,0.26,0.78,0.6,26.37
+Iris,svc,lime,0.58,0.24,0.76,0.65,28.9
+Iris,svc,lime,0.58,0.22,0.74,0.7,31.02
+Iris,svc,lime,0.59,0.19,0.73,0.75,33.26
+Iris,svc,lime,0.59,0.17,0.71,0.8,35.84
+Iris,svc,lime,0.58,0.14,0.69,0.85,38.54
+Iris,svc,lime,0.54,0.06,0.67,0.9,40.68
+Iris,svc,lime,0.54,0.05,0.65,0.95,42.5
+Iris,svc,lime,0.54,0.05,0.63,1.0,45.0
+Iris,svc,lime,0.43,0.19,0.46,-1,20.61
+Iris,lda,Leafage: closest enemy,0.98,0.12,1.0,0.05,1.33
+Iris,lda,Leafage: closest enemy,0.97,0.12,0.98,0.1,2.29
+Iris,lda,Leafage: closest enemy,0.97,0.11,0.97,0.15,4.06
+Iris,lda,Leafage: closest enemy,0.95,0.12,0.95,0.2,6.08
+Iris,lda,Leafage: closest enemy,0.93,0.11,0.92,0.25,8.67
+Iris,lda,Leafage: closest enemy,0.91,0.12,0.89,0.3,11.41
+Iris,lda,Leafage: closest enemy,0.91,0.09,0.87,0.35,14.27
+Iris,lda,Leafage: closest enemy,0.91,0.09,0.85,0.4,16.67
+Iris,lda,Leafage: closest enemy,0.91,0.08,0.83,0.45,19.21
+Iris,lda,Leafage: closest enemy,0.91,0.07,0.81,0.5,21.39
+Iris,lda,Leafage: closest enemy,0.91,0.06,0.79,0.55,23.7
+Iris,lda,Leafage: closest enemy,0.91,0.05,0.76,0.6,26.37
+Iris,lda,Leafage: closest enemy,0.91,0.05,0.73,0.65,28.9
+Iris,lda,Leafage: closest enemy,0.91,0.04,0.72,0.7,31.02
+Iris,lda,Leafage: closest enemy,0.91,0.04,0.7,0.75,33.26
+Iris,lda,Leafage: closest enemy,0.9,0.04,0.69,0.8,35.84
+Iris,lda,Leafage: closest enemy,0.91,0.04,0.67,0.85,38.54
+Iris,lda,Leafage: closest enemy,0.9,0.04,0.64,0.9,40.68
+Iris,lda,Leafage: closest enemy,0.9,0.04,0.62,0.95,42.5
+Iris,lda,Leafage: closest enemy,0.91,0.04,0.61,1.0,45.0
+Iris,lda,Leafage: closest enemy,0.9,0.1,0.45,-1,18.9
+Iris,lda,Leafage: closest boundary,0.99,0.07,1.0,0.05,1.33
+Iris,lda,Leafage: closest boundary,0.98,0.06,0.98,0.1,2.29
+Iris,lda,Leafage: closest boundary,0.97,0.06,0.97,0.15,4.06
+Iris,lda,Leafage: closest boundary,0.96,0.07,0.95,0.2,6.08
+Iris,lda,Leafage: closest boundary,0.94,0.08,0.92,0.25,8.67
+Iris,lda,Leafage: closest boundary,0.93,0.08,0.89,0.3,11.41
+Iris,lda,Leafage: closest boundary,0.93,0.07,0.87,0.35,14.27
+Iris,lda,Leafage: closest boundary,0.92,0.07,0.85,0.4,16.67
+Iris,lda,Leafage: closest boundary,0.92,0.06,0.83,0.45,19.21
+Iris,lda,Leafage: closest boundary,0.92,0.05,0.81,0.5,21.39
+Iris,lda,Leafage: closest boundary,0.9,0.09,0.79,0.55,23.7
+Iris,lda,Leafage: closest boundary,0.92,0.04,0.76,0.6,26.37
+Iris,lda,Leafage: closest boundary,0.92,0.04,0.73,0.65,28.9
+Iris,lda,Leafage: closest boundary,0.92,0.03,0.72,0.7,31.02
+Iris,lda,Leafage: closest boundary,0.92,0.03,0.7,0.75,33.26
+Iris,lda,Leafage: closest boundary,0.92,0.02,0.69,0.8,35.84
+Iris,lda,Leafage: closest boundary,0.92,0.02,0.67,0.85,38.54
+Iris,lda,Leafage: closest boundary,0.92,0.03,0.64,0.9,40.68
+Iris,lda,Leafage: closest boundary,0.92,0.03,0.62,0.95,42.5
+Iris,lda,Leafage: closest boundary,0.92,0.03,0.61,1.0,45.0
+Iris,lda,Leafage: closest boundary,0.9,0.09,0.45,-1,18.9
+Iris,lda,lime,0.72,0.28,1.0,0.05,1.33
+Iris,lda,lime,0.71,0.28,0.98,0.1,2.29
+Iris,lda,lime,0.7,0.27,0.97,0.15,4.06
+Iris,lda,lime,0.68,0.25,0.95,0.2,6.08
+Iris,lda,lime,0.65,0.22,0.92,0.25,8.67
+Iris,lda,lime,0.64,0.21,0.89,0.3,11.41
+Iris,lda,lime,0.62,0.2,0.87,0.35,14.27
+Iris,lda,lime,0.61,0.17,0.85,0.4,16.67
+Iris,lda,lime,0.59,0.15,0.83,0.45,19.21
+Iris,lda,lime,0.58,0.13,0.81,0.5,21.39
+Iris,lda,lime,0.56,0.11,0.79,0.55,23.7
+Iris,lda,lime,0.56,0.11,0.76,0.6,26.37
+Iris,lda,lime,0.56,0.1,0.73,0.65,28.9
+Iris,lda,lime,0.56,0.09,0.72,0.7,31.02
+Iris,lda,lime,0.56,0.06,0.7,0.75,33.26
+Iris,lda,lime,0.56,0.05,0.69,0.8,35.84
+Iris,lda,lime,0.56,0.04,0.67,0.85,38.54
+Iris,lda,lime,0.56,0.01,0.64,0.9,40.68
+Iris,lda,lime,0.56,0.01,0.62,0.95,42.5
+Iris,lda,lime,0.57,0.0,0.61,1.0,45.0
+Iris,lda,lime,0.54,0.11,0.45,-1,18.9
+Iris,rf,Leafage: closest enemy,0.93,0.18,1.0,0.05,1.33
+Iris,rf,Leafage: closest enemy,0.93,0.18,1.0,0.1,2.29
+Iris,rf,Leafage: closest enemy,0.92,0.18,1.0,0.15,4.06
+Iris,rf,Leafage: closest enemy,0.92,0.18,0.98,0.2,6.08
+Iris,rf,Leafage: closest enemy,0.92,0.16,0.93,0.25,8.67
+Iris,rf,Leafage: closest enemy,0.92,0.16,0.89,0.3,11.41
+Iris,rf,Leafage: closest enemy,0.92,0.15,0.86,0.35,14.27
+Iris,rf,Leafage: closest enemy,0.91,0.15,0.84,0.4,16.67
+Iris,rf,Leafage: closest enemy,0.9,0.15,0.81,0.45,19.21
+Iris,rf,Leafage: closest enemy,0.9,0.14,0.78,0.5,21.39
+Iris,rf,Leafage: closest enemy,0.88,0.17,0.76,0.55,23.7
+Iris,rf,Leafage: closest enemy,0.87,0.15,0.72,0.6,26.37
+Iris,rf,Leafage: closest enemy,0.88,0.13,0.68,0.65,28.9
+Iris,rf,Leafage: closest enemy,0.88,0.12,0.66,0.7,31.02
+Iris,rf,Leafage: closest enemy,0.88,0.1,0.64,0.75,33.26
+Iris,rf,Leafage: closest enemy,0.88,0.06,0.63,0.8,35.84
+Iris,rf,Leafage: closest enemy,0.87,0.04,0.61,0.85,38.54
+Iris,rf,Leafage: closest enemy,0.86,0.03,0.59,0.9,40.68
+Iris,rf,Leafage: closest enemy,0.86,0.02,0.57,0.95,42.5
+Iris,rf,Leafage: closest enemy,0.86,0.02,0.56,1.0,45.0
+Iris,rf,Leafage: closest enemy,0.87,0.16,0.45,-1,18.9
+Iris,rf,Leafage: closest boundary,0.87,0.21,1.0,0.05,1.33
+Iris,rf,Leafage: closest boundary,0.87,0.21,1.0,0.1,2.29
+Iris,rf,Leafage: closest boundary,0.88,0.19,1.0,0.15,4.06
+Iris,rf,Leafage: closest boundary,0.88,0.19,0.98,0.2,6.08
+Iris,rf,Leafage: closest boundary,0.88,0.19,0.93,0.25,8.67
+Iris,rf,Leafage: closest boundary,0.87,0.2,0.89,0.3,11.41
+Iris,rf,Leafage: closest boundary,0.87,0.17,0.86,0.35,14.27
+Iris,rf,Leafage: closest boundary,0.88,0.17,0.84,0.4,16.67
+Iris,rf,Leafage: closest boundary,0.88,0.16,0.81,0.45,19.21
+Iris,rf,Leafage: closest boundary,0.89,0.15,0.78,0.5,21.39
+Iris,rf,Leafage: closest boundary,0.87,0.18,0.76,0.55,23.7
+Iris,rf,Leafage: closest boundary,0.87,0.16,0.72,0.6,26.37
+Iris,rf,Leafage: closest boundary,0.88,0.14,0.68,0.65,28.9
+Iris,rf,Leafage: closest boundary,0.88,0.13,0.66,0.7,31.02
+Iris,rf,Leafage: closest boundary,0.88,0.1,0.64,0.75,33.26
+Iris,rf,Leafage: closest boundary,0.88,0.07,0.63,0.8,35.84
+Iris,rf,Leafage: closest boundary,0.87,0.05,0.61,0.85,38.54
+Iris,rf,Leafage: closest boundary,0.86,0.03,0.59,0.9,40.68
+Iris,rf,Leafage: closest boundary,0.86,0.03,0.57,0.95,42.5
+Iris,rf,Leafage: closest boundary,0.86,0.02,0.56,1.0,45.0
+Iris,rf,Leafage: closest boundary,0.87,0.18,0.45,-1,18.9
+Iris,rf,lime,0.55,0.47,1.0,0.05,1.33
+Iris,rf,lime,0.55,0.47,1.0,0.1,2.29
+Iris,rf,lime,0.55,0.46,1.0,0.15,4.06
+Iris,rf,lime,0.53,0.45,0.98,0.2,6.08
+Iris,rf,lime,0.5,0.4,0.93,0.25,8.67
+Iris,rf,lime,0.5,0.38,0.89,0.3,11.41
+Iris,rf,lime,0.48,0.35,0.86,0.35,14.27
+Iris,rf,lime,0.46,0.32,0.84,0.4,16.67
+Iris,rf,lime,0.45,0.28,0.81,0.45,19.21
+Iris,rf,lime,0.45,0.25,0.78,0.5,21.39
+Iris,rf,lime,0.46,0.22,0.76,0.55,23.7
+Iris,rf,lime,0.48,0.21,0.72,0.6,26.37
+Iris,rf,lime,0.47,0.17,0.68,0.65,28.9
+Iris,rf,lime,0.48,0.17,0.66,0.7,31.02
+Iris,rf,lime,0.48,0.17,0.64,0.75,33.26
+Iris,rf,lime,0.46,0.17,0.63,0.8,35.84
+Iris,rf,lime,0.44,0.16,0.61,0.85,38.54
+Iris,rf,lime,0.4,0.1,0.59,0.9,40.68
+Iris,rf,lime,0.39,0.09,0.57,0.95,42.5
+Iris,rf,lime,0.39,0.09,0.56,1.0,45.0
+Iris,rf,lime,0.32,0.16,0.45,-1,18.9
+Iris,dt,Leafage: closest enemy,0.91,0.19,1.0,0.05,1.33
+Iris,dt,Leafage: closest enemy,0.91,0.19,1.0,0.1,2.29
+Iris,dt,Leafage: closest enemy,0.9,0.19,1.0,0.15,4.06
+Iris,dt,Leafage: closest enemy,0.9,0.18,0.98,0.2,6.08
+Iris,dt,Leafage: closest enemy,0.88,0.16,0.94,0.25,8.67
+Iris,dt,Leafage: closest enemy,0.89,0.16,0.9,0.3,11.41
+Iris,dt,Leafage: closest enemy,0.89,0.14,0.88,0.35,14.27
+Iris,dt,Leafage: closest enemy,0.89,0.14,0.85,0.4,16.67
+Iris,dt,Leafage: closest enemy,0.88,0.14,0.82,0.45,19.21
+Iris,dt,Leafage: closest enemy,0.88,0.13,0.79,0.5,21.39
+Iris,dt,Leafage: closest enemy,0.86,0.16,0.76,0.55,23.7
+Iris,dt,Leafage: closest enemy,0.86,0.14,0.72,0.6,26.37
+Iris,dt,Leafage: closest enemy,0.86,0.12,0.68,0.65,28.9
+Iris,dt,Leafage: closest enemy,0.86,0.12,0.66,0.7,31.02
+Iris,dt,Leafage: closest enemy,0.86,0.1,0.64,0.75,33.26
+Iris,dt,Leafage: closest enemy,0.86,0.06,0.62,0.8,35.84
+Iris,dt,Leafage: closest enemy,0.85,0.04,0.6,0.85,38.54
+Iris,dt,Leafage: closest enemy,0.85,0.03,0.58,0.9,40.68
+Iris,dt,Leafage: closest enemy,0.85,0.02,0.56,0.95,42.5
+Iris,dt,Leafage: closest enemy,0.85,0.02,0.55,1.0,45.0
+Iris,dt,Leafage: closest enemy,0.84,0.15,0.46,-1,19.13
+Iris,dt,Leafage: closest boundary,0.86,0.21,1.0,0.05,1.33
+Iris,dt,Leafage: closest boundary,0.86,0.21,1.0,0.1,2.29
+Iris,dt,Leafage: closest boundary,0.85,0.19,1.0,0.15,4.06
+Iris,dt,Leafage: closest boundary,0.85,0.19,0.98,0.2,6.08
+Iris,dt,Leafage: closest boundary,0.83,0.17,0.94,0.25,8.67
+Iris,dt,Leafage: closest boundary,0.83,0.18,0.9,0.3,11.41
+Iris,dt,Leafage: closest boundary,0.84,0.15,0.88,0.35,14.27
+Iris,dt,Leafage: closest boundary,0.85,0.15,0.85,0.4,16.67
+Iris,dt,Leafage: closest boundary,0.86,0.14,0.82,0.45,19.21
+Iris,dt,Leafage: closest boundary,0.87,0.13,0.79,0.5,21.39
+Iris,dt,Leafage: closest boundary,0.85,0.17,0.76,0.55,23.7
+Iris,dt,Leafage: closest boundary,0.85,0.15,0.72,0.6,26.37
+Iris,dt,Leafage: closest boundary,0.85,0.13,0.68,0.65,28.9
+Iris,dt,Leafage: closest boundary,0.85,0.12,0.66,0.7,31.02
+Iris,dt,Leafage: closest boundary,0.86,0.1,0.64,0.75,33.26
+Iris,dt,Leafage: closest boundary,0.86,0.07,0.62,0.8,35.84
+Iris,dt,Leafage: closest boundary,0.85,0.05,0.6,0.85,38.54
+Iris,dt,Leafage: closest boundary,0.85,0.03,0.58,0.9,40.68
+Iris,dt,Leafage: closest boundary,0.85,0.03,0.56,0.95,42.5
+Iris,dt,Leafage: closest boundary,0.85,0.02,0.55,1.0,45.0
+Iris,dt,Leafage: closest boundary,0.82,0.16,0.46,-1,19.13
+Iris,dt,lime,0.54,0.46,1.0,0.05,1.33
+Iris,dt,lime,0.54,0.46,1.0,0.1,2.29
+Iris,dt,lime,0.54,0.45,1.0,0.15,4.06
+Iris,dt,lime,0.51,0.43,0.98,0.2,6.08
+Iris,dt,lime,0.48,0.39,0.94,0.25,8.67
+Iris,dt,lime,0.48,0.37,0.9,0.3,11.41
+Iris,dt,lime,0.47,0.35,0.88,0.35,14.27
+Iris,dt,lime,0.44,0.32,0.85,0.4,16.67
+Iris,dt,lime,0.43,0.27,0.82,0.45,19.21
+Iris,dt,lime,0.43,0.24,0.79,0.5,21.39
+Iris,dt,lime,0.44,0.21,0.76,0.55,23.7
+Iris,dt,lime,0.46,0.19,0.72,0.6,26.37
+Iris,dt,lime,0.46,0.16,0.68,0.65,28.9
+Iris,dt,lime,0.47,0.16,0.66,0.7,31.02
+Iris,dt,lime,0.48,0.16,0.64,0.75,33.26
+Iris,dt,lime,0.47,0.16,0.62,0.8,35.84
+Iris,dt,lime,0.45,0.15,0.6,0.85,38.54
+Iris,dt,lime,0.41,0.09,0.58,0.9,40.68
+Iris,dt,lime,0.4,0.08,0.56,0.95,42.5
+Iris,dt,lime,0.4,0.08,0.55,1.0,45.0
+Iris,dt,lime,0.3,0.16,0.46,-1,19.13
+Iris,nb_g,Leafage: closest enemy,0.86,0.16,1.0,0.05,1.33
+Iris,nb_g,Leafage: closest enemy,0.86,0.16,1.0,0.1,2.29
+Iris,nb_g,Leafage: closest enemy,0.85,0.19,0.98,0.15,4.06
+Iris,nb_g,Leafage: closest enemy,0.84,0.17,0.96,0.2,6.08
+Iris,nb_g,Leafage: closest enemy,0.84,0.17,0.92,0.25,8.67
+Iris,nb_g,Leafage: closest enemy,0.84,0.17,0.89,0.3,11.41
+Iris,nb_g,Leafage: closest enemy,0.83,0.16,0.87,0.35,14.27
+Iris,nb_g,Leafage: closest enemy,0.83,0.16,0.84,0.4,16.67
+Iris,nb_g,Leafage: closest enemy,0.84,0.15,0.81,0.45,19.21
+Iris,nb_g,Leafage: closest enemy,0.85,0.14,0.79,0.5,21.39
+Iris,nb_g,Leafage: closest enemy,0.86,0.13,0.76,0.55,23.7
+Iris,nb_g,Leafage: closest enemy,0.88,0.12,0.72,0.6,26.37
+Iris,nb_g,Leafage: closest enemy,0.87,0.11,0.69,0.65,28.9
+Iris,nb_g,Leafage: closest enemy,0.87,0.1,0.66,0.7,31.02
+Iris,nb_g,Leafage: closest enemy,0.87,0.09,0.64,0.75,33.26
+Iris,nb_g,Leafage: closest enemy,0.87,0.07,0.63,0.8,35.84
+Iris,nb_g,Leafage: closest enemy,0.86,0.05,0.61,0.85,38.54
+Iris,nb_g,Leafage: closest enemy,0.85,0.03,0.59,0.9,40.68
+Iris,nb_g,Leafage: closest enemy,0.85,0.03,0.57,0.95,42.5
+Iris,nb_g,Leafage: closest enemy,0.85,0.02,0.55,1.0,45.0
+Iris,nb_g,Leafage: closest enemy,0.82,0.15,0.45,-1,18.71
+Iris,nb_g,Leafage: closest boundary,0.86,0.21,1.0,0.05,1.33
+Iris,nb_g,Leafage: closest boundary,0.86,0.2,1.0,0.1,2.29
+Iris,nb_g,Leafage: closest boundary,0.85,0.18,0.98,0.15,4.06
+Iris,nb_g,Leafage: closest boundary,0.84,0.17,0.96,0.2,6.08
+Iris,nb_g,Leafage: closest boundary,0.85,0.18,0.92,0.25,8.67
+Iris,nb_g,Leafage: closest boundary,0.85,0.17,0.89,0.3,11.41
+Iris,nb_g,Leafage: closest boundary,0.84,0.18,0.87,0.35,14.27
+Iris,nb_g,Leafage: closest boundary,0.85,0.16,0.84,0.4,16.67
+Iris,nb_g,Leafage: closest boundary,0.86,0.15,0.81,0.45,19.21
+Iris,nb_g,Leafage: closest boundary,0.86,0.15,0.79,0.5,21.39
+Iris,nb_g,Leafage: closest boundary,0.87,0.13,0.76,0.55,23.7
+Iris,nb_g,Leafage: closest boundary,0.87,0.12,0.72,0.6,26.37
+Iris,nb_g,Leafage: closest boundary,0.87,0.11,0.69,0.65,28.9
+Iris,nb_g,Leafage: closest boundary,0.87,0.1,0.66,0.7,31.02
+Iris,nb_g,Leafage: closest boundary,0.87,0.09,0.64,0.75,33.26
+Iris,nb_g,Leafage: closest boundary,0.86,0.07,0.63,0.8,35.84
+Iris,nb_g,Leafage: closest boundary,0.85,0.06,0.61,0.85,38.54
+Iris,nb_g,Leafage: closest boundary,0.84,0.04,0.59,0.9,40.68
+Iris,nb_g,Leafage: closest boundary,0.84,0.04,0.57,0.95,42.5
+Iris,nb_g,Leafage: closest boundary,0.84,0.04,0.55,1.0,45.0
+Iris,nb_g,Leafage: closest boundary,0.82,0.18,0.45,-1,18.71
+Iris,nb_g,lime,0.69,0.46,1.0,0.05,1.33
+Iris,nb_g,lime,0.69,0.46,1.0,0.1,2.29
+Iris,nb_g,lime,0.67,0.46,0.98,0.15,4.06
+Iris,nb_g,lime,0.65,0.45,0.96,0.2,6.08
+Iris,nb_g,lime,0.63,0.43,0.92,0.25,8.67
+Iris,nb_g,lime,0.62,0.41,0.89,0.3,11.41
+Iris,nb_g,lime,0.61,0.4,0.87,0.35,14.27
+Iris,nb_g,lime,0.6,0.38,0.84,0.4,16.67
+Iris,nb_g,lime,0.57,0.35,0.81,0.45,19.21
+Iris,nb_g,lime,0.56,0.33,0.79,0.5,21.39
+Iris,nb_g,lime,0.55,0.3,0.76,0.55,23.7
+Iris,nb_g,lime,0.52,0.25,0.72,0.6,26.37
+Iris,nb_g,lime,0.5,0.2,0.69,0.65,28.9
+Iris,nb_g,lime,0.49,0.19,0.66,0.7,31.02
+Iris,nb_g,lime,0.49,0.19,0.64,0.75,33.26
+Iris,nb_g,lime,0.48,0.19,0.63,0.8,35.84
+Iris,nb_g,lime,0.46,0.18,0.61,0.85,38.54
+Iris,nb_g,lime,0.41,0.11,0.59,0.9,40.68
+Iris,nb_g,lime,0.41,0.1,0.57,0.95,42.5
+Iris,nb_g,lime,0.41,0.1,0.55,1.0,45.0
+Iris,nb_g,lime,0.36,0.18,0.45,-1,18.71
+Iris,mlp,Leafage: closest enemy,0.85,0.23,1.0,0.05,1.33
+Iris,mlp,Leafage: closest enemy,0.85,0.23,0.99,0.1,2.29
+Iris,mlp,Leafage: closest enemy,0.85,0.23,0.99,0.15,4.06
+Iris,mlp,Leafage: closest enemy,0.84,0.22,0.97,0.2,6.08
+Iris,mlp,Leafage: closest enemy,0.85,0.2,0.93,0.25,8.67
+Iris,mlp,Leafage: closest enemy,0.84,0.2,0.89,0.3,11.41
+Iris,mlp,Leafage: closest enemy,0.85,0.17,0.86,0.35,14.27
+Iris,mlp,Leafage: closest enemy,0.85,0.17,0.84,0.4,16.67
+Iris,mlp,Leafage: closest enemy,0.85,0.16,0.81,0.45,19.21
+Iris,mlp,Leafage: closest enemy,0.86,0.15,0.78,0.5,21.39
+Iris,mlp,Leafage: closest enemy,0.86,0.15,0.76,0.55,23.7
+Iris,mlp,Leafage: closest enemy,0.86,0.14,0.72,0.6,26.37
+Iris,mlp,Leafage: closest enemy,0.86,0.13,0.69,0.65,28.9
+Iris,mlp,Leafage: closest enemy,0.86,0.12,0.67,0.7,31.02
+Iris,mlp,Leafage: closest enemy,0.87,0.09,0.65,0.75,33.26
+Iris,mlp,Leafage: closest enemy,0.87,0.06,0.64,0.8,35.84
+Iris,mlp,Leafage: closest enemy,0.86,0.04,0.62,0.85,38.54
+Iris,mlp,Leafage: closest enemy,0.85,0.03,0.6,0.9,40.68
+Iris,mlp,Leafage: closest enemy,0.85,0.03,0.58,0.95,42.5
+Iris,mlp,Leafage: closest enemy,0.85,0.02,0.56,1.0,45.0
+Iris,mlp,Leafage: closest enemy,0.83,0.18,0.45,-1,18.81
+Iris,mlp,Leafage: closest boundary,0.87,0.21,1.0,0.05,1.33
+Iris,mlp,Leafage: closest boundary,0.86,0.21,0.99,0.1,2.29
+Iris,mlp,Leafage: closest boundary,0.86,0.21,0.99,0.15,4.06
+Iris,mlp,Leafage: closest boundary,0.86,0.21,0.97,0.2,6.08
+Iris,mlp,Leafage: closest boundary,0.86,0.17,0.93,0.25,8.67
+Iris,mlp,Leafage: closest boundary,0.86,0.16,0.89,0.3,11.41
+Iris,mlp,Leafage: closest boundary,0.86,0.16,0.86,0.35,14.27
+Iris,mlp,Leafage: closest boundary,0.86,0.15,0.84,0.4,16.67
+Iris,mlp,Leafage: closest boundary,0.86,0.14,0.81,0.45,19.21
+Iris,mlp,Leafage: closest boundary,0.87,0.13,0.78,0.5,21.39
+Iris,mlp,Leafage: closest boundary,0.87,0.14,0.76,0.55,23.7
+Iris,mlp,Leafage: closest boundary,0.86,0.14,0.72,0.6,26.37
+Iris,mlp,Leafage: closest boundary,0.87,0.13,0.69,0.65,28.9
+Iris,mlp,Leafage: closest boundary,0.87,0.12,0.67,0.7,31.02
+Iris,mlp,Leafage: closest boundary,0.87,0.09,0.65,0.75,33.26
+Iris,mlp,Leafage: closest boundary,0.87,0.06,0.64,0.8,35.84
+Iris,mlp,Leafage: closest boundary,0.86,0.04,0.62,0.85,38.54
+Iris,mlp,Leafage: closest boundary,0.86,0.02,0.6,0.9,40.68
+Iris,mlp,Leafage: closest boundary,0.85,0.02,0.58,0.95,42.5
+Iris,mlp,Leafage: closest boundary,0.85,0.02,0.56,1.0,45.0
+Iris,mlp,Leafage: closest boundary,0.86,0.17,0.45,-1,18.81
+Iris,mlp,lime,0.84,0.34,1.0,0.05,1.33
+Iris,mlp,lime,0.84,0.32,0.99,0.1,2.29
+Iris,mlp,lime,0.83,0.29,0.99,0.15,4.06
+Iris,mlp,lime,0.8,0.31,0.97,0.2,6.08
+Iris,mlp,lime,0.78,0.28,0.93,0.25,8.67
+Iris,mlp,lime,0.77,0.27,0.89,0.3,11.41
+Iris,mlp,lime,0.76,0.25,0.86,0.35,14.27
+Iris,mlp,lime,0.77,0.24,0.84,0.4,16.67
+Iris,mlp,lime,0.74,0.22,0.81,0.45,19.21
+Iris,mlp,lime,0.75,0.19,0.78,0.5,21.39
+Iris,mlp,lime,0.73,0.19,0.76,0.55,23.7
+Iris,mlp,lime,0.71,0.18,0.72,0.6,26.37
+Iris,mlp,lime,0.7,0.18,0.69,0.65,28.9
+Iris,mlp,lime,0.69,0.17,0.67,0.7,31.02
+Iris,mlp,lime,0.69,0.18,0.65,0.75,33.26
+Iris,mlp,lime,0.67,0.19,0.64,0.8,35.84
+Iris,mlp,lime,0.64,0.19,0.62,0.85,38.54
+Iris,mlp,lime,0.6,0.17,0.6,0.9,40.68
+Iris,mlp,lime,0.59,0.18,0.58,0.95,42.5
+Iris,mlp,lime,0.59,0.18,0.56,1.0,45.0
+Iris,mlp,lime,0.54,0.17,0.45,-1,18.81

@@ -1,0 +1,442 @@
+Dataset name,Classifier name,Strategy,f1_score,std,class_of_z,radius,amount in radius
+BreastCancer,lr,Leafage: closest enemy,0.95,0.21,1.0,0.05,1.0
+BreastCancer,lr,Leafage: closest enemy,0.95,0.2,0.99,0.1,1.68
+BreastCancer,lr,Leafage: closest enemy,0.93,0.2,0.97,0.15,7.74
+BreastCancer,lr,Leafage: closest enemy,0.89,0.2,0.93,0.2,23.13
+BreastCancer,lr,Leafage: closest enemy,0.89,0.16,0.89,0.25,44.94
+BreastCancer,lr,Leafage: closest enemy,0.9,0.12,0.85,0.3,66.21
+BreastCancer,lr,Leafage: closest enemy,0.9,0.11,0.8,0.35,85.89
+BreastCancer,lr,Leafage: closest enemy,0.91,0.09,0.74,0.4,103.45
+BreastCancer,lr,Leafage: closest enemy,0.92,0.09,0.69,0.45,118.82
+BreastCancer,lr,Leafage: closest enemy,0.94,0.06,0.65,0.5,131.52
+BreastCancer,lr,Leafage: closest enemy,0.94,0.05,0.62,0.55,141.44
+BreastCancer,lr,Leafage: closest enemy,0.95,0.03,0.59,0.6,148.8
+BreastCancer,lr,Leafage: closest enemy,0.95,0.02,0.58,0.65,154.06
+BreastCancer,lr,Leafage: closest enemy,0.95,0.02,0.57,0.7,158.17
+BreastCancer,lr,Leafage: closest enemy,0.95,0.01,0.56,0.75,161.32
+BreastCancer,lr,Leafage: closest enemy,0.95,0.01,0.55,0.8,164.15
+BreastCancer,lr,Leafage: closest enemy,0.95,0.01,0.54,0.85,166.55
+BreastCancer,lr,Leafage: closest enemy,0.95,0.01,0.54,0.9,168.39
+BreastCancer,lr,Leafage: closest enemy,0.95,0.01,0.54,0.95,169.55
+BreastCancer,lr,Leafage: closest enemy,0.95,0.01,0.54,1.0,171.0
+BreastCancer,lr,Leafage: closest enemy,0.86,0.14,0.45,-1,51.99
+BreastCancer,lr,Leafage: closest boundary,0.95,0.21,1.0,0.05,1.0
+BreastCancer,lr,Leafage: closest boundary,0.95,0.21,0.99,0.1,1.68
+BreastCancer,lr,Leafage: closest boundary,0.92,0.21,0.97,0.15,7.74
+BreastCancer,lr,Leafage: closest boundary,0.88,0.2,0.93,0.2,23.13
+BreastCancer,lr,Leafage: closest boundary,0.89,0.16,0.89,0.25,44.94
+BreastCancer,lr,Leafage: closest boundary,0.9,0.12,0.85,0.3,66.21
+BreastCancer,lr,Leafage: closest boundary,0.9,0.11,0.8,0.35,85.89
+BreastCancer,lr,Leafage: closest boundary,0.92,0.08,0.74,0.4,103.45
+BreastCancer,lr,Leafage: closest boundary,0.92,0.09,0.69,0.45,118.82
+BreastCancer,lr,Leafage: closest boundary,0.94,0.06,0.65,0.5,131.52
+BreastCancer,lr,Leafage: closest boundary,0.94,0.06,0.62,0.55,141.44
+BreastCancer,lr,Leafage: closest boundary,0.95,0.05,0.59,0.6,148.8
+BreastCancer,lr,Leafage: closest boundary,0.95,0.04,0.58,0.65,154.06
+BreastCancer,lr,Leafage: closest boundary,0.95,0.03,0.57,0.7,158.17
+BreastCancer,lr,Leafage: closest boundary,0.95,0.01,0.56,0.75,161.32
+BreastCancer,lr,Leafage: closest boundary,0.95,0.01,0.55,0.8,164.15
+BreastCancer,lr,Leafage: closest boundary,0.95,0.01,0.54,0.85,166.55
+BreastCancer,lr,Leafage: closest boundary,0.95,0.01,0.54,0.9,168.39
+BreastCancer,lr,Leafage: closest boundary,0.95,0.01,0.54,0.95,169.55
+BreastCancer,lr,Leafage: closest boundary,0.95,0.01,0.54,1.0,171.0
+BreastCancer,lr,Leafage: closest boundary,0.85,0.14,0.45,-1,51.99
+BreastCancer,lr,lime,0.84,0.36,1.0,0.05,1.0
+BreastCancer,lr,lime,0.82,0.36,0.99,0.1,1.68
+BreastCancer,lr,lime,0.78,0.35,0.97,0.15,7.74
+BreastCancer,lr,lime,0.75,0.33,0.93,0.2,23.13
+BreastCancer,lr,lime,0.74,0.3,0.89,0.25,44.94
+BreastCancer,lr,lime,0.73,0.27,0.85,0.3,66.21
+BreastCancer,lr,lime,0.73,0.26,0.8,0.35,85.89
+BreastCancer,lr,lime,0.75,0.25,0.74,0.4,103.45
+BreastCancer,lr,lime,0.76,0.23,0.69,0.45,118.82
+BreastCancer,lr,lime,0.76,0.23,0.65,0.5,131.52
+BreastCancer,lr,lime,0.76,0.22,0.62,0.55,141.44
+BreastCancer,lr,lime,0.77,0.22,0.59,0.6,148.8
+BreastCancer,lr,lime,0.77,0.22,0.58,0.65,154.06
+BreastCancer,lr,lime,0.77,0.22,0.57,0.7,158.17
+BreastCancer,lr,lime,0.78,0.21,0.56,0.75,161.32
+BreastCancer,lr,lime,0.78,0.21,0.55,0.8,164.15
+BreastCancer,lr,lime,0.78,0.21,0.54,0.85,166.55
+BreastCancer,lr,lime,0.78,0.21,0.54,0.9,168.39
+BreastCancer,lr,lime,0.78,0.21,0.54,0.95,169.55
+BreastCancer,lr,lime,0.78,0.21,0.54,1.0,171.0
+BreastCancer,lr,lime,0.64,0.27,0.45,-1,51.99
+BreastCancer,svc,Leafage: closest enemy,0.96,0.19,1.0,0.05,1.0
+BreastCancer,svc,Leafage: closest enemy,0.96,0.19,1.0,0.1,1.68
+BreastCancer,svc,Leafage: closest enemy,0.94,0.17,0.97,0.15,7.74
+BreastCancer,svc,Leafage: closest enemy,0.9,0.18,0.93,0.2,23.13
+BreastCancer,svc,Leafage: closest enemy,0.89,0.15,0.9,0.25,44.94
+BreastCancer,svc,Leafage: closest enemy,0.9,0.11,0.86,0.3,66.21
+BreastCancer,svc,Leafage: closest enemy,0.91,0.09,0.81,0.35,85.89
+BreastCancer,svc,Leafage: closest enemy,0.92,0.07,0.76,0.4,103.45
+BreastCancer,svc,Leafage: closest enemy,0.94,0.06,0.7,0.45,118.82
+BreastCancer,svc,Leafage: closest enemy,0.94,0.05,0.66,0.5,131.52
+BreastCancer,svc,Leafage: closest enemy,0.95,0.03,0.63,0.55,141.44
+BreastCancer,svc,Leafage: closest enemy,0.95,0.02,0.6,0.6,148.8
+BreastCancer,svc,Leafage: closest enemy,0.95,0.02,0.59,0.65,154.06
+BreastCancer,svc,Leafage: closest enemy,0.95,0.02,0.57,0.7,158.17
+BreastCancer,svc,Leafage: closest enemy,0.95,0.02,0.56,0.75,161.32
+BreastCancer,svc,Leafage: closest enemy,0.95,0.02,0.56,0.8,164.15
+BreastCancer,svc,Leafage: closest enemy,0.95,0.02,0.55,0.85,166.55
+BreastCancer,svc,Leafage: closest enemy,0.95,0.02,0.54,0.9,168.39
+BreastCancer,svc,Leafage: closest enemy,0.95,0.02,0.54,0.95,169.55
+BreastCancer,svc,Leafage: closest enemy,0.95,0.02,0.54,1.0,171.0
+BreastCancer,svc,Leafage: closest enemy,0.85,0.15,0.46,-1,53.73
+BreastCancer,svc,Leafage: closest boundary,0.96,0.19,1.0,0.05,1.0
+BreastCancer,svc,Leafage: closest boundary,0.96,0.18,1.0,0.1,1.68
+BreastCancer,svc,Leafage: closest boundary,0.94,0.18,0.97,0.15,7.74
+BreastCancer,svc,Leafage: closest boundary,0.91,0.17,0.93,0.2,23.13
+BreastCancer,svc,Leafage: closest boundary,0.91,0.14,0.9,0.25,44.94
+BreastCancer,svc,Leafage: closest boundary,0.92,0.09,0.86,0.3,66.21
+BreastCancer,svc,Leafage: closest boundary,0.93,0.07,0.81,0.35,85.89
+BreastCancer,svc,Leafage: closest boundary,0.94,0.07,0.76,0.4,103.45
+BreastCancer,svc,Leafage: closest boundary,0.94,0.06,0.7,0.45,118.82
+BreastCancer,svc,Leafage: closest boundary,0.95,0.04,0.66,0.5,131.52
+BreastCancer,svc,Leafage: closest boundary,0.96,0.03,0.63,0.55,141.44
+BreastCancer,svc,Leafage: closest boundary,0.96,0.02,0.6,0.6,148.8
+BreastCancer,svc,Leafage: closest boundary,0.96,0.02,0.59,0.65,154.06
+BreastCancer,svc,Leafage: closest boundary,0.96,0.02,0.57,0.7,158.17
+BreastCancer,svc,Leafage: closest boundary,0.96,0.01,0.56,0.75,161.32
+BreastCancer,svc,Leafage: closest boundary,0.96,0.01,0.56,0.8,164.15
+BreastCancer,svc,Leafage: closest boundary,0.96,0.01,0.55,0.85,166.55
+BreastCancer,svc,Leafage: closest boundary,0.96,0.01,0.54,0.9,168.39
+BreastCancer,svc,Leafage: closest boundary,0.96,0.01,0.54,0.95,169.55
+BreastCancer,svc,Leafage: closest boundary,0.96,0.01,0.54,1.0,171.0
+BreastCancer,svc,Leafage: closest boundary,0.87,0.14,0.46,-1,53.73
+BreastCancer,svc,lime,0.36,0.48,1.0,0.05,1.0
+BreastCancer,svc,lime,0.36,0.48,1.0,0.1,1.68
+BreastCancer,svc,lime,0.34,0.45,0.97,0.15,7.74
+BreastCancer,svc,lime,0.33,0.43,0.93,0.2,23.13
+BreastCancer,svc,lime,0.31,0.39,0.9,0.25,44.94
+BreastCancer,svc,lime,0.3,0.34,0.86,0.3,66.21
+BreastCancer,svc,lime,0.29,0.29,0.81,0.35,85.89
+BreastCancer,svc,lime,0.29,0.24,0.76,0.4,103.45
+BreastCancer,svc,lime,0.29,0.2,0.7,0.45,118.82
+BreastCancer,svc,lime,0.28,0.16,0.66,0.5,131.52
+BreastCancer,svc,lime,0.28,0.14,0.63,0.55,141.44
+BreastCancer,svc,lime,0.28,0.11,0.6,0.6,148.8
+BreastCancer,svc,lime,0.27,0.07,0.59,0.65,154.06
+BreastCancer,svc,lime,0.27,0.06,0.57,0.7,158.17
+BreastCancer,svc,lime,0.26,0.03,0.56,0.75,161.32
+BreastCancer,svc,lime,0.26,0.02,0.56,0.8,164.15
+BreastCancer,svc,lime,0.26,0.02,0.55,0.85,166.55
+BreastCancer,svc,lime,0.26,0.01,0.54,0.9,168.39
+BreastCancer,svc,lime,0.26,0.01,0.54,0.95,169.55
+BreastCancer,svc,lime,0.26,0.01,0.54,1.0,171.0
+BreastCancer,svc,lime,0.22,0.18,0.46,-1,53.73
+BreastCancer,lda,Leafage: closest enemy,0.98,0.13,1.0,0.05,1.0
+BreastCancer,lda,Leafage: closest enemy,0.98,0.13,0.99,0.1,1.68
+BreastCancer,lda,Leafage: closest enemy,0.97,0.14,0.98,0.15,7.74
+BreastCancer,lda,Leafage: closest enemy,0.92,0.18,0.96,0.2,23.13
+BreastCancer,lda,Leafage: closest enemy,0.89,0.18,0.92,0.25,44.94
+BreastCancer,lda,Leafage: closest enemy,0.92,0.13,0.89,0.3,66.21
+BreastCancer,lda,Leafage: closest enemy,0.94,0.09,0.84,0.35,85.89
+BreastCancer,lda,Leafage: closest enemy,0.96,0.05,0.78,0.4,103.45
+BreastCancer,lda,Leafage: closest enemy,0.96,0.04,0.73,0.45,118.82
+BreastCancer,lda,Leafage: closest enemy,0.97,0.03,0.68,0.5,131.52
+BreastCancer,lda,Leafage: closest enemy,0.97,0.03,0.65,0.55,141.44
+BreastCancer,lda,Leafage: closest enemy,0.97,0.01,0.62,0.6,148.8
+BreastCancer,lda,Leafage: closest enemy,0.97,0.01,0.61,0.65,154.06
+BreastCancer,lda,Leafage: closest enemy,0.97,0.01,0.59,0.7,158.17
+BreastCancer,lda,Leafage: closest enemy,0.97,0.01,0.58,0.75,161.32
+BreastCancer,lda,Leafage: closest enemy,0.97,0.01,0.57,0.8,164.15
+BreastCancer,lda,Leafage: closest enemy,0.97,0.01,0.57,0.85,166.55
+BreastCancer,lda,Leafage: closest enemy,0.97,0.01,0.56,0.9,168.39
+BreastCancer,lda,Leafage: closest enemy,0.97,0.01,0.56,0.95,169.55
+BreastCancer,lda,Leafage: closest enemy,0.97,0.01,0.56,1.0,171.0
+BreastCancer,lda,Leafage: closest enemy,0.91,0.12,0.46,-1,63.7
+BreastCancer,lda,Leafage: closest boundary,0.99,0.07,1.0,0.05,1.0
+BreastCancer,lda,Leafage: closest boundary,0.99,0.07,0.99,0.1,1.68
+BreastCancer,lda,Leafage: closest boundary,0.98,0.06,0.98,0.15,7.74
+BreastCancer,lda,Leafage: closest boundary,0.96,0.07,0.96,0.2,23.13
+BreastCancer,lda,Leafage: closest boundary,0.95,0.09,0.92,0.25,44.94
+BreastCancer,lda,Leafage: closest boundary,0.96,0.07,0.89,0.3,66.21
+BreastCancer,lda,Leafage: closest boundary,0.97,0.04,0.84,0.35,85.89
+BreastCancer,lda,Leafage: closest boundary,0.98,0.03,0.78,0.4,103.45
+BreastCancer,lda,Leafage: closest boundary,0.98,0.02,0.73,0.45,118.82
+BreastCancer,lda,Leafage: closest boundary,0.98,0.01,0.68,0.5,131.52
+BreastCancer,lda,Leafage: closest boundary,0.98,0.01,0.65,0.55,141.44
+BreastCancer,lda,Leafage: closest boundary,0.98,0.01,0.62,0.6,148.8
+BreastCancer,lda,Leafage: closest boundary,0.98,0.01,0.61,0.65,154.06
+BreastCancer,lda,Leafage: closest boundary,0.98,0.01,0.59,0.7,158.17
+BreastCancer,lda,Leafage: closest boundary,0.98,0.01,0.58,0.75,161.32
+BreastCancer,lda,Leafage: closest boundary,0.98,0.01,0.57,0.8,164.15
+BreastCancer,lda,Leafage: closest boundary,0.98,0.01,0.57,0.85,166.55
+BreastCancer,lda,Leafage: closest boundary,0.98,0.01,0.56,0.9,168.39
+BreastCancer,lda,Leafage: closest boundary,0.98,0.01,0.56,0.95,169.55
+BreastCancer,lda,Leafage: closest boundary,0.98,0.01,0.56,1.0,171.0
+BreastCancer,lda,Leafage: closest boundary,0.94,0.08,0.46,-1,63.7
+BreastCancer,lda,lime,0.33,0.47,1.0,0.05,1.0
+BreastCancer,lda,lime,0.33,0.47,0.99,0.1,1.68
+BreastCancer,lda,lime,0.32,0.45,0.98,0.15,7.74
+BreastCancer,lda,lime,0.31,0.43,0.96,0.2,23.13
+BreastCancer,lda,lime,0.28,0.39,0.92,0.25,44.94
+BreastCancer,lda,lime,0.27,0.34,0.89,0.3,66.21
+BreastCancer,lda,lime,0.26,0.29,0.84,0.35,85.89
+BreastCancer,lda,lime,0.26,0.23,0.78,0.4,103.45
+BreastCancer,lda,lime,0.26,0.2,0.73,0.45,118.82
+BreastCancer,lda,lime,0.27,0.17,0.68,0.5,131.52
+BreastCancer,lda,lime,0.26,0.14,0.65,0.55,141.44
+BreastCancer,lda,lime,0.26,0.12,0.62,0.6,148.8
+BreastCancer,lda,lime,0.25,0.08,0.61,0.65,154.06
+BreastCancer,lda,lime,0.25,0.06,0.59,0.7,158.17
+BreastCancer,lda,lime,0.25,0.03,0.58,0.75,161.32
+BreastCancer,lda,lime,0.25,0.03,0.57,0.8,164.15
+BreastCancer,lda,lime,0.25,0.02,0.57,0.85,166.55
+BreastCancer,lda,lime,0.25,0.01,0.56,0.9,168.39
+BreastCancer,lda,lime,0.25,0.01,0.56,0.95,169.55
+BreastCancer,lda,lime,0.25,0.01,0.56,1.0,171.0
+BreastCancer,lda,lime,0.21,0.18,0.46,-1,63.7
+BreastCancer,rf,Leafage: closest enemy,0.94,0.24,1.0,0.05,1.0
+BreastCancer,rf,Leafage: closest enemy,0.94,0.24,1.0,0.1,1.68
+BreastCancer,rf,Leafage: closest enemy,0.9,0.24,0.97,0.15,7.74
+BreastCancer,rf,Leafage: closest enemy,0.85,0.22,0.94,0.2,23.13
+BreastCancer,rf,Leafage: closest enemy,0.82,0.19,0.91,0.25,44.94
+BreastCancer,rf,Leafage: closest enemy,0.82,0.15,0.86,0.3,66.21
+BreastCancer,rf,Leafage: closest enemy,0.83,0.13,0.81,0.35,85.89
+BreastCancer,rf,Leafage: closest enemy,0.86,0.1,0.76,0.4,103.45
+BreastCancer,rf,Leafage: closest enemy,0.89,0.08,0.71,0.45,118.82
+BreastCancer,rf,Leafage: closest enemy,0.9,0.07,0.66,0.5,131.52
+BreastCancer,rf,Leafage: closest enemy,0.91,0.07,0.63,0.55,141.44
+BreastCancer,rf,Leafage: closest enemy,0.91,0.05,0.61,0.6,148.8
+BreastCancer,rf,Leafage: closest enemy,0.91,0.05,0.59,0.65,154.06
+BreastCancer,rf,Leafage: closest enemy,0.92,0.04,0.58,0.7,158.17
+BreastCancer,rf,Leafage: closest enemy,0.92,0.02,0.57,0.75,161.32
+BreastCancer,rf,Leafage: closest enemy,0.93,0.01,0.56,0.8,164.15
+BreastCancer,rf,Leafage: closest enemy,0.93,0.01,0.55,0.85,166.55
+BreastCancer,rf,Leafage: closest enemy,0.93,0.01,0.55,0.9,168.39
+BreastCancer,rf,Leafage: closest enemy,0.93,0.01,0.54,0.95,169.55
+BreastCancer,rf,Leafage: closest enemy,0.93,0.01,0.54,1.0,171.0
+BreastCancer,rf,Leafage: closest enemy,0.74,0.15,0.46,-1,54.04
+BreastCancer,rf,Leafage: closest boundary,0.93,0.26,1.0,0.05,1.0
+BreastCancer,rf,Leafage: closest boundary,0.93,0.25,1.0,0.1,1.68
+BreastCancer,rf,Leafage: closest boundary,0.9,0.25,0.97,0.15,7.74
+BreastCancer,rf,Leafage: closest boundary,0.86,0.23,0.94,0.2,23.13
+BreastCancer,rf,Leafage: closest boundary,0.84,0.19,0.91,0.25,44.94
+BreastCancer,rf,Leafage: closest boundary,0.83,0.16,0.86,0.3,66.21
+BreastCancer,rf,Leafage: closest boundary,0.83,0.14,0.81,0.35,85.89
+BreastCancer,rf,Leafage: closest boundary,0.87,0.11,0.76,0.4,103.45
+BreastCancer,rf,Leafage: closest boundary,0.89,0.1,0.71,0.45,118.82
+BreastCancer,rf,Leafage: closest boundary,0.9,0.09,0.66,0.5,131.52
+BreastCancer,rf,Leafage: closest boundary,0.91,0.08,0.63,0.55,141.44
+BreastCancer,rf,Leafage: closest boundary,0.92,0.06,0.61,0.6,148.8
+BreastCancer,rf,Leafage: closest boundary,0.92,0.06,0.59,0.65,154.06
+BreastCancer,rf,Leafage: closest boundary,0.92,0.05,0.58,0.7,158.17
+BreastCancer,rf,Leafage: closest boundary,0.93,0.02,0.57,0.75,161.32
+BreastCancer,rf,Leafage: closest boundary,0.93,0.01,0.56,0.8,164.15
+BreastCancer,rf,Leafage: closest boundary,0.93,0.01,0.55,0.85,166.55
+BreastCancer,rf,Leafage: closest boundary,0.93,0.01,0.55,0.9,168.39
+BreastCancer,rf,Leafage: closest boundary,0.93,0.01,0.54,0.95,169.55
+BreastCancer,rf,Leafage: closest boundary,0.93,0.01,0.54,1.0,171.0
+BreastCancer,rf,Leafage: closest boundary,0.74,0.15,0.46,-1,54.04
+BreastCancer,rf,lime,0.36,0.48,1.0,0.05,1.0
+BreastCancer,rf,lime,0.35,0.48,1.0,0.1,1.68
+BreastCancer,rf,lime,0.35,0.46,0.97,0.15,7.74
+BreastCancer,rf,lime,0.33,0.43,0.94,0.2,23.13
+BreastCancer,rf,lime,0.31,0.39,0.91,0.25,44.94
+BreastCancer,rf,lime,0.29,0.34,0.86,0.3,66.21
+BreastCancer,rf,lime,0.27,0.28,0.81,0.35,85.89
+BreastCancer,rf,lime,0.28,0.24,0.76,0.4,103.45
+BreastCancer,rf,lime,0.29,0.21,0.71,0.45,118.82
+BreastCancer,rf,lime,0.28,0.17,0.66,0.5,131.52
+BreastCancer,rf,lime,0.28,0.15,0.63,0.55,141.44
+BreastCancer,rf,lime,0.27,0.12,0.61,0.6,148.8
+BreastCancer,rf,lime,0.27,0.1,0.59,0.65,154.06
+BreastCancer,rf,lime,0.27,0.07,0.58,0.7,158.17
+BreastCancer,rf,lime,0.26,0.03,0.57,0.75,161.32
+BreastCancer,rf,lime,0.26,0.02,0.56,0.8,164.15
+BreastCancer,rf,lime,0.26,0.02,0.55,0.85,166.55
+BreastCancer,rf,lime,0.26,0.01,0.55,0.9,168.39
+BreastCancer,rf,lime,0.26,0.01,0.54,0.95,169.55
+BreastCancer,rf,lime,0.26,0.01,0.54,1.0,171.0
+BreastCancer,rf,lime,0.22,0.18,0.46,-1,54.04
+BreastCancer,dt,Leafage: closest enemy,0.94,0.24,1.0,0.05,1.0
+BreastCancer,dt,Leafage: closest enemy,0.93,0.24,1.0,0.1,1.68
+BreastCancer,dt,Leafage: closest enemy,0.9,0.25,0.98,0.15,7.74
+BreastCancer,dt,Leafage: closest enemy,0.82,0.25,0.93,0.2,23.13
+BreastCancer,dt,Leafage: closest enemy,0.78,0.21,0.9,0.25,44.94
+BreastCancer,dt,Leafage: closest enemy,0.79,0.17,0.86,0.3,66.21
+BreastCancer,dt,Leafage: closest enemy,0.81,0.13,0.81,0.35,85.89
+BreastCancer,dt,Leafage: closest enemy,0.85,0.11,0.76,0.4,103.45
+BreastCancer,dt,Leafage: closest enemy,0.88,0.1,0.71,0.45,118.82
+BreastCancer,dt,Leafage: closest enemy,0.89,0.08,0.67,0.5,131.52
+BreastCancer,dt,Leafage: closest enemy,0.9,0.06,0.64,0.55,141.44
+BreastCancer,dt,Leafage: closest enemy,0.9,0.06,0.62,0.6,148.8
+BreastCancer,dt,Leafage: closest enemy,0.91,0.04,0.6,0.65,154.06
+BreastCancer,dt,Leafage: closest enemy,0.91,0.04,0.59,0.7,158.17
+BreastCancer,dt,Leafage: closest enemy,0.91,0.02,0.58,0.75,161.32
+BreastCancer,dt,Leafage: closest enemy,0.91,0.01,0.57,0.8,164.15
+BreastCancer,dt,Leafage: closest enemy,0.91,0.01,0.56,0.85,166.55
+BreastCancer,dt,Leafage: closest enemy,0.91,0.01,0.55,0.9,168.39
+BreastCancer,dt,Leafage: closest enemy,0.92,0.01,0.55,0.95,169.55
+BreastCancer,dt,Leafage: closest enemy,0.92,0.01,0.55,1.0,171.0
+BreastCancer,dt,Leafage: closest enemy,0.73,0.16,0.45,-1,59.37
+BreastCancer,dt,Leafage: closest boundary,0.93,0.26,1.0,0.05,1.0
+BreastCancer,dt,Leafage: closest boundary,0.92,0.26,1.0,0.1,1.68
+BreastCancer,dt,Leafage: closest boundary,0.89,0.26,0.98,0.15,7.74
+BreastCancer,dt,Leafage: closest boundary,0.83,0.24,0.93,0.2,23.13
+BreastCancer,dt,Leafage: closest boundary,0.8,0.2,0.9,0.25,44.94
+BreastCancer,dt,Leafage: closest boundary,0.81,0.17,0.86,0.3,66.21
+BreastCancer,dt,Leafage: closest boundary,0.83,0.12,0.81,0.35,85.89
+BreastCancer,dt,Leafage: closest boundary,0.86,0.1,0.76,0.4,103.45
+BreastCancer,dt,Leafage: closest boundary,0.89,0.08,0.71,0.45,118.82
+BreastCancer,dt,Leafage: closest boundary,0.9,0.07,0.67,0.5,131.52
+BreastCancer,dt,Leafage: closest boundary,0.91,0.05,0.64,0.55,141.44
+BreastCancer,dt,Leafage: closest boundary,0.92,0.03,0.62,0.6,148.8
+BreastCancer,dt,Leafage: closest boundary,0.92,0.02,0.6,0.65,154.06
+BreastCancer,dt,Leafage: closest boundary,0.92,0.02,0.59,0.7,158.17
+BreastCancer,dt,Leafage: closest boundary,0.92,0.01,0.58,0.75,161.32
+BreastCancer,dt,Leafage: closest boundary,0.92,0.01,0.57,0.8,164.15
+BreastCancer,dt,Leafage: closest boundary,0.92,0.01,0.56,0.85,166.55
+BreastCancer,dt,Leafage: closest boundary,0.92,0.01,0.55,0.9,168.39
+BreastCancer,dt,Leafage: closest boundary,0.92,0.01,0.55,0.95,169.55
+BreastCancer,dt,Leafage: closest boundary,0.93,0.01,0.55,1.0,171.0
+BreastCancer,dt,Leafage: closest boundary,0.74,0.16,0.45,-1,59.37
+BreastCancer,dt,lime,0.34,0.47,1.0,0.05,1.0
+BreastCancer,dt,lime,0.34,0.47,1.0,0.1,1.68
+BreastCancer,dt,lime,0.33,0.46,0.98,0.15,7.74
+BreastCancer,dt,lime,0.31,0.42,0.93,0.2,23.13
+BreastCancer,dt,lime,0.28,0.38,0.9,0.25,44.94
+BreastCancer,dt,lime,0.27,0.33,0.86,0.3,66.21
+BreastCancer,dt,lime,0.26,0.27,0.81,0.35,85.89
+BreastCancer,dt,lime,0.26,0.23,0.76,0.4,103.45
+BreastCancer,dt,lime,0.27,0.19,0.71,0.45,118.82
+BreastCancer,dt,lime,0.27,0.15,0.67,0.5,131.52
+BreastCancer,dt,lime,0.26,0.13,0.64,0.55,141.44
+BreastCancer,dt,lime,0.26,0.11,0.62,0.6,148.8
+BreastCancer,dt,lime,0.26,0.07,0.6,0.65,154.06
+BreastCancer,dt,lime,0.26,0.06,0.59,0.7,158.17
+BreastCancer,dt,lime,0.25,0.03,0.58,0.75,161.32
+BreastCancer,dt,lime,0.25,0.02,0.57,0.8,164.15
+BreastCancer,dt,lime,0.25,0.02,0.56,0.85,166.55
+BreastCancer,dt,lime,0.25,0.01,0.55,0.9,168.39
+BreastCancer,dt,lime,0.25,0.01,0.55,0.95,169.55
+BreastCancer,dt,lime,0.25,0.01,0.55,1.0,171.0
+BreastCancer,dt,lime,0.21,0.17,0.45,-1,59.37
+BreastCancer,nb_g,Leafage: closest enemy,0.97,0.18,1.0,0.05,1.0
+BreastCancer,nb_g,Leafage: closest enemy,0.97,0.18,1.0,0.1,1.68
+BreastCancer,nb_g,Leafage: closest enemy,0.96,0.17,0.99,0.15,7.74
+BreastCancer,nb_g,Leafage: closest enemy,0.91,0.2,0.96,0.2,23.13
+BreastCancer,nb_g,Leafage: closest enemy,0.87,0.19,0.93,0.25,44.94
+BreastCancer,nb_g,Leafage: closest enemy,0.9,0.15,0.88,0.3,66.21
+BreastCancer,nb_g,Leafage: closest enemy,0.91,0.11,0.83,0.35,85.89
+BreastCancer,nb_g,Leafage: closest enemy,0.94,0.07,0.77,0.4,103.45
+BreastCancer,nb_g,Leafage: closest enemy,0.95,0.06,0.71,0.45,118.82
+BreastCancer,nb_g,Leafage: closest enemy,0.96,0.03,0.66,0.5,131.52
+BreastCancer,nb_g,Leafage: closest enemy,0.96,0.05,0.63,0.55,141.44
+BreastCancer,nb_g,Leafage: closest enemy,0.96,0.03,0.61,0.6,148.8
+BreastCancer,nb_g,Leafage: closest enemy,0.96,0.03,0.59,0.65,154.06
+BreastCancer,nb_g,Leafage: closest enemy,0.96,0.04,0.58,0.7,158.17
+BreastCancer,nb_g,Leafage: closest enemy,0.97,0.02,0.57,0.75,161.32
+BreastCancer,nb_g,Leafage: closest enemy,0.97,0.01,0.56,0.8,164.15
+BreastCancer,nb_g,Leafage: closest enemy,0.97,0.01,0.55,0.85,166.55
+BreastCancer,nb_g,Leafage: closest enemy,0.97,0.01,0.55,0.9,168.39
+BreastCancer,nb_g,Leafage: closest enemy,0.97,0.01,0.54,0.95,169.55
+BreastCancer,nb_g,Leafage: closest enemy,0.97,0.01,0.54,1.0,171.0
+BreastCancer,nb_g,Leafage: closest enemy,0.88,0.11,0.46,-1,65.89
+BreastCancer,nb_g,Leafage: closest boundary,0.97,0.17,1.0,0.05,1.0
+BreastCancer,nb_g,Leafage: closest boundary,0.97,0.16,1.0,0.1,1.68
+BreastCancer,nb_g,Leafage: closest boundary,0.97,0.15,0.99,0.15,7.74
+BreastCancer,nb_g,Leafage: closest boundary,0.93,0.18,0.96,0.2,23.13
+BreastCancer,nb_g,Leafage: closest boundary,0.91,0.17,0.93,0.25,44.94
+BreastCancer,nb_g,Leafage: closest boundary,0.92,0.14,0.88,0.3,66.21
+BreastCancer,nb_g,Leafage: closest boundary,0.93,0.11,0.83,0.35,85.89
+BreastCancer,nb_g,Leafage: closest boundary,0.95,0.07,0.77,0.4,103.45
+BreastCancer,nb_g,Leafage: closest boundary,0.96,0.07,0.71,0.45,118.82
+BreastCancer,nb_g,Leafage: closest boundary,0.97,0.05,0.66,0.5,131.52
+BreastCancer,nb_g,Leafage: closest boundary,0.96,0.05,0.63,0.55,141.44
+BreastCancer,nb_g,Leafage: closest boundary,0.97,0.05,0.61,0.6,148.8
+BreastCancer,nb_g,Leafage: closest boundary,0.97,0.03,0.59,0.65,154.06
+BreastCancer,nb_g,Leafage: closest boundary,0.97,0.04,0.58,0.7,158.17
+BreastCancer,nb_g,Leafage: closest boundary,0.97,0.01,0.57,0.75,161.32
+BreastCancer,nb_g,Leafage: closest boundary,0.97,0.01,0.56,0.8,164.15
+BreastCancer,nb_g,Leafage: closest boundary,0.97,0.0,0.55,0.85,166.55
+BreastCancer,nb_g,Leafage: closest boundary,0.97,0.0,0.55,0.9,168.39
+BreastCancer,nb_g,Leafage: closest boundary,0.97,0.0,0.54,0.95,169.55
+BreastCancer,nb_g,Leafage: closest boundary,0.97,0.0,0.54,1.0,171.0
+BreastCancer,nb_g,Leafage: closest boundary,0.9,0.11,0.46,-1,65.89
+BreastCancer,nb_g,lime,0.35,0.48,1.0,0.05,1.0
+BreastCancer,nb_g,lime,0.35,0.48,1.0,0.1,1.68
+BreastCancer,nb_g,lime,0.35,0.47,0.99,0.15,7.74
+BreastCancer,nb_g,lime,0.33,0.44,0.96,0.2,23.13
+BreastCancer,nb_g,lime,0.3,0.4,0.93,0.25,44.94
+BreastCancer,nb_g,lime,0.28,0.34,0.88,0.3,66.21
+BreastCancer,nb_g,lime,0.28,0.3,0.83,0.35,85.89
+BreastCancer,nb_g,lime,0.28,0.25,0.77,0.4,103.45
+BreastCancer,nb_g,lime,0.28,0.21,0.71,0.45,118.82
+BreastCancer,nb_g,lime,0.28,0.18,0.66,0.5,131.52
+BreastCancer,nb_g,lime,0.28,0.15,0.63,0.55,141.44
+BreastCancer,nb_g,lime,0.27,0.12,0.61,0.6,148.8
+BreastCancer,nb_g,lime,0.27,0.1,0.59,0.65,154.06
+BreastCancer,nb_g,lime,0.27,0.08,0.58,0.7,158.17
+BreastCancer,nb_g,lime,0.26,0.03,0.57,0.75,161.32
+BreastCancer,nb_g,lime,0.26,0.03,0.56,0.8,164.15
+BreastCancer,nb_g,lime,0.26,0.01,0.55,0.85,166.55
+BreastCancer,nb_g,lime,0.26,0.01,0.55,0.9,168.39
+BreastCancer,nb_g,lime,0.26,0.0,0.54,0.95,169.55
+BreastCancer,nb_g,lime,0.26,0.0,0.54,1.0,171.0
+BreastCancer,nb_g,lime,0.21,0.17,0.46,-1,65.89
+BreastCancer,mlp,Leafage: closest enemy,0.95,0.22,1.0,0.05,1.0
+BreastCancer,mlp,Leafage: closest enemy,0.94,0.22,0.98,0.1,1.68
+BreastCancer,mlp,Leafage: closest enemy,0.91,0.22,0.94,0.15,7.74
+BreastCancer,mlp,Leafage: closest enemy,0.88,0.21,0.9,0.2,23.13
+BreastCancer,mlp,Leafage: closest enemy,0.88,0.18,0.86,0.25,44.94
+BreastCancer,mlp,Leafage: closest enemy,0.89,0.14,0.82,0.3,66.21
+BreastCancer,mlp,Leafage: closest enemy,0.89,0.13,0.78,0.35,85.89
+BreastCancer,mlp,Leafage: closest enemy,0.91,0.1,0.73,0.4,103.45
+BreastCancer,mlp,Leafage: closest enemy,0.92,0.08,0.68,0.45,118.82
+BreastCancer,mlp,Leafage: closest enemy,0.92,0.08,0.65,0.5,131.52
+BreastCancer,mlp,Leafage: closest enemy,0.93,0.06,0.62,0.55,141.44
+BreastCancer,mlp,Leafage: closest enemy,0.93,0.07,0.6,0.6,148.8
+BreastCancer,mlp,Leafage: closest enemy,0.94,0.05,0.58,0.65,154.06
+BreastCancer,mlp,Leafage: closest enemy,0.94,0.04,0.57,0.7,158.17
+BreastCancer,mlp,Leafage: closest enemy,0.94,0.02,0.56,0.75,161.32
+BreastCancer,mlp,Leafage: closest enemy,0.94,0.02,0.56,0.8,164.15
+BreastCancer,mlp,Leafage: closest enemy,0.94,0.02,0.55,0.85,166.55
+BreastCancer,mlp,Leafage: closest enemy,0.94,0.02,0.55,0.9,168.39
+BreastCancer,mlp,Leafage: closest enemy,0.94,0.02,0.54,0.95,169.55
+BreastCancer,mlp,Leafage: closest enemy,0.94,0.02,0.54,1.0,171.0
+BreastCancer,mlp,Leafage: closest enemy,0.82,0.18,0.45,-1,40.49
+BreastCancer,mlp,Leafage: closest boundary,0.94,0.23,1.0,0.05,1.0
+BreastCancer,mlp,Leafage: closest boundary,0.93,0.23,0.98,0.1,1.68
+BreastCancer,mlp,Leafage: closest boundary,0.91,0.23,0.94,0.15,7.74
+BreastCancer,mlp,Leafage: closest boundary,0.89,0.21,0.9,0.2,23.13
+BreastCancer,mlp,Leafage: closest boundary,0.91,0.16,0.86,0.25,44.94
+BreastCancer,mlp,Leafage: closest boundary,0.92,0.13,0.82,0.3,66.21
+BreastCancer,mlp,Leafage: closest boundary,0.92,0.12,0.78,0.35,85.89
+BreastCancer,mlp,Leafage: closest boundary,0.92,0.1,0.73,0.4,103.45
+BreastCancer,mlp,Leafage: closest boundary,0.93,0.08,0.68,0.45,118.82
+BreastCancer,mlp,Leafage: closest boundary,0.93,0.09,0.65,0.5,131.52
+BreastCancer,mlp,Leafage: closest boundary,0.94,0.07,0.62,0.55,141.44
+BreastCancer,mlp,Leafage: closest boundary,0.94,0.07,0.6,0.6,148.8
+BreastCancer,mlp,Leafage: closest boundary,0.94,0.05,0.58,0.65,154.06
+BreastCancer,mlp,Leafage: closest boundary,0.95,0.05,0.57,0.7,158.17
+BreastCancer,mlp,Leafage: closest boundary,0.95,0.02,0.56,0.75,161.32
+BreastCancer,mlp,Leafage: closest boundary,0.95,0.01,0.56,0.8,164.15
+BreastCancer,mlp,Leafage: closest boundary,0.95,0.01,0.55,0.85,166.55
+BreastCancer,mlp,Leafage: closest boundary,0.95,0.01,0.55,0.9,168.39
+BreastCancer,mlp,Leafage: closest boundary,0.95,0.01,0.54,0.95,169.55
+BreastCancer,mlp,Leafage: closest boundary,0.95,0.01,0.54,1.0,171.0
+BreastCancer,mlp,Leafage: closest boundary,0.85,0.17,0.45,-1,40.49
+BreastCancer,mlp,lime,0.59,0.44,1.0,0.05,1.0
+BreastCancer,mlp,lime,0.58,0.44,0.98,0.1,1.68
+BreastCancer,mlp,lime,0.55,0.41,0.94,0.15,7.74
+BreastCancer,mlp,lime,0.52,0.38,0.9,0.2,23.13
+BreastCancer,mlp,lime,0.5,0.33,0.86,0.25,44.94
+BreastCancer,mlp,lime,0.5,0.31,0.82,0.3,66.21
+BreastCancer,mlp,lime,0.5,0.28,0.78,0.35,85.89
+BreastCancer,mlp,lime,0.51,0.25,0.73,0.4,103.45
+BreastCancer,mlp,lime,0.51,0.23,0.68,0.45,118.82
+BreastCancer,mlp,lime,0.51,0.2,0.65,0.5,131.52
+BreastCancer,mlp,lime,0.51,0.19,0.62,0.55,141.44
+BreastCancer,mlp,lime,0.51,0.17,0.6,0.6,148.8
+BreastCancer,mlp,lime,0.51,0.16,0.58,0.65,154.06
+BreastCancer,mlp,lime,0.51,0.16,0.57,0.7,158.17
+BreastCancer,mlp,lime,0.51,0.16,0.56,0.75,161.32
+BreastCancer,mlp,lime,0.51,0.15,0.56,0.8,164.15
+BreastCancer,mlp,lime,0.51,0.15,0.55,0.85,166.55
+BreastCancer,mlp,lime,0.51,0.15,0.55,0.9,168.39
+BreastCancer,mlp,lime,0.51,0.15,0.54,0.95,169.55
+BreastCancer,mlp,lime,0.51,0.15,0.54,1.0,171.0
+BreastCancer,mlp,lime,0.42,0.23,0.45,-1,40.49
