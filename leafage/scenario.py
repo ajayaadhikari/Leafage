@@ -55,8 +55,8 @@ class Scenario:
     def get_leafage_object(self):
         return self.leafage
 
-    def get_explanation(self, instance, amount_of_examples):
-        return self.leafage.explain(instance, amount_of_examples)
+    def get_explanation(self, instance, amount_of_examples, type="contrastive"):
+        return self.leafage.explain(instance, amount_of_examples, type)
 
     def __get_data(self, dataset):
         if self.dataset_source == "load_from_use_cases":

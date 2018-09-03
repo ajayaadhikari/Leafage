@@ -64,14 +64,17 @@ class Leafage:
     def is_binary(self):
         return len(self.labels) == 2
 
-    def explain(self, test_instance, amount_of_examples):
-        probabilities_per_class = self.classifier.predict_proba([test_instance])[0]
-        sorted_indices = np.argsort(probabilities_per_class)
-        fact_class = sorted_indices[-1]
-        foil_class = sorted_indices[-2]
-        leafage_binary = self.get_one_vs_one(fact_class, foil_class)
-        return leafage_binary.explain(test_instance, fact_class, amount_of_examples)
-
+    def explain(self, test_instance, amount_of_examples, type="contrastive"):
+        if type=="contrastive" or self.is_binary():
+            probabilities_per_class = self.classifier.predict_proba([test_instance])[0]
+            sorted_indices = np.argsort(probabilities_per_class)
+            fact_class = sorted_indices[-1]
+            foil_class = sorted_indices[-2]
+            leafage_binary = self.get_one_vs_one(fact_class, foil_class)
+            return leafage_binary.explain(test_instance, fact_class, amount_of_examples)
+        else:
+            fact_class = self.classifier.predict([test_instance])[0]
+            return self.one_vs_rest[fact_class].explain(test_instance, fact_class, amount_of_examples)
 
 class LeafageBinary:
     # Static variables
