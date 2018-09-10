@@ -1,4 +1,6 @@
+import base64
 import random
+import string
 
 import numpy
 
@@ -16,6 +18,9 @@ import dill
 from flask import Flask, jsonify, request, abort, make_response
 
 from leafage.scenario import Scenario
+
+import plotly
+plotly.tools.set_credentials_file(username='riccardo.satta-TNO', api_key='VyxDB6UGALAq6MCEf26L')
 
 scenario_cache_dir = "cache/"
 
@@ -161,7 +166,41 @@ def explain():
 
     explanation = scenario.get_explanation(test_instance, nr_of_examples)
 
-    return jsonify({'explanation': explanation.to_json()}), 201
+    rnd_string = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(10))
+    f_name_feature_importance_img = scenario_cache_dir + "/" + rnd_string + "_feat.png"
+    f_name_examples_in_support_img = scenario_cache_dir + "/" + rnd_string + "_support.png"
+    f_name_examples_against_img = scenario_cache_dir + "/" + rnd_string + "_against.png"
+
+    explanation.visualize_feature_importance(amount_of_features=10,
+                                             target="write_to_file",
+                                             path=f_name_feature_importance_img)
+    explanation.visualize_examples(amount_of_features=10,
+                                   target="write_to_file",
+                                   path=f_name_examples_in_support_img,
+                                   type="examples_in_support")
+    explanation.visualize_examples(amount_of_features=10,
+                                   target="write_to_file",
+                                   path=f_name_examples_against_img,
+                                   type="examples_against")
+
+    with open(f_name_feature_importance_img, "rb") as image_file:
+        feature_importance_img_base64 = base64.b64encode(image_file.read())
+    os.remove(f_name_feature_importance_img)
+
+    with open(f_name_examples_in_support_img, "rb") as image_file:
+        examples_in_support_img_base64 = base64.b64encode(image_file.read())
+    os.remove(f_name_examples_in_support_img)
+
+    with open(f_name_examples_against_img, "rb") as image_file:
+        examples_against_img_base64 = base64.b64encode(image_file.read())
+    os.remove(f_name_examples_against_img)
+
+    explanation_dict = explanation.to_json()
+    explanation_dict['feature_importance_img_base64'] = feature_importance_img_base64
+    explanation_dict['examples_in_support_img_base64'] = examples_in_support_img_base64
+    explanation_dict['examples_against_img_base64'] = examples_against_img_base64
+
+    return jsonify({'explanation': explanation_dict}), 201
 
 
 if __name__ == '__main__':
