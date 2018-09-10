@@ -124,9 +124,19 @@ class Explanation:
 
     @staticmethod
     def __visualize_table_ff(amount_of_features, df, header_background_color):
-        color_scale = [[0, header_background_color], [.5, '#f2e5ff'], [1, '#ffffff']]
         df = df.iloc[:, 0:amount_of_features]
+
+        df = df.astype(str)
+        columns = list(df)
+        max_amount = 130/len(columns)
+        shorten = lambda row: [i[:max_amount - 1] + ".." if len(i) > max_amount else i for i in row]
+
+        df.apply(shorten)
+        df.columns = shorten(columns)
+
+        color_scale = [[0, header_background_color], [.5, '#f2e5ff'], [1, '#ffffff']]
         figure = ff.create_table(df, colorscale=color_scale)
+        figure.layout.width = 1000
         return figure
 
     @staticmethod

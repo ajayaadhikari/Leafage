@@ -169,6 +169,14 @@ def housing_from_use_cases():
     explanation.visualize_examples(target="write_to_file", path="../output/examples_against2.png", type="examples_against")
 
 
+def breast_cancer_from_use_cases():
+    scenario = Scenario("load_from_use_cases", "breast_cancer", "lr")
+    leafage = scenario.leafage
+    explanation = scenario.get_explanation(leafage.training_data.feature_vector[1], 5)
+    explanation.visualize_feature_importance(amount_of_features=10, target="write_to_file", path="../output/breast_cancer_feature_importance.png")
+    explanation.visualize_examples(amount_of_features=10,target="write_to_file", path="../output/breast_cancer_examples_in_support.png", type="examples_in_support")
+    explanation.visualize_examples(amount_of_features=10,target="write_to_file", path="../output/breast_cancer_examples_against.png", type="examples_against")
+
 def housing_from_file():
     scenario = Scenario("load_from_file", "../data/housing/pre_processed_train.csv", "lr")
     leafage = scenario.leafage
@@ -177,4 +185,4 @@ def housing_from_file():
 
 
 if __name__ == "__main__":
-    housing_from_use_cases()
+    breast_cancer_from_use_cases()
