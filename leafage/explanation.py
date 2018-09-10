@@ -117,6 +117,7 @@ class Explanation:
         jsonized = {'coefficients': list(self.coefficients),
                     'examples_against': self.examples_against.to_json(),
                     'examples_in_support': self.examples_in_support.to_json(),
+                    'feature_names': list(self.feature_names),
                     'fact_class': self.fact_class,
                     'foil_class': self.foil_class
                     }
