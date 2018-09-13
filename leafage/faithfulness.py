@@ -53,11 +53,11 @@ class Faithfulness:
             base_line_value = Counter(black_box_predictions)[prediction]/float(len(black_box_predictions))
             if base_line_value <= self.a:
                 f1_score_value = f1_score(black_box_predictions, local_predictions, average="macro")
-                base_line = base_line_value
+                base_line_f1_score = f1_score(black_box_predictions, np.array([prediction]*len(instances_within)), average="macro")
                 amount = len(instances_within)
                 break
 
-        return f1_score_value, base_line, amount
+        return f1_score_value, base_line_f1_score, amount
 
     def evaluate(self):
         f1 = []
