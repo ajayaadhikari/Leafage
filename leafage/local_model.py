@@ -1,5 +1,7 @@
 from collections import Counter
 
+from sklearn.metrics import f1_score
+
 from custom_exceptions import OneClassValues
 from utils.Evaluate import EvaluationMetrics
 from utils.MathFunctions import euclidean_distance
@@ -38,8 +40,7 @@ class LocalModel:
 
     def build_model(self):
         # Build local regression model
-        local_classifier = self.linear_classifier_type(**self.linear_classifier_variables)
-        local_classifier.fit(self.neighbourhood.instances, self.neighbourhood.labels, self.neighbourhood.weights)
+        local_classifier = self.get_classifier()
 
         # Move line such that it goes through the test instance
         moved_intercept = -1 * np.dot(self.instance_to_explain, np.transpose(local_classifier.coef_[0]))
@@ -55,6 +56,21 @@ class LocalModel:
                             (Distances.unbiased_distance_function, self.training_set)
 
         return Distances(self.instance_to_explain, linear_model, distance_to_enemy), linear_model
+
+    def get_classifier(self):
+        feature_vector, target_vector = self.neighbourhood.instances, self.neighbourhood.labels
+        C = [0.00001, 0.0001, 0.001, 0.01, 0.1, 0.5, 1, 5, 10, 50, 100, 500, 1000, 5000, 100000, 50000, 1000000]
+        max_f1_score = 0
+
+        for c_value in C:
+            svc = SVC(kernel="linear", C=c_value)
+            svc.fit(feature_vector, target_vector)
+            predicted_labels = svc.predict(feature_vector)
+            f1 = f1_score(target_vector, predicted_labels, average="macro")
+            if f1 > max_f1_score:
+                max_f1_score = f1
+                classifier = svc
+        return classifier
 
     def get_faithfulness(self):
         local_model_predictions = self.linear_model.get_predictions(self.neighbourhood.instances, pre_process=False)

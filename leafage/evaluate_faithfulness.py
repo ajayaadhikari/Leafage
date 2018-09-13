@@ -87,7 +87,7 @@ class EvaluateFaithfulness:
                 print("Classifier %s on dataset %s: only predicts one class" % (classifier_name, self.data.name))
 
         merged_df = pd.concat(dfs, ignore_index=True)
-        path = "../output/result_faithfulness/dataset_%s_%s.csv" % (self.data.name, self.train_size)
+        path = "../output/result_faithfulness/new_optimization_dataset_%s_%s.csv" % (self.data.name, self.train_size)
         merged_df.to_csv(path, index=False)
         return merged_df
 
@@ -185,7 +185,7 @@ def create_artificial_datasets():
 def faithfulness_data_sets():
     train_size = 0.7
     all_df = []
-    dataset_names = ["iris", "breast_cancer", "wine", "bank_note", "abalone", "digits"]
+    dataset_names = ["iris", "wine", "breast_cancer", "bank_note", "abalone", "digits"]
     for name in dataset_names:
         dataset = all_data_sets[name]()
         print("Dataset %s" % name)
