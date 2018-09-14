@@ -138,7 +138,6 @@ def get_allowed_values_per_feature():
     return jsonify(allowed_values), 201
 
 
-
 @app.route('/leafage/api/v1.0/explain', methods=['POST'])
 def explain():
     if not request.json:
@@ -185,14 +184,15 @@ def explain():
 
     with open(f_name_feature_importance_img, "rb") as image_file:
         feature_importance_img_base64 = base64.b64encode(image_file.read())
-    os.remove(f_name_feature_importance_img)
 
     with open(f_name_examples_in_support_img, "rb") as image_file:
         examples_in_support_img_base64 = base64.b64encode(image_file.read())
-    os.remove(f_name_examples_in_support_img)
 
     with open(f_name_examples_against_img, "rb") as image_file:
         examples_against_img_base64 = base64.b64encode(image_file.read())
+
+    os.remove(f_name_examples_in_support_img)
+    os.remove(f_name_feature_importance_img)
     os.remove(f_name_examples_against_img)
 
     explanation_dict = explanation.to_json()
