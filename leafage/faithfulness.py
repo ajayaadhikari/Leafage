@@ -1,26 +1,24 @@
 from collections import Counter
 
 import numpy as np
-import matplotlib.pyplot as plt
 
-from local_model import Distances, Neighbourhood
-from utils.Evaluate import EvaluationMetrics
+from local_model import Distances
+from sklearn.metrics import f1_score
 
 
 class Faithfulness:
     a = 0.95
+    radii = np.arange(0.05, 1.05, 0.05)
 
-    def __init__(self, test_set, test_predictions, function_get_local_model, radii, verbose=False):
+    def __init__(self, test_set, test_predictions, function_get_local_model, verbose=False):
         self.scale = lambda x: test_set.pre_process([x], scale=True)[0]
         self.test_set = test_set.feature_vector
         self.scaled_test_set = test_set.scaled_feature_vector
         self.test_predictions = test_predictions
         self.function_get_local_model = function_get_local_model
-        self.radii = radii
         self.verbose = verbose
 
-        self.average_f1_score_per_radius, self.std_f1_score_per_radius, \
-        self.average_base_line_per_radius, self.average_amount_per_radius = self.evaluate()
+        self.f1_score, self.baseline, self.amount = self.evaluate()
         if verbose:
             print(self)
 
@@ -50,33 +48,19 @@ class Faithfulness:
         normalized_distances = self.get_normalized_distances(instance)
         instances_within_radii = self.get_instances_within_radii(normalized_distances, radii)
 
-        f1_score = []
-        base_line = []
-        amount = []
         for instances_within, black_box_predictions in instances_within_radii:
             local_predictions = local_model.get_predictions(instances_within)
-            evaluation = EvaluationMetrics(black_box_predictions, local_predictions)
-            f1_score.append(evaluation.f1_score)
             base_line_value = Counter(black_box_predictions)[prediction]/float(len(black_box_predictions))
-            base_line.append(base_line_value)
-            amount.append(len(instances_within))
-
-        stop_index = -1
-        for i, base_line_value in zip(range(len(base_line)), base_line):
             if base_line_value <= self.a:
-                stop_index = i
+                f1_score_value = f1_score(black_box_predictions, local_predictions, average="macro")
+                base_line_f1_score = f1_score(black_box_predictions, np.array([prediction]*len(instances_within)), average="macro")
+                amount = len(instances_within)
                 break
 
-        if stop_index == -1:
-            print("Stop index is the last index")
-
-        base_line.append(EvaluationMetrics(instances_within_radii[stop_index][1], [prediction]*amount[stop_index]).f1_score)
-        f1_score.append(f1_score[stop_index])
-        amount.append(amount[stop_index])
-        return f1_score, base_line, amount
+        return f1_score_value, base_line_f1_score, amount
 
     def evaluate(self):
-        accuracy = []
+        f1 = []
         base_line = []
         amount = []
         i = 0
@@ -84,23 +68,9 @@ class Faithfulness:
             i += 1
             if self.verbose:
                 print("\t%s/%s" % (i, len(self.test_set)))
-            a, b, am = self.evaluate_instance(test_instance, prediction, self.radii)
-            accuracy.append(a)
+            f, b, am = self.evaluate_instance(test_instance, prediction, self.radii)
+            f1.append(f)
             base_line.append(b)
             amount.append(am)
 
-        average_f1_score_per_radius = np.mean(accuracy, axis=0)
-        std_f1_score_per_radius = np.std(accuracy, axis=0)
-        average_base_line_per_radius = np.mean(base_line, axis=0)
-        average_amount_per_radius = np.mean(amount, axis=0)
-
-        return average_f1_score_per_radius, std_f1_score_per_radius, average_base_line_per_radius, average_amount_per_radius
-
-    def plot(self):
-        plt.figure()
-        plt.scatter(self.radii, self.average_f1_score_per_radius)
-        plt.show()
-
-    def __str__(self):
-        return "Radii: %s\nAccuracy: %s\nStd: %s\nAmount: %s" % \
-               (self.radii, self.average_f1_score_per_radius, self.std_f1_score_per_radius, self.average_amount_per_radius)
+        return f1, base_line, amount

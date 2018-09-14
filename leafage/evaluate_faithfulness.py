@@ -9,9 +9,10 @@ from use_cases.all_use_cases import all_data_sets
 import numpy as np
 import pandas as pd
 from custom_exceptions import OneClassValues
-from sklearn.metrics import accuracy_score
+from sklearn.metrics import f1_score
 from sklearn.datasets import make_classification
-
+from sklearn.model_selection import GridSearchCV
+from sklearn.svm import SVC
 
 setup_blackbox_models = [("lr", {}), ("svc", {"kernel": "linear", "probability": True}), ("lda", {}),
                          ("rf", {}), ("dt", {}),
@@ -54,7 +55,13 @@ class EvaluateFaithfulness:
         classes = np.unique(self.data.target_vector)
         one_vs_all = {}
         for class_name in classes:
-            binary_labels = np.array([class_name if x == class_name else -1 for x in self.data.target_vector])
+            if len(classes) == 2:
+                binary_labels = self.data.target_vector
+                dataset_name = "%s vs %s" % tuple(self.data.target_vector_encoder.inverse_transform(classes))
+            else:
+                binary_labels = np.array([class_name if x == class_name else -1 for x in self.data.target_vector])
+                dataset_name = "%s vs rest" % self.data.target_vector_encoder.inverse_transform([class_name])[0]
+
             train, test, labels_train, labels_test = train_test_split(self.data.feature_vector,
                                                                       binary_labels,
                                                                       train_size=self.train_size,
@@ -62,7 +69,10 @@ class EvaluateFaithfulness:
                                                                       stratify=binary_labels)
             training_data = self.data.copy(train, labels_train)
             testing_data = self.data.copy(test, labels_test)
-            one_vs_all[class_name] = (training_data, testing_data)
+            one_vs_all[dataset_name] = (training_data, testing_data)
+
+            if len(classes) == 2:
+                break
 
         return one_vs_all
 
@@ -77,69 +87,95 @@ class EvaluateFaithfulness:
                 print("Classifier %s on dataset %s: only predicts one class" % (classifier_name, self.data.name))
 
         merged_df = pd.concat(dfs, ignore_index=True)
-        path = "../output/result_faithfulness/dataset_%s_%s.csv" % (self.data.name, self.train_size)
+        path = "../output/result_faithfulness/new_optimization_dataset_%s_%s.csv" % (self.data.name, self.train_size)
         merged_df.to_csv(path, index=False)
         return merged_df
 
     def get_faithfulness_classifier(self, classifier_name, classifier_variables):
-        radii = np.arange(0.05, 1.05, 0.05)
+        def get_separability(feature_vector, target_vector):
+            C = [0.00001, 0.0001, 0.001, 0.01, 0.1, 0.5, 1, 5, 10, 50, 100, 500, 1000, 5000, 100000, 50000, 1000000]
+            max_f1_score = 0
 
-        def combine(container):
-            f1_score = np.around(np.mean([x.average_f1_score_per_radius for x in container], axis=0), 2)
-            std = np.around(np.mean([x.std_f1_score_per_radius for x in container], axis=0), 2)
-            base_line = np.around(np.mean([x.average_base_line_per_radius for x in container], axis=0), 2)
-            amount = np.around(np.mean([x.average_amount_per_radius for x in container], axis=0), 2)
-            return [f1_score.tolist(), std.tolist(), base_line.tolist(), amount.tolist()]
+            for c_value in C:
+                svc = SVC(kernel="linear", C=c_value)
+                svc.fit(feature_vector, target_vector)
+                predicted_labels = svc.predict(feature_vector)
+                f1 = f1_score(target_vector, predicted_labels, average="macro")
+                if f1 > max_f1_score:
+                    max_f1_score = f1
 
-        def create_df(l_ce_all, l_cb_all, lime_all):
-            l_ce_all, l_cb_all, lime_all = combine(l_ce_all), combine(l_cb_all), combine(lime_all)
-            len_radii = len(radii)+1
-            amount_of_rows = len_radii*3
+            return max_f1_score
 
-            dataset_name_column = [self.data.name]*amount_of_rows
-            classifier_name_column = [classifier_name]*amount_of_rows
-            #classifier_variables_column = [str(classifier_variables)]*amount_of_rows
-            strategy_column = ["Leafage: closest enemy"]*len_radii + ["Leafage: closest boundary"]*len_radii + ["lime"]*len_radii
-            accuracy_column = l_ce_all[0] + l_cb_all[0] + lime_all[0]
-            std_column = l_ce_all[1] + l_cb_all[1] + lime_all[1]
-            base_line_column = l_ce_all[2] + l_cb_all[2] + lime_all[2]
-            radii_column = (radii.tolist()+[-1]) *3
-            amount_column = l_ce_all[3] + l_cb_all[3] + lime_all[3]
+        def create_df(dataset_sub_name, test_data,
+                      faithfulness_leafage_ce, faithfulness_leafage_cb,
+                      faithfulness_lime, classifier_f1_score, separability):
+            amount_per_strategy = len(test_data.feature_vector)
+            amount_of_rows = amount_per_strategy * 4
 
-            table = np.array([dataset_name_column, classifier_name_column, strategy_column,
-                     accuracy_column, std_column, base_line_column, radii_column, amount_column]).transpose()
-            column_names = ["Dataset name", "Classifier name", "Strategy",
-                            "f1_score", "std", "class_of_z", "radius", "amount in radius"]
+            dataset_name_column = [self.data.name] * amount_of_rows
+            dataset_sub_name_column = [dataset_sub_name] * amount_of_rows
+            classifier_name_column = [classifier_name] * amount_of_rows
+            classifier_variables_column = [str(classifier_variables)] * amount_of_rows
+            classifier_f1_score_column = [str(classifier_f1_score)] * amount_of_rows
+            separability_column = [str(separability)] * amount_of_rows
+            strategy_column = ["Leafage: Closest Enemy"]*amount_per_strategy + \
+                              ["Leafage: Closest Boundary"]*amount_per_strategy + \
+                              ["Lime"]*amount_per_strategy + \
+                              ["Baseline"]*amount_per_strategy
+            f1_score_column = faithfulness_leafage_ce.f1_score + faithfulness_leafage_cb.f1_score + \
+                              faithfulness_lime.f1_score + faithfulness_lime.baseline
+            amount_column = faithfulness_leafage_ce.amount * 4
+            total_amount_column = [str(amount_per_strategy)] * amount_of_rows
+
+            table = np.array([dataset_name_column, dataset_sub_name_column, classifier_name_column,
+                              classifier_variables_column, classifier_f1_score_column, separability_column,
+                              strategy_column, amount_column, total_amount_column, f1_score_column]).transpose()
+            column_names = ["Dataset Name", "Class vs Class", "Classifier Name",
+                            "Classifier Variables", "Local F1 Score", "Separability", "Strategy",
+                            "Amount within", "Total test amount", "F1 Score method"]
+
             return pd.DataFrame(data=table, columns=column_names)
 
-        leafage_ce_all = []
-        leafage_cb_all = []
-        lime_all = []
+        resulting_dfs = []
         i = 0
         for name in self.one_vs_rest.keys():
             i += 1
             print("\t\tOne vs one %s/%s %s:" % (i, len(self.one_vs_rest.keys()), name))
+
             training_data, test_data = self.one_vs_rest[name]
+            train_feature_vector = training_data.one_hot_encoded_feature_vector
+            test_feature_vector = test_data.one_hot_encoded_feature_vector
+
             classifier = train(classifier_name,
-                               training_data.one_hot_encoded_feature_vector,
+                               train_feature_vector,
                                training_data.target_vector,
                                classifier_variables)
-            predicted_training_labels = classifier.predict(training_data.one_hot_encoded_feature_vector)
+            predicted_training_labels = classifier.predict(train_feature_vector)
+            predicted_test_labels = classifier.predict(test_feature_vector)
 
-            test_accuracy = accuracy_score(test_data.target_vector, classifier.predict(test_data.one_hot_encoded_feature_vector))
-            print("\t\tBlack-box test accuracy: %s" % test_accuracy)
+            if len(np.unique(predicted_training_labels)) <= 1 or len(np.unique(predicted_test_labels)) <= 1:
+                raise OneClassValues()
+
+            classifier_f1_score = f1_score(test_data.target_vector,
+                                           predicted_test_labels, average="macro")
+            separability = get_separability(test_feature_vector,
+                                            predicted_test_labels)
+            print("\t\tBlack-box test f1_score: %s" % classifier_f1_score)
+            print("\t\tSeparability: %s" % separability)
 
             leafage_ce = LeafageBinary(training_data, predicted_training_labels, self.random_state, "closest_enemy")
             leafage_cb = LeafageBinary(training_data, predicted_training_labels, self.random_state, "closest_boundary")
             lime = WrapperLime(training_data, classifier.predict_proba)
 
-            predicted_test_labels = classifier.predict(test_data.one_hot_encoded_feature_vector)
+            faithfulness_leafage_ce = Faithfulness(test_data, predicted_test_labels, leafage_ce.get_local_model)
+            faithfulness_leafage_cb = Faithfulness(test_data, predicted_test_labels, leafage_cb.get_local_model)
+            faithfulness_lime = Faithfulness(test_data, predicted_test_labels, lime.get_local_model)
 
-            lime_all.append(Faithfulness(test_data, predicted_test_labels, lime.get_local_model, radii))
-            leafage_ce_all.append(Faithfulness(test_data, predicted_test_labels, leafage_ce.get_local_model, radii))
-            leafage_cb_all.append(Faithfulness(test_data, predicted_test_labels, leafage_cb.get_local_model, radii))
+            resulting_dfs.append(create_df(name, test_data,
+                                           faithfulness_leafage_ce, faithfulness_leafage_cb,
+                                           faithfulness_lime, classifier_f1_score, separability))
 
-        return create_df(leafage_ce_all, leafage_cb_all, lime_all)
+        return pd.concat(resulting_dfs, ignore_index=True)
 
 
 def create_artificial_datasets():
@@ -149,7 +185,7 @@ def create_artificial_datasets():
 def faithfulness_data_sets():
     train_size = 0.7
     all_df = []
-    dataset_names = ["iris", "wine", "breast_cancer", "digits"]
+    dataset_names = ["iris", "wine", "breast_cancer", "bank_note", "abalone", "digits"]
     for name in dataset_names:
         dataset = all_data_sets[name]()
         print("Dataset %s" % name)
@@ -185,4 +221,4 @@ def housing_from_file():
 
 
 if __name__ == "__main__":
-    breast_cancer_from_use_cases()
+    faithfulness_data_sets()
