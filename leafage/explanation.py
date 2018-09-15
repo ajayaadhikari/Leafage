@@ -129,15 +129,21 @@ class Explanation:
 
         df = df.astype(str)
         columns = list(df)
-        max_amount = 130/len(columns)
-        shorten = lambda row: [i[:max_amount - 1] + ".." if len(i) > max_amount else i for i in row]
+        max_amount = 110/len(columns)
+        shorten = lambda row: [i[:max_amount - 4] + "..." if len(i) > max_amount else i for i in row]
 
         df.apply(shorten)
         df.columns = shorten(columns)
 
         color_scale = [[0, header_background_color], [.5, '#f2e5ff'], [1, '#ffffff']]
         figure = ff.create_table(df, colorscale=color_scale)
+
         figure.layout.width = 1000
+
+        for i in range(len(figure.layout.annotations)):
+            figure.layout.annotations[i].font.size = 16
+
+
         return figure
 
     @staticmethod
