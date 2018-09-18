@@ -41,13 +41,13 @@ def not_found(error):
 @app.route('/leafage/api/v1.0/get_available_datasets', methods=['GET'])
 def get_available_datasets():
     all_ds = list(all_data_sets.keys())
-    return jsonify({'available_datasets': all_ds}), 201
+    return jsonify({'list': all_ds}), 201
 
 
 @app.route('/leafage/api/v1.0/get_available_classifiers', methods=['GET'])
 def get_available_classifiers():
     all_c = list(possible_classifiers.keys())
-    return jsonify({'available_datasets': all_c}), 201
+    return jsonify({'list': all_c}), 201
 
 
 @app.route('/leafage/api/v1.0/initiate_scenario', methods=['POST'])
@@ -62,6 +62,10 @@ def initiate_scenario():
     classifier_name = request.json['classifier_name']
     classifier_hyper_parameters = request.json.get('classifier_hyper_parameters',
                                                    default_params['classifier_hyper_parameters'])
+
+    if classifier_name == 'svc':
+        classifier_hyper_parameters['probability'] = True
+
     random_state = request.json.get('random_state',
                                     default_params['random_state'])
     neighbourhood_sampling_strategy = request.json.get('neighbourhood_sampling_strategy',
@@ -84,7 +88,7 @@ def initiate_scenario():
     scenario_fname = scenario_cache_dir + ("/" if scenario_cache_dir[-1] is not "/" else "") + scenario_ID + ".dill"
 
     if os.path.isfile(scenario_fname) and not force_regenerate:
-        message = 'A scenario with that ID exists already. You can force regenerating the scenario ' \
+        message = 'A scenario with that ID has been found in the cache and loaded. You can force regenerating the scenario ' \
                   'by setting \'force_regenerate\':true'
         scenario = dill.load(open(scenario_fname, "rb"))
     else:
