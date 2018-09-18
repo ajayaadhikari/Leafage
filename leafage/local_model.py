@@ -40,7 +40,8 @@ class LocalModel:
 
     def build_model(self):
         # Build local regression model
-        local_classifier = self.get_classifier()
+        local_classifier = self.linear_classifier_type(**self.linear_classifier_variables)
+        local_classifier.fit(self.neighbourhood.instances, self.neighbourhood.labels, self.neighbourhood.weights)
 
         # Move line such that it goes through the test instance
         moved_intercept = -1 * np.dot(self.instance_to_explain, np.transpose(local_classifier.coef_[0]))
