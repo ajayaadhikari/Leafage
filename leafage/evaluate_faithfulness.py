@@ -200,7 +200,7 @@ def create_artificial_datasets():
 
 
 def faithfulness_data_sets():
-    train_size = 0.95
+    train_size = 0.7
     all_df = []
     real_datasets = [all_data_sets[name]() for name in ["iris", "wine", "breast_cancer", "bank_note", "abalone"]]
     artifical_datasets = create_artificial_datasets()
