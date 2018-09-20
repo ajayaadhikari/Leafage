@@ -76,18 +76,20 @@ class Leafage:
             fact_class = self.classifier.predict([test_instance])[0]
             return self.one_vs_rest[fact_class].explain(test_instance, fact_class, amount_of_examples)
 
+
 class LeafageBinary:
     # Static variables
     distance_measure = euclidean_distance
     linear_classifier = LogisticRegression
     linear_classifier_variables = {}
 
-    def __init__(self, training_data, predicted_labels, random_state, neighbourhood_sampling_strategy):
+    def __init__(self, training_data, predicted_labels, random_state, neighbourhood_sampling_strategy, i=None):
         self.training_data = training_data
 
         self.predicted_labels = predicted_labels
         self.random_state = random_state
         self.neighbourhood_sampling_strategy = neighbourhood_sampling_strategy
+        self.i = i
 
     def explain(self, test_instance, test_instance_prediction, amount_of_examples=10):
         test_instance = np.array(test_instance)
@@ -105,7 +107,8 @@ class LeafageBinary:
                                  scaled_training_set,
                                  self.predicted_labels,
                                  pre_process,
-                                 self.neighbourhood_sampling_strategy)
+                                 self.neighbourhood_sampling_strategy,
+                                 i=self.i)
 
         # Get the closest instances
         indices_examples_in_support, _ = \
