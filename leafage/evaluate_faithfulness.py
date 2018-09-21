@@ -94,7 +94,7 @@ class EvaluateFaithfulness:
                 print("Classifier %s on dataset %s: only predicts one class" % (classifier_name, self.data.name))
 
         merged_df = pd.concat(dfs, ignore_index=True)
-        path = "../output/result_faithfulness/new_optimization_dataset_%s_%s_i_%s.csv" % (self.data.name, self.train_size, i)
+        path = "../output/result_faithfulness/parallel_new_optimization_dataset_%s_%s_i_%s.csv" % (self.data.name, self.train_size, i)
         merged_df.to_csv(path, index=False)
         return merged_df
 
