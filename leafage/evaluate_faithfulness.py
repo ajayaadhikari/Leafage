@@ -14,6 +14,9 @@ from sklearn.datasets import make_classification
 from sklearn.svm import SVC
 from use_cases.data import Data
 
+from joblib import Parallel, delayed
+import multiprocessing
+
 setup_blackbox_models = [("lr", {}), ("svc", {"kernel": "linear", "probability": True}), ("lda", {}),
                          ("rf", {"n_estimators":10}), ("rf", {"n_estimators":50}),
                          ("rf", {"n_estimators":100}), ("rf", {"n_estimators":150}),
@@ -191,12 +194,41 @@ def create_artificial_datasets():
     datasets = []
     random_state = 11
     amount_of_features = 2
-    for i in np.arange(0.1,1.1,0.1):
+    for i in np.arange(0.1, 1, 0.3):
         X, y = make_classification(n_samples=600, n_features=2, n_redundant=0,
                                    n_informative=2, class_sep=i, random_state=random_state)
         dataset = Data(X, y, range(amount_of_features), name="Separability: %s" % i)
         datasets.append(dataset)
     return datasets
+
+
+def faithfulness_data_sets_parallel():
+    train_size = 0.7
+    real_datasets = [all_data_sets[name]() for name in ["iris", "wine", "breast_cancer", "bank_note", "abalone"]]
+    artificial_datasets = create_artificial_datasets()
+    datasets = artificial_datasets + real_datasets
+
+    def processInput(i):
+        dfs = []
+        for dataset in datasets:
+            print("Dataset %s" % dataset.name)
+            faithfulness = EvaluateFaithfulness(dataset, train_size).get_faithfulness(i)
+            dfs.append(faithfulness)
+
+        dfs = pd.concat(dfs, ignore_index=True)
+        path = "../output/result_faithfulness/parallel_faithfulness_i_%s.csv" % i
+        dfs.to_csv(path, index=False)
+        return dfs
+
+    inputs = [1, 2, 5, 10, 20, 50]
+
+    num_cores = multiprocessing.cpu_count()
+
+    all_df = Parallel(n_jobs=num_cores)(delayed(processInput)(i) for i in inputs)
+
+    all_df = pd.concat(all_df, ignore_index=True)
+    path = "../output/result_faithfulness/parallel_faithfulness.csv"
+    all_df.to_csv(path, index=False)
 
 
 def faithfulness_data_sets():
@@ -205,7 +237,7 @@ def faithfulness_data_sets():
     real_datasets = [all_data_sets[name]() for name in ["iris", "wine", "breast_cancer", "bank_note", "abalone"]]
     artifical_datasets = create_artificial_datasets()
     datasets = artifical_datasets + real_datasets
-    for i in range(1, 20):
+    for i in range(1, 20, 3):
         current_i = []
         for dataset in datasets:
             print("Dataset %s" % dataset.name)
@@ -248,4 +280,4 @@ def housing_from_file():
 
 
 if __name__ == "__main__":
-    faithfulness_data_sets()
+    faithfulness_data_sets_parallel()
