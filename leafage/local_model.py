@@ -196,8 +196,8 @@ class Neighbourhood:
 
     def get_neighbourhood_of_closest_boundary(self, training_set, black_box_labels, i=3):
         d = len(training_set[0])
-        amount_per_class_big_neighbourhood = 15*d
-        amount_per_class_small_neighbourhood = 3*d
+        amount_per_class_big_neighbourhood = 3*i*d
+        amount_per_class_small_neighbourhood = i*d
         unbiased_distance = Distances.unbiased_distance_function
 
         closest_enemy = Neighbourhood.get_closest_enemy_instance(training_set, black_box_labels, unbiased_distance, self.instance_to_explain, self.prediction)
