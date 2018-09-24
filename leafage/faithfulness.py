@@ -4,6 +4,8 @@ import numpy as np
 
 from local_model import Distances
 from sklearn.metrics import f1_score
+from sklearn.metrics import roc_auc_score
+from sklearn.preprocessing import LabelEncoder
 
 
 class Faithfulness:
@@ -18,7 +20,7 @@ class Faithfulness:
         self.function_get_local_model = function_get_local_model
         self.verbose = verbose
 
-        self.f1_score, self.baseline, self.amount = self.evaluate()
+        self.auc, self.f1, self.base_line_f1, self.base_line_auc, self.amount = self.evaluate()
         if verbose:
             print(self)
 
@@ -54,23 +56,33 @@ class Faithfulness:
             if base_line_value <= self.a:
                 f1_score_value = f1_score(black_box_predictions, local_predictions, average="macro")
                 base_line_f1_score = f1_score(black_box_predictions, np.array([prediction]*len(instances_within)), average="macro")
+
+                scores = local_model.get_scores(instances_within)
+                auc_value = roc_auc_score(black_box_predictions, scores)
+                base_line_auc_value = roc_auc_score(black_box_predictions, np.array([prediction]*len(instances_within)))
                 amount = len(instances_within)
                 break
 
-        return f1_score_value, base_line_f1_score, amount
+        return auc_value, f1_score_value, base_line_f1_score, base_line_auc_value,  amount
 
     def evaluate(self):
+        auc = []
         f1 = []
-        base_line = []
+        base_line_f1 = []
+        base_line_auc = []
         amount = []
         i = 0
+
         for test_instance, prediction in zip(self.test_set, self.test_predictions):
             i += 1
             if self.verbose:
                 print("\t%s/%s" % (i, len(self.test_set)))
-            f, b, am = self.evaluate_instance(test_instance, prediction, self.radii)
-            f1.append(f)
-            base_line.append(b)
-            amount.append(am)
+            auc_value, f1_score_value, base_line_f1_score, base_line_auc_value, amount_value = \
+                self.evaluate_instance(test_instance, prediction, self.radii)
+            auc.append(auc_value)
+            f1.append(f1_score_value)
+            base_line_f1.append(base_line_f1_score)
+            base_line_auc.append(base_line_auc_value)
+            amount.append(amount_value)
 
-        return f1, base_line, amount
+        return auc, f1, base_line_f1, base_line_auc, amount

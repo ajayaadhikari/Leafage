@@ -16,7 +16,7 @@ class LocalModel:
 
     def __init__(self, instance_to_explain, prediction, training_set,
                  black_box_labels, pre_process, neighbourhood_strategy,
-                 data_preprocessed=True):
+                 data_preprocessed=True, i=None):
 
         if len(np.unique(black_box_labels)) <= 1:
             raise OneClassValues()
@@ -32,7 +32,7 @@ class LocalModel:
         self.neighbourhood_strategy = neighbourhood_strategy
 
         self.neighbourhood = Neighbourhood(self.instance_to_explain, self.prediction,
-                                           self.training_set, self.black_box_labels, strategy=neighbourhood_strategy)
+                                           self.training_set, self.black_box_labels, strategy=neighbourhood_strategy, i=i)
         self.valid = self.neighbourhood.valid
         if self.valid:
             self.distances, self.linear_model = self.build_model()
@@ -108,14 +108,30 @@ class LinearModel:
 
         return local_model_predictions
 
+    def get_scores(self, instances, pre_process=True):
+        """
+            Get the predictions made by the local_model on the instances in the given neighbourhood
+        """
+        if pre_process:
+            instances = self.pre_process(instances)
+
+        local_model_scores = []
+        for instance in instances:
+            regression_value = np.dot(np.array(self.coefficients), np.array(instance)) + self.original_intercept
+            local_model_scores.append(regression_value)
+
+        return local_model_scores
+
 
 class Neighbourhood:
     min_weight = 0.01
 
-    def __init__(self, instance_to_explain, prediction, training_set, black_box_labels, sigma=15, strategy="closest_boundary"):
+    def __init__(self, instance_to_explain, prediction, training_set, black_box_labels, strategy="closest_boundary", i=3):
+        if i is None:
+            i = 3
+
         self.instance_to_explain = instance_to_explain
         self.prediction = prediction
-        self.sigma = sigma
 
         classes = np.array(sorted(np.unique(black_box_labels)))
         self.enemy_class = classes[classes != self.prediction][0]
@@ -124,12 +140,10 @@ class Neighbourhood:
             get_neighbourhood = self.get_neighbourhood_around_closest_enemy
         elif strategy == "closest_boundary":
             get_neighbourhood = self.get_neighbourhood_of_closest_boundary
-        elif strategy == "lime":
-            get_neighbourhood = self.get_neighbourhood_oud
         else:
             raise ValueError("%s not supported" % strategy)
 
-        self.instances, self.labels, self.weights = get_neighbourhood(training_set, black_box_labels)
+        self.instances, self.labels, self.weights = get_neighbourhood(training_set, black_box_labels, i=i)
         self.valid = self.is_valid()
 
     def get_neighbourhood_oud(self, training_feature_vector, black_box_labels):
@@ -148,7 +162,7 @@ class Neighbourhood:
 
         return neighbourhood, neighbourhood_labels, neighbourhood_weights
 
-    def get_neighbourhood_around_closest_enemy(self, training_set, black_box_labels, amount_per_class=None):
+    def get_neighbourhood_around_closest_enemy(self, training_set, black_box_labels, i=3):
         unbiased_distance = Distances.unbiased_distance_function
 
         closest_enemy = Neighbourhood.get_closest_enemy_instance(training_set, black_box_labels, unbiased_distance, self.instance_to_explain, self.prediction)
@@ -157,8 +171,7 @@ class Neighbourhood:
         distances = np.array(map(lambda x: unbiased_distance(x, closest_enemy), training_set))
 
         # Amount per party: number of dimension
-        if amount_per_class is None:
-            amount_per_class = 3*len(training_set[0])
+        amount_per_class = i*len(training_set[0])
 
         # Get the indices of each label
         indices_label_0 = np.where(black_box_labels == self.prediction)
@@ -181,9 +194,10 @@ class Neighbourhood:
 
         return neighbourhood, neighbourhood_labels, weights
 
-    def get_neighbourhood_of_closest_boundary(self, training_set, black_box_labels,):
-        amount_per_class_big_neighbourhood = 15*len(training_set[0])
-        amount_per_class_small_neighbourhood = 3*len(training_set[0])
+    def get_neighbourhood_of_closest_boundary(self, training_set, black_box_labels, i=3):
+        d = len(training_set[0])
+        amount_per_class_big_neighbourhood = 3*i*d
+        amount_per_class_small_neighbourhood = i*d
         unbiased_distance = Distances.unbiased_distance_function
 
         closest_enemy = Neighbourhood.get_closest_enemy_instance(training_set, black_box_labels, unbiased_distance, self.instance_to_explain, self.prediction)
