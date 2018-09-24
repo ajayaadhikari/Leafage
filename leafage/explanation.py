@@ -129,7 +129,7 @@ class Explanation:
 
         df = df.astype(str)
         columns = list(df)
-        max_amount = 110/len(columns)
+        max_amount = 135/len(columns)
         shorten = lambda row: [i[:max_amount - 4] + "..." if len(i) > max_amount else i for i in row]
 
         df.apply(shorten)
@@ -141,8 +141,7 @@ class Explanation:
         figure.layout.width = 1000
 
         for i in range(len(figure.layout.annotations)):
-            figure.layout.annotations[i].font.size = 16
-
+            figure.layout.annotations[i].font.size = 13
 
         return figure
 

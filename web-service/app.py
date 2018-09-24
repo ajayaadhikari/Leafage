@@ -121,7 +121,29 @@ def get_random_data_point_from_dataset():
         abort(400, 'The provided scenario_ID does not exist.')
 
     scenario = dill.load(open(scenario_fname, "rb"))
-    return jsonify(list(random.choice(scenario.data.feature_vector))), 201
+
+    # return jsonify(list(random.choice(scenario.data.feature_vector)), 201)
+    rnd_index = random.randint(1, len(scenario.data.target_vector))
+
+    print("label is " +  str(scenario.data.target_vector[rnd_index]))
+    return jsonify(list(scenario.data.feature_vector[rnd_index])), 201
+
+
+@app.route('/leafage/api/v1.0/get_random_data_point_with_label_from_dataset', methods=['POST'])
+def get_random_data_point_with_label_from_dataset():
+    scenario_ID = request.json['scenario_ID']
+    scenario_fname = scenario_cache_dir + ("/" if scenario_cache_dir[-1] is not "/" else "") + scenario_ID + ".dill"
+
+    if not os.path.isfile(scenario_fname):
+        abort(400, 'The provided scenario_ID does not exist.')
+
+    scenario = dill.load(open(scenario_fname, "rb"))
+
+    rnd_index = random.randint(1, len(scenario.data.target_vector))
+
+    return jsonify({'data_point': list(scenario.data.feature_vector[rnd_index]),
+                    'label': scenario.data.target_vector[rnd_index]
+                    }), 201
 
 
 @app.route('/leafage/api/v1.0/get_allowed_values_per_feature', methods=['POST'])

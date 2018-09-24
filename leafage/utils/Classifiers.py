@@ -1,3 +1,5 @@
+import pickle
+
 from sklearn.ensemble import RandomForestClassifier, VotingClassifier, GradientBoostingClassifier, AdaBoostClassifier
 from sklearn.linear_model import LogisticRegression
 from sklearn.naive_bayes import GaussianNB, BernoulliNB
@@ -18,18 +20,29 @@ possible_classifiers = {"knn": KNeighborsClassifier,
                         "dt": DecisionTreeClassifier,
                         "svc": SVC,
                         "lr": LogisticRegression,
-                        "mlp": MLPClassifier}
+                        "mlp": MLPClassifier,
+                        "stored_model_mlp.pkl": None}
 
 
 def train(name_classifier, features_train, labels_train, variables={}, verbose=False):
     if verbose:
         print("Training ||%s|| with variables %s" % (name_classifier, variables))
 
-    if name_classifier not in possible_classifiers.keys():
-        raise(ValueError, "Classifier %s not support choose from: %s" % (name_classifier, possible_classifiers.keys()))
-    elif variables is None:
-        variables = {}
+    if name_classifier.startswith("stored_model_"):
+        sklearn_fname = name_classifier.replace("stored_model_", "")
+        with open('../data/' + sklearn_fname, 'rb') as f:
+            print("loading classifier: " + sklearn_fname)
+            #with open(sklearn_fname, 'rb') as f:
+            classifier = pickle.load(f)
+    else:
 
-    classifier = possible_classifiers[name_classifier](**variables)
-    classifier.fit(features_train, labels_train)
+        if name_classifier not in possible_classifiers.keys():
+            raise(ValueError, "Classifier %s not support choose from: %s" % (name_classifier, possible_classifiers.keys()))
+        elif variables is None:
+            variables = {}
+
+        classifier = possible_classifiers[name_classifier](**variables)
+        classifier.fit(features_train, labels_train)
+        # with open('../data/' + name_classifier + '.pkl', 'wb') as f:
+        #      pickle.dump(classifier, f)
     return classifier
