@@ -2,7 +2,7 @@ import pandas as pd
 from numpy import genfromtxt
 import numpy as np
 
-from leafage.use_cases.data import Data
+from data import Data
 
 
 class Diabetes(Data):

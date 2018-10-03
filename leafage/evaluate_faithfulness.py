@@ -259,9 +259,11 @@ def housing_from_use_cases():
     scenario = Scenario("load_from_use_cases", "housing", "lr")
     leafage = scenario.leafage
     explanation = scenario.get_explanation(leafage.training_data.feature_vector[1], 5)
-    explanation.visualize_feature_importance(amount_of_features=10, target="write_to_file", path="../output/feature_importance2.png")
-    explanation.visualize_examples(target="write_to_file", path="../output/examples_in_support2.png", type="examples_in_support")
-    explanation.visualize_examples(target="write_to_file", path="../output/examples_against2.png", type="examples_against")
+    #explanation.visualize_feature_importance(amount_of_features=10, target="write_to_file", path="../output/feature_importance2.png")
+    #explanation.visualize_examples(target="write_to_file", path="../output/examples_in_support2.png", type="examples_in_support")
+    #explanation.visualize_examples(target="write_to_file", path="../output/examples_against2.png", type="examples_against")
+    #explanation.visualize_examples(target="write_to_file", path="../output/examples_both.png", type="both")
+    explanation.visualize_leafage(path="../output/all.png")
 
 
 def breast_cancer_from_use_cases():
@@ -280,4 +282,4 @@ def housing_from_file():
 
 
 if __name__ == "__main__":
-    faithfulness_data_sets_parallel()
+    housing_from_use_cases()
