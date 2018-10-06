@@ -13,6 +13,7 @@ from sklearn.metrics import f1_score
 from sklearn.datasets import make_classification
 from sklearn.svm import SVC
 from use_cases.data import Data
+import matplotlib.pyplot as plt
 
 from joblib import Parallel, delayed
 import multiprocessing
@@ -202,6 +203,77 @@ def create_artificial_datasets():
     return datasets
 
 
+def create_artificial_datasets_varying_dimensions():
+    datasets = []
+    random_state = 11
+    separability = 0.7
+    for d in range(2, 50, 5):
+        X, y = make_classification(n_samples=600, n_features=d, n_redundant=0,
+                                   n_informative=d, class_sep=separability, random_state=random_state)
+        dataset = Data(X, y, range(d), name="Varying Dimension: %s" % d)
+        datasets.append(dataset)
+    return datasets
+
+
+def create_artificial_dataset():
+    random_state = 12
+    np.random.seed(random_state)
+    amount = 250
+    X1 = np.random.multivariate_normal([0, 0], [[2, 0], [0, 2]], amount).tolist()
+    X2 = np.random.multivariate_normal([1, 0], [[2, 0], [0, 2]], amount).tolist()
+    y = np.array([0] * amount + [1] * amount)
+    X = np.array(X1 + X2)
+
+    plt.scatter(X[:, 0], X[:, 1], marker='o', c=y)
+    plt.show()
+
+    def plot():
+        plt.scatter(X[:,0], X[:,1], marker="o", c=y)
+
+        xmin, xmax, ymin, ymax = -4, 5, -4, 5
+        x_spacing = np.linspace(xmin, xmax, (xmax - xmin) * 30)
+        y_spacing = np.linspace(ymin, ymax, (ymax - ymin) * 30)
+
+        plt.xlim([xmin, xmax])
+        plt.ylim([ymin, ymax])
+        xx, yy = np.meshgrid(x_spacing, y_spacing)
+
+        from sklearn.neighbors import KNeighborsClassifier
+
+        classifier = KNeighborsClassifier(n_neighbors=10)
+        classifier.fit(X,y)
+
+        Z = classifier.predict(np.c_[xx.ravel(), yy.ravel()])
+        Z = Z.reshape(xx.shape)
+
+        #plt.contourf(xx, yy, Z, alpha=0.4)
+        plt.contour(xx, yy, Z, alpha=0.4, level=[0])
+        plt.show()
+
+    return Data(X, y, np.array([0,1]), name="non_separable_dataset")
+
+
+def faithfulness_data_sets_varying_dimensions():
+    train_size = 0.7
+    i = 3
+    datasets = create_artificial_datasets_varying_dimensions()
+
+    def processInput(j):
+        dataset = datasets[j]
+        print("Dataset %s" % dataset.name)
+        df = EvaluateFaithfulness(dataset, train_size).get_faithfulness(i)
+        return df
+
+    num_cores = multiprocessing.cpu_count()
+    inputs = range(len(datasets))
+
+    all_df = Parallel(n_jobs=num_cores)(delayed(processInput)(i) for i in inputs)
+
+    all_df = pd.concat(all_df, ignore_index=True)
+    path = "../output/result_faithfulness/parallel_faithfulness_varying_dimensions.csv"
+    all_df.to_csv(path, index=False)
+
+
 def faithfulness_data_sets_parallel():
     train_size = 0.7
     real_datasets = [all_data_sets[name]() for name in ["iris", "wine", "breast_cancer", "bank_note", "abalone"]]
@@ -273,6 +345,7 @@ def breast_cancer_from_use_cases():
     explanation.visualize_feature_importance(amount_of_features=10, target="write_to_file", path="../output/breast_cancer_feature_importance.png")
     explanation.visualize_examples(amount_of_features=10,target="write_to_file", path="../output/breast_cancer_examples_in_support.png", type="examples_in_support")
     explanation.visualize_examples(amount_of_features=10,target="write_to_file", path="../output/breast_cancer_examples_against.png", type="examples_against")
+
 
 def housing_from_file():
     scenario = Scenario("load_from_file", "../data/housing/pre_processed_train.csv", "lr")
