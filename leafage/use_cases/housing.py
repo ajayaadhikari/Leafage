@@ -77,12 +77,12 @@ not_used_columns = ["Id", "Condition1", "Condition2", "Neighborhood", "RoofMatl"
 
 new_columns = ["Amount Bathrooms", "Amount Toilets"]
 useful_numerical_columns = dict([("LotArea", "Total Area"),
-                                 ("OverallQual", "Overall Quality (1-10)"),
-                                 ("OverallCond", "Overall Condition (1-10)"),
+                                 ("OverallQual", "Overall Quality(1-10)"),
+                                 ("OverallCond", "Overall Condition(1-10)"),
                                  ("YearBuilt", "Year Built"),
                                  ("YearRemodAdd", "Year Renovation"),
-                                 ("ExterQual", "Quality Exterior Material (1-5)"),
-                                 ("ExterCond", "Condition Exterior Material (1-5)"),
+                                 ("ExterQual", "Quality Exterior(1-5)"),
+                                 ("ExterCond", "Condition Exterior(1-5)"),
                                  ("TotalBsmtSF", "Basement Area"),
                                  ("HeatingQC", "Heating Condition"),
                                  ("GrLivArea", "Living Area"),
@@ -179,10 +179,10 @@ categorical_values = dict([("Street",       dict([("Grvl", "Gravel"),
                                                   ("Low", "Not flat")
                                                   ])
                             ),
-                           ("Utilities",    dict([("AllPub", "Electricity, Gas and Water"),
-                                                  ("NoSewr", "Electricity, Gas and Water"),
-                                                  ("NoSeWa", "Electricity and Gas only"),
-                                                  ("ELO", "Electricity only"),
+                           ("Utilities",    dict([("AllPub", "Elec., Gas and Water"),
+                                                  ("NoSewr", "Elec., Gas and Water"),
+                                                  ("NoSeWa", "Elec. and Gas only"),
+                                                  ("ELO", "Elec. only"),
                                                   ])
                             ),
                            ("LotConfig",    dict([("Inside", "Inside"),
