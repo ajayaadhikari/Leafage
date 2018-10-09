@@ -23,6 +23,7 @@ class Explanation:
         self.fact_class = fact_class
         self.foil_class = foil_class
         self.feature_names = feature_names
+        self.original_order_test_instance = pd.Series(test_instance, index=feature_names)
 
         self.local_model = local_model
         self.__sort_columns_according_to_importance()
@@ -65,6 +66,11 @@ class Explanation:
         figure = self.__visualize_all(amount_of_features)
         self.__export(figure, "write_to_file", path)
 
+    def visualize_instance(self, path=None):
+        self.__set_plotly_imports()
+        figure = self.__visualize_instance(self.original_order_test_instance)
+        self.__export(figure, "write_to_file", path)
+
     def __export(self, figure, target, path):
         if target == "notebook":
             self.__visualize_notebook(figure)
@@ -98,28 +104,33 @@ class Explanation:
 
         trace_positive = go.Bar(x=x_values[indices_positive],
                                 y=coefficients[indices_positive],
-                                marker=dict(color="green"),
-                                name="Supports %s" % self.fact_class)
+                                marker=dict(color=self.color_examples_in_support),
+                                name="Supports %s" % self.fact_class,
+                                width=[0.8]*len(indices_positive))
         trace_negative = go.Bar(x=x_values[indices_negative],
                                 y=coefficients[indices_negative],
-                                marker=dict(color="red"),
-                                name="Supports %s" % self.foil_class)
+                                marker=dict(color=self.color_examples_against),
+                                name="Supports %s" % self.foil_class,
+                                width=[0.8] * len(indices_negative))
 
         data = [trace_positive, trace_negative]
         layout = go.Layout(title="The top %s most important features for the classification" % amount_of_features,
                            yaxis=dict(title='Importance'),
-                           xaxis=dict(title="Features", categoryorder="array", categoryarray=x_values))
+                           xaxis=dict(title="Features", categoryorder="array", categoryarray=x_values),
+                           showlegend=True,
+                           bargap=0.9)
         figure = go.Figure(data=data, layout=layout)
         return figure
 
     def __set_plotly_imports(self):
         if not self.plotly_imports_set:
-            global py, go, ff, iplot, download_plotlyjs, init_notebook_mode, tools
+            global py, go, ff, iplot, download_plotlyjs, init_notebook_mode, tools, pio
             from plotly.offline import download_plotlyjs, iplot, init_notebook_mode
             import plotly.plotly as py
             import plotly.graph_objs as go
             import plotly.figure_factory as ff
             from plotly import tools
+            #import plotly.io as pio
             self.plotly_imports_set = True
 
     def to_json(self):
@@ -191,18 +202,20 @@ class Explanation:
                                                             self.color_examples_in_support)
         table_against = self.__visualize_table_ff(amount_of_features, self.examples_against,
                                                          self.color_examples_against)
-        feature_importance = self.__visualize_feature_importance(amount_of_features)
+        feature_importance = self.__visualize_feature_importance(amount_of_features=amount_of_features)
 
-        title_in_support = 'Examples in support of prediction <b>%s</b>' % self.fact_class
-        title_against = 'Most relevant counter-examples from class <b>%s</b>' % self.foil_class
+        title_in_support = 'Most similar houses with value %s' % self.fact_class
+        title_against = 'Most similar houses with value %s' % self.foil_class
+        title_feature_importance = "The %s most important features for the prediction" % \
+                                   amount_of_features
 
         fig = tools.make_subplots(specs=[[{'rowspan':2, 'colspan': 2}, None, {'colspan': 3}, None, None],
                                          [None, None, {'colspan': 3}, None, None]],
                                   rows=2,
                                   cols=5,
-                                  subplot_titles=("lol", title_in_support, title_against),
+                                  subplot_titles=(title_feature_importance, title_in_support, title_against),
                                   vertical_spacing=0.085)
-
+        fig["layout"].update(title="Prediction: %s" % self.fact_class, titlefont={"size": 32})
         for i in range(len(table_in_support.data)):
             table_in_support.data[i].xaxis = 'x2'
             table_in_support.data[i].yaxis = 'y2'
@@ -218,9 +231,16 @@ class Explanation:
         fig.append_trace(table_in_support['data'][0], 1, 3)
         fig.append_trace(table_against['data'][0], 2, 3)
         fig.append_trace(feature_importance["data"][0], 1, 1)
+        fig.append_trace(feature_importance["data"][1], 1, 1)
+
 
         fig['layout']['xaxis1'] = dict(fig['layout']['xaxis1'], **feature_importance['layout']['xaxis'])
         fig['layout']['yaxis1'] = dict(fig['layout']['yaxis1'], **feature_importance['layout']['yaxis'])
+        fig['layout']['legend'] = dict(x=0.25,
+                                       y=1.0,
+                                       bgcolor='rgba(255, 255, 255, 0)',
+                                       bordercolor='rgba(255, 255, 255, 0)')
+        fig["layout"]["showlegend"] = True
 
         fig['layout']['xaxis2'] = dict(fig['layout']['xaxis2'], **table_in_support['layout']['xaxis'])
         fig['layout']['yaxis2'] = dict(fig['layout']['yaxis2'], **table_in_support['layout']['yaxis'])
@@ -240,25 +260,53 @@ class Explanation:
                                             table_in_support['layout']['annotations'] +
                                             table_against['layout']['annotations'])
 
-        fig['layout'].update(width=1000, height=600, margin=dict(t=100, l=50, r=50, b=50))
+        fig['layout'].update(width=1300, height=600, margin=dict(t=100, l=50, r=50, b=100))
 
         return fig
 
-    def __combine_tables(self, amount_of_features):
+    @staticmethod
+    def __visualize_instance(pd_series):
+        header_background_color = "rgb(47, 80, 135, 1)"
+        cell_background_color = "rgb(182, 187, 196, 1)"
 
-        trace_in_support = self.__visualize_table_trace(amount_of_features, self.examples_in_support, "in_support")
-        trace_against = self.__visualize_table_trace(amount_of_features, self.examples_against, "against")
+        num_columns = 7
+        d = len(pd_series)
+        num_rows = int(np.ceil(d/float(num_columns)))
 
-        fig = tools.make_subplots(rows=1, cols=2)
+        extra_cells = (num_columns - (d % num_columns)) % num_columns
+        total_cells = num_columns*num_rows*2
 
-        fig.append_trace(trace_in_support, 1, 1)
-        fig.append_trace(trace_against, 1, 2)
+        header = Explanation.__make_bold(pd_series.index)
+        values = pd_series.values
 
-        fig['layout'].update(height=600, width=800, title='i <3 annotations and subplots')
+        header_values = np.append(header, [""]*extra_cells).reshape(num_rows, num_columns)
+        cell_values = np.append(values, [""]*extra_cells).reshape(num_rows, num_columns)
+        all_cells = np.array(zip(header_values, cell_values)).reshape((-1, num_columns)).transpose()
 
-        py.image.save_as(fig, filename="lol.png")
+        values_per_cel = lambda h,c: np.array(zip([[h]*num_columns]*total_cells,
+                                                  [[c]*num_columns]*total_cells))\
+                                              .reshape((-1, num_columns))\
+                                              .transpose()
+        fill_color = values_per_cel(header_background_color, cell_background_color)
+        font_color = values_per_cel("white", "black")
+        font_size = values_per_cel(14, 14)
 
-        return fig
+        trace = go.Table(
+                        header=dict(line=dict(color='white')),
+                        cells=dict(values=all_cells,
+                                   align="center",
+                                   line=dict(color="rgb(207, 210, 214)"),
+                                   fill=dict(color=fill_color),
+                                   font=dict(color=font_color, size=font_size),
+                                   height=30
+                                   )
+                        )
+        layout = go.Layout(title="A house in the market",
+                           width=1300,
+                           height=800,
+                           margin=dict(t=100, l=50, r=50, b=100))
+        figure = go.Figure(data=[trace], layout=layout)
+        return figure
 
     @staticmethod
     def __visualize_table_trace(amount_of_features, df, type="in_support"):
@@ -301,6 +349,8 @@ class Explanation:
     @staticmethod
     def visualize_png(figure, path):
         py.image.save_as(figure, filename=path)
+        # pip install psutil
+        #pio.write_image(figure, path)
         print("Image saved as %s" % path)
 
 
@@ -346,6 +396,7 @@ def test_subplot():
     fig['layout'].update(width=800, height=600, margin=dict(t=100, l=50, r=50, b=50))
 
     py.image.save_as(fig, filename="lol2.png")
+
 
 if __name__ == "__main__":
     test_subplot()

@@ -16,7 +16,7 @@ class Scenario:
                  classifier_name,
                  classifier_hyper_parameters={},
                  random_state=11,
-                 neighbourhood_sampling_strategy="closest_boundary",
+                 neighbourhood_sampling_strategy="closest_enemy",
                  encoder_classifier=None):
         """
         This class is a wrapper around the class leafage.Leafage.

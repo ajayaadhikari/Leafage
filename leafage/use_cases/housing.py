@@ -55,11 +55,11 @@ class HousingDataSet(Data):
 
         for price in sale_price:
             if price <= first_threshold:
-                result.append("low")
+                result.append("Low")
             elif price > first_threshold and price <= second_threshold:
-                result.append("medium")
+                result.append("Medium")
             else:
-                result.append("high")
+                result.append("High")
         return np.array(result, dtype=object)
 
 
