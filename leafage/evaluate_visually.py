@@ -415,7 +415,7 @@ def simple_decision_boundary():
 
 
 def complex_decision_boundary():
-    test_point = np.array([1, 2])
+    test_point = np.array([1, 1.5])
     random_state = 20
     random.seed(random_state)
 
@@ -489,6 +489,8 @@ def complex_decision_boundary():
 
     plt.xticks(range(-4, 6), range(1, 11))
     plt.yticks(range(-4, 6), range(30, 41))
+
+    plt.show()
 
 
 def linear_approximation():
@@ -564,12 +566,12 @@ def linear_approximation():
 
 
 if __name__ == "__main__":
-    #complex_decision_boundary()
+    complex_decision_boundary()
     #linear_approximation()
 
-    a = TwoDimensionExample()
-    a.plot_neighbourhood(np.array([-12,7]))
-    plt.show()
+    #a = TwoDimensionExample()
+    #a.plot_neighbourhood(np.array([-12,7]))
+    #plt.show()
 
 
 

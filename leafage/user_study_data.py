@@ -1,9 +1,16 @@
 from sklearn.svm import SVC
+
+from faithfulness import Faithfulness
+from explanation import Explanation
 from use_cases.housing import HousingDataSet
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score
-from leafage import Leafage
+from leafage import LeafageBinary
 from scenario import Classifier
+from local_model import Neighbourhood, Distances
+import pandas as pd
+import numpy as np
+import time
 
 
 class UserStudy:
@@ -13,6 +20,9 @@ class UserStudy:
     def __init__(self):
         self.train, self.test = self.get_train_test()
         self.classifier = self.set_classifier()
+
+        predicted_training_data = self.classifier.predict(self.train.feature_vector)
+        self.leafage = LeafageBinary(self.train, predicted_training_data, self.random_state, "closest_enemy")
 
     def set_classifier(self):
         svc = SVC(C=10, kernel="rbf", gamma=0.001, probability=True)
@@ -36,20 +46,81 @@ class UserStudy:
         return training_data, testing_data
 
     def fidelity(self):
-
+        test_set_predictions = self.classifier.predict(self.test.feature_vector)
+        faithfulness = Faithfulness(self.test, test_set_predictions, self.leafage.get_local_model, verbose=True)
+        print(faithfulness)
 
     def get_instances(self):
         test_predictions = self.classifier.predict(self.test.feature_vector)
         correct_instances = self.test.feature_vector[test_predictions == self.test.target_vector]
 
-        leafage = Leafage(self.train, self.classifier, self.random_state, "closest_enemy")
+        explanation_types = ["feature_based"]*10 + ["example_based"]*10 + ["leafage"]*10 + ["no_ex"]*10
+        np.random.seed(0)
 
-        #i = 2
+        # for i in range(5):
+        #     test_instance = correct_instances[i]
+        #     prediction = self.classifier.predict([test_instance])[0]
+        #     explanation = self.leafage.explain(correct_instances[i], prediction, amount_of_examples=5)
+        #     explanation.visualize_feature_importance(path="../output/user_study/test_test_%s.png" % i,
+        #                                              show_values=False)
 
-        for i in range(1,5):
-            explanation = leafage.explain(correct_instances[i], 5)
-            explanation.visualize_instance(path="../output/new_housing_instance2_%s.png" % i)
-            explanation.visualize_leafage(path="../output/new_housing_explanation2_%s.png" % i)
+        num = 36
+        for i in range(76, 80):
+            e_type = "lol"
+            num += 1
+            test_instance = correct_instances[i]
+            prediction = self.classifier.predict([test_instance])[0]
+            explanation = self.leafage.explain(correct_instances[i], prediction, amount_of_examples=5)
+            explanation.set_plotly_imports()
+
+            explanation.visualize_instance(path="../output/user_study/%s_instance_prediction_%s.png" % (num, explanation.fact_class))
+            if e_type == "feature_based":
+                explanation.visualize_feature_importance(path="../output/user_study/%s_feature_importance.png" % num, show_values=False)
+            elif e_type == "example_based":
+                explanation.visualize_examples(path="../output/user_study/%s_examples.png" % num, type="both")
+            elif e_type == "leafage":
+                explanation.visualize_leafage(path="../output/user_study/%s_leafage.png" % num)
+            else:
+                print("Nope %s" % e_type)
+
+            instance_to_test, instance_to_test_class = self.get_instance_to_test(explanation)
+            figure = Explanation.visualize_instance_one_line(instance_to_test)
+            Explanation.visualize_png(figure, path="../output/user_study/%s_test_instance_prediction_%s.png" % (num, instance_to_test_class))
+
+    def get_instance_to_test(self, explanation):
+        np.random.seed(int(time.time()))
+        new_instance_class = np.random.choice(["High", "Low"], 1)[0]
+        class_encoded = self.train.target_vector_encoder.transform([new_instance_class])[0]
+
+        training_set = self.train.scaled_feature_vector
+        predictions = self.classifier.predict(self.train.feature_vector)
+        instance = explanation.local_model.instance_to_explain
+
+        indices, _ = Neighbourhood.get_closest_instances_of_label(training_set,
+                                                                          predictions,
+                                                                          Distances.unbiased_distance_function,
+                                                                          10,
+                                                                          instance,
+                                                                          class_encoded)
+        closest_instances = self.train.feature_vector[indices].tolist()
+        if explanation.fact_class == new_instance_class:
+            cross_check_instances = explanation.original_in_support.tolist()
+        else:
+            cross_check_instances = explanation.original_against.tolist()
+
+        found = False
+        i = 0
+        while not found:
+            if closest_instances[i] not in cross_check_instances:
+                result_instance = closest_instances[i]
+                found = True
+            i += 1
+
+        result_instance = pd.Series(result_instance, index=self.train.feature_names)
+        get_both_measure = lambda feet_square: "%s m<sup>2</sup> (%s ft<sup>2</sup>)" % (int(feet_square * 0.09290304), feet_square)
+        result_instance["Living Area"] = get_both_measure(result_instance["Living Area"])
+        return result_instance, new_instance_class
+
 
     def get_feature_importance(self):
         import numpy as np

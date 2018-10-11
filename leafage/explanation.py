@@ -25,28 +25,44 @@ class Explanation:
         self.feature_names = feature_names
         self.original_order_test_instance = pd.Series(test_instance, index=feature_names)
 
+        # TODO remove later
+        self.original_test = test_instance
+        self.original_in_support = examples_in_support
+        self.original_against = examples_against
+
         self.local_model = local_model
         self.__sort_columns_according_to_importance()
         self.notebook_initialized = False
         self.plotly_imports_set = False
 
-    def visualize_feature_importance(self, amount_of_features=5, target="notebook", path=None):
+        # TODO remove later
+        self.format_living_area()
+
+    def format_living_area(self):
+        get_both_measure = lambda feet_square: "%s m<sup>2</sup> (%s ft<sup>2</sup>)" % (int(feet_square * 0.09290304), feet_square)
+        self.original_order_test_instance["Living Area"] = get_both_measure(self.original_order_test_instance["Living Area"])
+        self.examples_in_support["Living Area"] = self.examples_in_support["Living Area"].apply(get_both_measure)
+        self.examples_against["Living Area"] = self.examples_against["Living Area"].apply(get_both_measure)
+
+    def visualize_feature_importance(self, amount_of_features=5, target="write_to_file", path=None, show_values=False):
         """
         Visualize a bar plot which contains the most important features for the classification of self.test_instance
         :param amount_of_features: Amount of top features to include in the bar plot
         :param target: Should be either "notebook" or "write_to_file"
-        :param path: If target="to_file", this parameter denotes where to save the image e.g. "../output/test.png"
+        :param path: If target="write_to_file", this parameter denotes where to save the image e.g. "../output/test.png"
+        :param show_values: Shows the values of the instance being explained along each bar
         """
         self.__set_plotly_imports()
-        figure = self.__visualize_feature_importance(amount_of_features)
+        figure = self.__visualize_feature_importance(amount_of_features, show_values=show_values)
         self.__export(figure, target, path)
 
-    def visualize_examples(self, amount_of_features=5, target="notebook", path=None, type="examples_in_support"):
+    def visualize_examples(self, amount_of_features=5, target="write_to_file", path=None,
+                           type="examples_in_support"):
         """
-        Visualize a table of closest examples from the training-set
+        Visualize the closest examples from the training-set
         :param amount_of_features: Amount of top features to include per example
         :param target: Denotes how to export the image. Should be either "notebook" or "write_to_file"
-        :param path: If target="to_file", this parameter denotes where to save the image e.g. "../output/test.png"
+        :param path: If target="write_to_file", this parameter denotes where to save the image e.g. "../output/test.png"
         :param type: Should be either "examples_in_support" or "examples_against" or "both"
         """
         self.__set_plotly_imports()
@@ -61,15 +77,44 @@ class Explanation:
 
         self.__export(figure, target, path)
 
-    def visualize_leafage(self, amount_of_features=5, path=None):
+    def visualize_leafage(self, amount_of_features=5, target="write_to_file", path=None, show_values=False):
+        """
+        Visualize closest examples and the feature importance from the training-set
+        :param amount_of_features: Amount of top features to include per example
+        :param target: Denotes how to export the image. Should be either "notebook" or "write_to_file"
+        :param path: If target="write_to_file", this parameter denotes where to save the image e.g. "../output/test.png"
+        :param show_values: Shows the values of the instance being explained along each bar
+        """
         self.__set_plotly_imports()
-        figure = self.__visualize_all(amount_of_features)
-        self.__export(figure, "write_to_file", path)
+        figure = self.__visualize_all(amount_of_features, show_values=show_values)
+        self.__export(figure, target, path)
 
-    def visualize_instance(self, path=None):
+    def visualize_instance(self, target="write_to_file", path=None):
+        """
+        Visualize the instance being explained
+        :param target: Denotes how to export the image. Should be either "notebook" or "write_to_file"
+        :param path: If target="write_to_file", this parameter denotes where to save the image e.g. "../output/test.png"
+        """
         self.__set_plotly_imports()
-        figure = self.__visualize_instance(self.original_order_test_instance)
-        self.__export(figure, "write_to_file", path)
+        figure = self.visualize_instance_one_line(self.original_order_test_instance)
+        self.__export(figure, target, path)
+
+    def visualize_prediction(self, target="write_to_file", path=None):
+        """
+        Visualize the prediction of the instance being explained
+        :param target: Denotes how to export the image. Should be either "notebook" or "write_to_file"
+        :param path: If target="write_to_file", this parameter denotes where to save the image e.g. "../output/test.png"
+        """
+        self.__set_plotly_imports()
+        figure = self.__visualize_prediction()
+        self.__export(figure, target, path)
+
+    def __visualize_prediction(self):
+        main_title = "Prediction: %s" % self.fact_class
+        layout = go.Layout(title=main_title,
+                           titlefont={"size": 32})
+        figure = go.Figure(layout=layout)
+        return figure
 
     def __export(self, figure, target, path):
         if target == "notebook":
@@ -82,8 +127,11 @@ class Explanation:
         else:
             raise ValueError("%s not supported" % target)
 
-    def __sort_columns_according_to_importance(self):
-        sort_index = sorted(range(len(self.coefficients)), key=lambda i: abs(self.coefficients[i]), reverse=True)
+    def __sort_columns_according_to_importance(self, sort=True):
+        if sort is True:
+            sort_index = sorted(range(len(self.coefficients)), key=lambda i: abs(self.coefficients[i]), reverse=True)
+        else:
+            sort_index = range(len(self.feature_names))
         self.feature_names = self.feature_names[sort_index]
         self.coefficients = self.coefficients[sort_index]
 
@@ -91,7 +139,15 @@ class Explanation:
         self.examples_in_support = pd.DataFrame(self.examples_in_support[:, sort_index], columns=self.feature_names)
         self.examples_against = pd.DataFrame(self.examples_against[:, sort_index], columns=self.feature_names)
 
-    def __visualize_feature_importance(self, amount_of_features):
+    def __visualize_feature_importance(self, amount_of_features, show_values=False, as_sub_figure=False):
+
+        color_examples_in_support = self.color_examples_in_support
+        color_examples_against = self.color_examples_against
+
+        if self.fact_class == "High":
+            color_examples_in_support = self.color_examples_against
+            color_examples_against = self.color_examples_in_support
+
         feature_names = self.feature_names[:amount_of_features]
         feature_values = self.test_instance.values[:amount_of_features]
         coefficients = self.coefficients[:amount_of_features]
@@ -100,38 +156,64 @@ class Explanation:
         indices_negative = np.where(coefficients < 0)
         coefficients = np.abs(coefficients)
 
-        x_values = np.array(["<b>%s</b><br>%s" % (i,j) for i,j in zip(feature_names, feature_values)])
+        get_value = lambda feature, value: "<b>%s</b><br>%s" % (feature, value) if show_values else "<b>%s</b>" % feature
+
+        x_values = np.array([get_value(i,j) for i, j in zip(feature_names, feature_values)])
 
         trace_positive = go.Bar(x=x_values[indices_positive],
                                 y=coefficients[indices_positive],
-                                marker=dict(color=self.color_examples_in_support),
-                                name="Supports %s" % self.fact_class,
-                                width=[0.8]*len(indices_positive))
+                                marker=dict(color=color_examples_in_support),
+                                name="Supports %s" % self.fact_class)
         trace_negative = go.Bar(x=x_values[indices_negative],
                                 y=coefficients[indices_negative],
-                                marker=dict(color=self.color_examples_against),
-                                name="Supports %s" % self.foil_class,
-                                width=[0.8] * len(indices_negative))
+                                marker=dict(color=color_examples_against),
+                                name="Supports %s" % self.foil_class)
 
-        data = [trace_positive, trace_negative]
-        layout = go.Layout(title="The top %s most important features for the classification" % amount_of_features,
-                           yaxis=dict(title='Importance'),
-                           xaxis=dict(title="Features", categoryorder="array", categoryarray=x_values),
-                           showlegend=True,
-                           bargap=0.9)
-        figure = go.Figure(data=data, layout=layout)
-        return figure
+        main_title = "Prediction: %s" % self.fact_class
+        sub_title = "The top %s most important features for the classification" % amount_of_features
+
+        if as_sub_figure:
+            data = [trace_positive, trace_negative]
+            layout = go.Layout(title=sub_title,
+                              yaxis=dict(title='Importance'),
+                              xaxis=dict(title="Features", categoryorder="array", categoryarray=x_values),
+                              showlegend=True)
+            fig = go.Figure(data=data, layout=layout)
+
+        else:
+            fig = tools.make_subplots(rows=1,
+                                      cols=1,
+                                      subplot_titles=[sub_title])
+
+            fig.append_trace(trace_positive, 1, 1)
+            fig.append_trace(trace_negative, 1, 1)
+
+            fig["layout"].update(
+                               yaxis=dict(title='Importance'),
+                               xaxis=dict(title="Features", categoryorder="array", categoryarray=x_values),
+                               showlegend=True,
+                                legend=dict(x=0.8,
+                                           y=1.0,
+                                           bgcolor='rgba(255, 255, 255, 0)',
+                                           bordercolor='rgba(255, 255, 255, 0)'))
+            fig["layout"].update(title=main_title, titlefont={"size": 32})
+            fig['layout'].update(margin=dict(t=100, l=50, r=50))
+
+        return fig
 
     def __set_plotly_imports(self):
         if not self.plotly_imports_set:
-            global py, go, ff, iplot, download_plotlyjs, init_notebook_mode, tools, pio
-            from plotly.offline import download_plotlyjs, iplot, init_notebook_mode
-            import plotly.plotly as py
-            import plotly.graph_objs as go
-            import plotly.figure_factory as ff
-            from plotly import tools
-            #import plotly.io as pio
+            self.set_plotly_imports()
             self.plotly_imports_set = True
+
+    @staticmethod
+    def set_plotly_imports():
+        global py, go, ff, iplot, download_plotlyjs, init_notebook_mode, tools, pio
+        from plotly.offline import download_plotlyjs, iplot, init_notebook_mode
+        import plotly.plotly as py
+        import plotly.graph_objs as go
+        import plotly.figure_factory as ff
+        from plotly import tools
 
     def to_json(self):
         jsonized = {'coefficients': list(self.coefficients),
@@ -144,7 +226,15 @@ class Explanation:
         return jsonized
 
     @staticmethod
-    def __visualize_table_ff(amount_of_features, df, header_background_color):
+    def __visualize_table_ff(amount_of_features, df, header_background_color=None,
+                             uneven_cell_color=None, even_cell_color=None):
+        if header_background_color is None:
+            header_background_color = "#00083e"
+        if uneven_cell_color is None:
+            uneven_cell_color = "#f2e5ff"
+        if even_cell_color is None:
+            even_cell_color = "#ffffff"
+
         df = df.iloc[:, 0:amount_of_features]
 
         df = df.astype(str)
@@ -155,10 +245,10 @@ class Explanation:
         df.apply(shorten)
         df.columns = shorten(columns)
 
-        color_scale = [[0, header_background_color], [.5, '#f2e5ff'], [1, '#ffffff']]
-        figure = ff.create_table(df, colorscale=color_scale, height_constant=60)
+        color_scale = [[0, header_background_color], [.5, uneven_cell_color], [1, even_cell_color]]
+        figure = ff.create_table(df, colorscale=color_scale)#, height_constant=60)
 
-        figure.layout.width = 1000
+        figure.layout.width = 800
 
         for i in range(len(figure.layout.annotations)):
             figure.layout.annotations[i].font.size = 13
@@ -169,16 +259,30 @@ class Explanation:
         table_in_support = self.__visualize_table_ff(amount_of_features, self.examples_in_support,
                                                             self.color_examples_in_support)
         table_against = self.__visualize_table_ff(amount_of_features, self.examples_against,
-                                                         self.color_examples_against)
+                                                     self.color_examples_against)
+        fact_class = self.fact_class
+        foil_class = self.foil_class
 
-        title_in_support = 'Examples in support of prediction <b>%s</b>' % self.fact_class
-        title_against = 'Most relevant counter-examples from class <b>%s</b>' % self.foil_class
+        if self.fact_class == "High":
+            table_in_support = self.__visualize_table_ff(amount_of_features, self.examples_against,
+                                                         self.color_examples_in_support)
+            table_against = self.__visualize_table_ff(amount_of_features, self.examples_in_support,
+                                                                self.color_examples_against)
+            fact_class = self.foil_class
+            foil_class = self.fact_class
+
+        #title_in_support = 'Examples in support of prediction <b>%s</b>' % self.fact_class
+        #title_against = 'Most relevant counter-examples from class <b>%s</b>' % self.foil_class
+
+        title_in_support = 'Most similar houses with value %s' % fact_class
+        title_against = 'Most similar houses with value %s' % foil_class
 
         fig = tools.make_subplots(rows=2,
                                   cols=1,
                                   print_grid=True,
                                   vertical_spacing=0.085,
                                   subplot_titles=(title_in_support, title_against))
+        fig["layout"].update(title="Prediction: %s" % self.fact_class, titlefont={"size": 32})
 
         fig.append_trace(table_in_support['data'][0], 1, 1)
         fig.append_trace(table_against['data'][0], 2, 1)
@@ -193,19 +297,33 @@ class Explanation:
 
         fig['layout']['annotations'].extend(table_in_support['layout']['annotations'] + table_against['layout']['annotations'])
 
-        fig['layout'].update(width=800, height=600, margin=dict(t=100, l=50, r=50, b=50))
+        fig['layout'].update(width=820, height=600, margin=dict(t=100, l=50, r=50, b=20))
 
         return fig
 
-    def __visualize_all(self, amount_of_features):
+    def __visualize_all(self, amount_of_features, show_values=False):
         table_in_support = self.__visualize_table_ff(amount_of_features, self.examples_in_support,
                                                             self.color_examples_in_support)
         table_against = self.__visualize_table_ff(amount_of_features, self.examples_against,
-                                                         self.color_examples_against)
-        feature_importance = self.__visualize_feature_importance(amount_of_features=amount_of_features)
+                                                     self.color_examples_against)
 
-        title_in_support = 'Most similar houses with value %s' % self.fact_class
-        title_against = 'Most similar houses with value %s' % self.foil_class
+        feature_importance = self.__visualize_feature_importance(amount_of_features=amount_of_features,
+                                                                 show_values=show_values,
+                                                                 as_sub_figure=True)
+
+        fact_class = self.fact_class
+        foil_class = self.foil_class
+
+        if self.fact_class == "High":
+            table_in_support = self.__visualize_table_ff(amount_of_features, self.examples_against,
+                                                         self.color_examples_in_support)
+            table_against = self.__visualize_table_ff(amount_of_features, self.examples_in_support,
+                                                                self.color_examples_against)
+            fact_class = self.foil_class
+            foil_class = self.fact_class
+
+        title_in_support = 'Most similar houses with value %s' % fact_class
+        title_against = 'Most similar houses with value %s' % foil_class
         title_feature_importance = "The %s most important features for the prediction" % \
                                    amount_of_features
 
@@ -233,10 +351,9 @@ class Explanation:
         fig.append_trace(feature_importance["data"][0], 1, 1)
         fig.append_trace(feature_importance["data"][1], 1, 1)
 
-
         fig['layout']['xaxis1'] = dict(fig['layout']['xaxis1'], **feature_importance['layout']['xaxis'])
         fig['layout']['yaxis1'] = dict(fig['layout']['yaxis1'], **feature_importance['layout']['yaxis'])
-        fig['layout']['legend'] = dict(x=0.25,
+        fig['layout']['legend'] = dict(x=0.28,
                                        y=1.0,
                                        bgcolor='rgba(255, 255, 255, 0)',
                                        bordercolor='rgba(255, 255, 255, 0)')
@@ -265,7 +382,15 @@ class Explanation:
         return fig
 
     @staticmethod
-    def __visualize_instance(pd_series):
+    def visualize_instance_one_line(pd_series):
+        df = pd.DataFrame([pd_series.values], columns=pd_series.index)
+        header = "#c2bc80"
+        uneven_cell = "#e9e7d8"
+        figure = Explanation.__visualize_table_ff(len(pd_series), df, header_background_color=header, uneven_cell_color=uneven_cell)
+        return figure
+
+    @staticmethod
+    def __visualize_instance_multiple_lines(pd_series):
         header_background_color = "rgb(47, 80, 135, 1)"
         cell_background_color = "rgb(182, 187, 196, 1)"
 

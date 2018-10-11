@@ -13,12 +13,16 @@ class HousingDataSet(Data):
         target_vector = self.split(original_df["SalePrice"].values)
         df = original_df.drop(columns=["SalePrice"])
 
+        # Remove rows with "medium"
+        df = df[target_vector!="Medium"]
+        target_vector = target_vector[target_vector!="Medium"]
+
         # Convert null values to string "NA"
         df.fillna("NA", inplace=True)
 
         # Merge two columns
-        df["Amount Bathrooms"] = df["BsmtFullBath"] + df["FullBath"]
-        df["Amount Toilets"] = df["BsmtHalfBath"] + df["HalfBath"]
+        df["Bathroom Amount"] = df["BsmtFullBath"] + df["FullBath"]
+        df["Toilet Amount"] = df["BsmtHalfBath"] + df["HalfBath"]
 
         # Remove not needed columns
         df.drop(columns=not_used_columns, inplace=True)
@@ -29,21 +33,20 @@ class HousingDataSet(Data):
         for column_name in categorical_to_numerical.keys():
             df[column_name] = df[column_name].map(categorical_to_numerical[column_name])
 
-
-        #df.replace(categorical_values, inplace=True)
-        #df.replace(categorical_to_numerical, inplace=True)
+        # Convert to numerical values to int
+        df[useful_numerical_columns.keys() + new_columns] = df[useful_numerical_columns.keys() + new_columns].astype(int)
 
         # Change column names to make them more readable
         df.rename(columns=useful_numerical_columns, inplace=True)
         df.rename(columns=useful_categorical_columns, inplace=True)
 
-        # Add all columns as feature vector expect the sale price
-        feature_vector = df.iloc[:, 1:-1].values
+        # Only keep final columns
+        df = df[final_columns]
 
-
+        feature_vector = df.values
 
         # Set the column names as the feature names
-        feature_names = list(df)[1:-1]
+        feature_names = list(df)
 
         Data.__init__(self, feature_vector, target_vector, feature_names, name="Housing")
 
@@ -71,11 +74,9 @@ not_used_columns = ["Id", "Condition1", "Condition2", "Neighborhood", "RoofMatl"
                     "3SsnPorch", "ScreenPorch", "MiscVal", "MoSold", "YrSold", "SaleType", "SaleCondition",
                     "LotFrontage", "BsmtFinType1", "BsmtFinSF1", "MSSubClass"]
 
-# TODO: Square feet to meter
-# TODO: Merge BsmtFullBath and FullBath; BsmtHalfBath and HalfBath
-# TODO: sum WoodDeckSF, OpenPorchSF, EnclosedPorch, 3SsnPorch and ScreenPorch
+final_columns = ["Living Area", "Bathroom Amount", "Bedroom Amount", "Year Built", "Overall Quality(1-10)"]
 
-new_columns = ["Amount Bathrooms", "Amount Toilets"]
+new_columns = ["Bathroom Amount", "Toilet Amount"]
 useful_numerical_columns = dict([("LotArea", "Total Area"),
                                  ("OverallQual", "Overall Quality(1-10)"),
                                  ("OverallCond", "Overall Condition(1-10)"),
@@ -86,9 +87,9 @@ useful_numerical_columns = dict([("LotArea", "Total Area"),
                                  ("TotalBsmtSF", "Basement Area"),
                                  ("HeatingQC", "Heating Condition"),
                                  ("GrLivArea", "Living Area"),
-                                 ("BedroomAbvGr", "Amount Bedrooms"),
+                                 ("BedroomAbvGr", "Bedroom Amount"),
                                  ("KitchenAbvGr", "Amount Kitchens"),
-                                 ("KitchenQual", "Kitchen Quality"),
+                                 ("KitchenQual", "Kitchen Quality(1-5)"),
                                  ("TotRmsAbvGrd", "Total Rooms"),
                                  ("Fireplaces", "Amount Fireplaces"),
                                  ("GarageCars", "Garage Capacity"),
@@ -124,11 +125,11 @@ categorical_to_numerical = dict([("ExterQual",   dict([("Ex", 5),
                                                      ])
                                   ),
                                  ("HouseStyle", dict([("1Story", 1),
-                                                      ("1.5Fin", 1.5),
-                                                      ("1.5Unf", 1.5),
+                                                      ("1.5Fin", 2),
+                                                      ("1.5Unf", 2),
                                                       ("2Story", 2),
-                                                      ("2.5Fin", 2.5),
-                                                      ("2.5Unf", 2.5),
+                                                      ("2.5Fin", 3),
+                                                      ("2.5Unf", 3),
                                                       ("SFoyer", 2),
                                                       ("SLvl", 2)
                                                       ])

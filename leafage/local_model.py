@@ -40,8 +40,9 @@ class LocalModel:
 
     def build_model(self):
         # Build local regression model
-        local_classifier = self.linear_classifier_type(**self.linear_classifier_variables)
-        local_classifier.fit(self.neighbourhood.instances, self.neighbourhood.labels, self.neighbourhood.weights)
+        #local_classifier = self.linear_classifier_type(**self.linear_classifier_variables)
+        #local_classifier.fit(self.neighbourhood.instances, self.neighbourhood.labels, self.neighbourhood.weights)
+        local_classifier = self.get_classifier()
 
         # Move line such that it goes through the test instance
         moved_intercept = -1 * np.dot(self.instance_to_explain, np.transpose(local_classifier.coef_[0]))
@@ -103,7 +104,7 @@ class LinearModel:
         local_model_predictions = []
         for instance in instances:
             regression_value = np.dot(np.array(self.coefficients), np.array(instance)) + self.original_intercept
-            prediction = self.classes[1 if regression_value > self.threshold else 0]
+            prediction = self.classes[self.classes[1] if regression_value > self.threshold else self.classes[0]]
             local_model_predictions.append(prediction)
 
         return local_model_predictions
@@ -254,7 +255,7 @@ class Neighbourhood:
         return sort_index, np.array(target_instances[sort_index])
 
     @staticmethod
-    def __get_closest_instances_of_label(target_instances, target_instances_labels, distance_function, amount, source, label):
+    def get_closest_instances_of_label(target_instances, target_instances_labels, distance_function, amount, source, label):
         # Get the instances with the given label from the target_instances
         label_index = np.where(target_instances_labels == label)[0]
         filtered_instances = target_instances[label_index]
@@ -265,7 +266,7 @@ class Neighbourhood:
 
     @staticmethod
     def get_closest_enemy_instance(target_instances, target_instances_labels, distance_function, source, label):
-        return Neighbourhood.__get_closest_instances_of_label(target_instances, target_instances_labels, distance_function, 1, source, Neighbourhood.__get_enemy_class(label, target_instances_labels))[1]
+        return Neighbourhood.get_closest_instances_of_label(target_instances, target_instances_labels, distance_function, 1, source, Neighbourhood.__get_enemy_class(label, target_instances_labels))[1]
 
     @staticmethod
     def __get_distance_to_closest_enemy_instance(target_instances, target_instances_labels, distance_function, source, label):
@@ -277,7 +278,7 @@ class Neighbourhood:
             target_instances = self.instances
             labels = self.labels
         # Get the instances with the given label from the current neighbourhood
-        return self.__get_closest_instances_of_label(target_instances, labels, distance_function, amount, self.instance_to_explain, label)
+        return self.get_closest_instances_of_label(target_instances, labels, distance_function, amount, self.instance_to_explain, label)
 
     def get_examples_in_support(self, amount, distance_function, target_instances=None, labels=None):
         return self.get_closest_instances(amount, distance_function, self.prediction, target_instances, labels)
@@ -339,7 +340,7 @@ class Distances:
         """
         d = len(training_instance)
         unbiased_distance = self.get_unbiased_distance(training_instance)
-        black_box_distance = np.sqrt(d* self.get_black_box_distance(training_instance))
+        black_box_distance = np.sqrt(d * self.get_black_box_distance(training_instance))
 
         return unbiased_distance + black_box_distance
 

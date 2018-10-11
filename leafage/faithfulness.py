@@ -5,7 +5,6 @@ import numpy as np
 from local_model import Distances
 from sklearn.metrics import f1_score
 from sklearn.metrics import roc_auc_score
-from sklearn.preprocessing import LabelEncoder
 
 
 class Faithfulness:
@@ -23,6 +22,11 @@ class Faithfulness:
         self.auc, self.f1, self.base_line_f1, self.base_line_auc, self.amount = self.evaluate()
         if verbose:
             print(self)
+
+    def __str__(self):
+        auc, std_auc, f1, std_f1 = np.mean(self.auc), np.std(self.auc), np.mean(self.f1), np.std(self.f1)
+        return "Auc: %s (%s), F1: %s (%s)" %\
+               (auc, std_auc, f1, std_f1)
 
     def get_max_distance(self):
         unbiased_distance_function = Distances.unbiased_distance_function

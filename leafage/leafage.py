@@ -99,12 +99,9 @@ class LeafageBinary:
     def explain(self, test_instance, test_instance_prediction, amount_of_examples=10):
         test_instance = np.array(test_instance)
         pre_process = lambda X: self.training_data.pre_process(X, scale=True)
-        #pre_process = lambda X: self.training_data.pre_process(X, scale=False)
 
         scaled_training_set = self.training_data.scaled_feature_vector
         scaled_test_instance = pre_process([test_instance])[0]
-        #scaled_training_set = self.training_data.feature_vector
-        #scaled_test_instance = test_instance
 
         np.random.seed(self.random_state)
         local_model = LocalModel(scaled_test_instance,
@@ -133,12 +130,13 @@ class LeafageBinary:
         enemy_class = local_model.neighbourhood.enemy_class
         fact_class = inverse_transform_label(test_instance_prediction)
         foil_class = inverse_transform_label(enemy_class)
-        coefficients = self.normalize(self.filter_coefficients(local_model.linear_model.coefficients, scaled_test_instance))
+        raw_coefficients = local_model.linear_model.coefficients * scaled_test_instance
 
-        if local_model.linear_model.classes[1] != test_instance_prediction:
-            coefficients = coefficients*-1
+        filtered_coefs = self.filter_coefficients(raw_coefficients, scaled_test_instance)
+        coefficients = self.normalize(filtered_coefs)
 
         classes = local_model.linear_model.classes
+
         if test_instance_prediction == classes[0]:
             coefficients = coefficients*-1
 
@@ -167,7 +165,7 @@ class LeafageBinary:
             categorical_features = self.training_data.pre_process_object.categorical_features
             for new_value, index in zip(coefficients_categorical_features, categorical_features):
                 result.insert(index, new_value)
-            return result
+            return np.array(result)
         else:
             return one_hot_encoded_coefficients
 
