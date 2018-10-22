@@ -55,14 +55,18 @@ class HousingDataSet(Data):
         result = []
         first_threshold = 150000
         second_threshold = 200000
-
+        low = 0
+        high = 0
         for price in sale_price:
             if price <= first_threshold:
                 result.append("Low")
+                low +=1
             elif price > first_threshold and price <= second_threshold:
                 result.append("Medium")
             else:
                 result.append("High")
+                high +=1
+        print(low,high)
         return np.array(result, dtype=object)
 
 
@@ -74,7 +78,7 @@ not_used_columns = ["Id", "Condition1", "Condition2", "Neighborhood", "RoofMatl"
                     "3SsnPorch", "ScreenPorch", "MiscVal", "MoSold", "YrSold", "SaleType", "SaleCondition",
                     "LotFrontage", "BsmtFinType1", "BsmtFinSF1", "MSSubClass"]
 
-final_columns = ["Living Area", "Bathroom Amount", "Bedroom Amount", "Year Built", "Overall Quality(1-10)"]
+final_columns = ["Living Area", "Year Built", "Overall Quality(1-10)", "Bathroom Amount", "Bedroom Amount"]
 
 new_columns = ["Bathroom Amount", "Toilet Amount"]
 useful_numerical_columns = dict([("LotArea", "Total Area"),

@@ -11,7 +11,7 @@ from local_model import Neighbourhood, Distances
 import pandas as pd
 import numpy as np
 import time
-
+from sklearn.metrics import roc_auc_score
 
 class UserStudy:
     train_size = 0.7
@@ -32,6 +32,7 @@ class UserStudy:
         self.classifier = Classifier(svc, encoder)
 
         print(accuracy_score(self.test.target_vector, self.classifier.predict(self.test.feature_vector)))
+        print(roc_auc_score(self.test.target_vector, self.classifier.predict_proba(self.test.feature_vector)[:,1]))
         return self.classifier
 
     def get_train_test(self):
@@ -57,35 +58,49 @@ class UserStudy:
         explanation_types = ["feature_based"]*10 + ["example_based"]*10 + ["leafage"]*10 + ["no_ex"]*10
         np.random.seed(0)
 
-        # for i in range(5):
-        #     test_instance = correct_instances[i]
-        #     prediction = self.classifier.predict([test_instance])[0]
-        #     explanation = self.leafage.explain(correct_instances[i], prediction, amount_of_examples=5)
-        #     explanation.visualize_feature_importance(path="../output/user_study/test_test_%s.png" % i,
-        #                                              show_values=False)
-
-        num = 36
-        for i in range(76, 80):
-            e_type = "lol"
-            num += 1
+        for i in range(201, 202):
             test_instance = correct_instances[i]
             prediction = self.classifier.predict([test_instance])[0]
             explanation = self.leafage.explain(correct_instances[i], prediction, amount_of_examples=5)
-            explanation.set_plotly_imports()
+            # explanation.visualize_feature_importance(path="../output/user_study_2/%s_fim.png" % i,
+            #                                           show_values=False)
+            # explanation.visualize_leafage(path="../output/user_study_2/%s_leafage.png" % i)
+            #
+            explanation.visualize_instance(
+                 path="../output/user_study_4/42_instance_prediction_%s.png" % explanation.fact_class)
+            explanation.visualize_examples(path="../output/user_study_4/42_examples.png", type="both")
 
-            explanation.visualize_instance(path="../output/user_study/%s_instance_prediction_%s.png" % (num, explanation.fact_class))
-            if e_type == "feature_based":
-                explanation.visualize_feature_importance(path="../output/user_study/%s_feature_importance.png" % num, show_values=False)
-            elif e_type == "example_based":
-                explanation.visualize_examples(path="../output/user_study/%s_examples.png" % num, type="both")
-            elif e_type == "leafage":
-                explanation.visualize_leafage(path="../output/user_study/%s_leafage.png" % num)
-            else:
-                print("Nope %s" % e_type)
-
-            instance_to_test, instance_to_test_class = self.get_instance_to_test(explanation)
+            #instance_to_test, instance_to_test_class = self.get_instance_to_test(explanation_5)
+            instance_to_test, instance_to_test_class = explanation.examples_against.iloc[0, :], explanation.foil_class
             figure = Explanation.visualize_instance_one_line(instance_to_test)
-            Explanation.visualize_png(figure, path="../output/user_study/%s_test_instance_prediction_%s.png" % (num, instance_to_test_class))
+            Explanation.visualize_png(figure, path="../output/user_study_4/42_test_instance_prediction_%s.png" % instance_to_test_class)
+
+        # num = 0
+        # for i, e_type in zip(range(40, 80), explanation_types):
+        #     num += 1
+        #
+        #     if num == 20:
+        #         import plotly
+        #         plotly.tools.set_credentials_file(username='ncaoijciacn', api_key='D2ZNZpPJBg8jDk9gpOB5')
+        #
+        #     test_instance = correct_instances[i]
+        #     prediction = self.classifier.predict([test_instance])[0]
+        #     explanation = self.leafage.explain(correct_instances[i], prediction, amount_of_examples=5)
+        #     explanation.set_plotly_imports()
+        #
+        #     explanation.visualize_instance(path="../output/user_study_4/%s_instance_prediction_%s.png" % (num, explanation.fact_class))
+        #     if e_type == "feature_based":
+        #         explanation.visualize_feature_importance(path="../output/user_study_4/%s_feature_importance.png" % num, show_values=False)
+        #     elif e_type == "example_based":
+        #         explanation.visualize_examples(path="../output/user_study_4/%s_examples.png" % num, type="both")
+        #     elif e_type == "leafage":
+        #         explanation.visualize_leafage(path="../output/user_study_4/%s_leafage.png" % num)
+        #     else:
+        #         print("Nope %s" % e_type)
+        #
+        #     instance_to_test, instance_to_test_class = self.get_instance_to_test(explanation)
+        #     figure = Explanation.visualize_instance_one_line(instance_to_test)
+        #     Explanation.visualize_png(figure, path="../output/user_study_4/%s_test_instance_prediction_%s.png" % (num, instance_to_test_class))
 
     def get_instance_to_test(self, explanation):
         np.random.seed(int(time.time()))

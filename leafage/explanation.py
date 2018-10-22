@@ -127,7 +127,7 @@ class Explanation:
         else:
             raise ValueError("%s not supported" % target)
 
-    def __sort_columns_according_to_importance(self, sort=True):
+    def __sort_columns_according_to_importance(self, sort=False):
         if sort is True:
             sort_index = sorted(range(len(self.coefficients)), key=lambda i: abs(self.coefficients[i]), reverse=True)
         else:
@@ -143,6 +143,7 @@ class Explanation:
 
         color_examples_in_support = self.color_examples_in_support
         color_examples_against = self.color_examples_against
+        color = "rgb(189,88,44,1)"
 
         if self.fact_class == "High":
             color_examples_in_support = self.color_examples_against
@@ -162,22 +163,25 @@ class Explanation:
 
         trace_positive = go.Bar(x=x_values[indices_positive],
                                 y=coefficients[indices_positive],
-                                marker=dict(color=color_examples_in_support),
+                                #
+                                marker=dict(color=color),
                                 name="Supports %s" % self.fact_class)
         trace_negative = go.Bar(x=x_values[indices_negative],
                                 y=coefficients[indices_negative],
-                                marker=dict(color=color_examples_against),
+                                #
+                                marker=dict(color=color),
                                 name="Supports %s" % self.foil_class)
 
         main_title = "Prediction: %s" % self.fact_class
-        sub_title = "The top %s most important features for the classification" % amount_of_features
+        #sub_title = "The top %s most important features for the classification" % amount_of_features
+        sub_title = "The importance of each feature for the prediction"
 
         if as_sub_figure:
             data = [trace_positive, trace_negative]
             layout = go.Layout(title=sub_title,
                               yaxis=dict(title='Importance'),
                               xaxis=dict(title="Features", categoryorder="array", categoryarray=x_values),
-                              showlegend=True)
+                              showlegend=False)
             fig = go.Figure(data=data, layout=layout)
 
         else:
@@ -191,11 +195,12 @@ class Explanation:
             fig["layout"].update(
                                yaxis=dict(title='Importance'),
                                xaxis=dict(title="Features", categoryorder="array", categoryarray=x_values),
-                               showlegend=True,
-                                legend=dict(x=0.8,
-                                           y=1.0,
-                                           bgcolor='rgba(255, 255, 255, 0)',
-                                           bordercolor='rgba(255, 255, 255, 0)'))
+                               showlegend=False,
+                                # legend=dict(x=0.8,
+                                #            y=1.0,
+                                #            bgcolor='rgba(255, 255, 255, 0)',
+                                #            bordercolor='rgba(255, 255, 255, 0)')
+            )
             fig["layout"].update(title=main_title, titlefont={"size": 32})
             fig['layout'].update(margin=dict(t=100, l=50, r=50))
 
@@ -324,8 +329,10 @@ class Explanation:
 
         title_in_support = 'Most similar houses with value %s' % fact_class
         title_against = 'Most similar houses with value %s' % foil_class
-        title_feature_importance = "The %s most important features for the prediction" % \
-                                   amount_of_features
+        #title_feature_importance = "The %s most important features for the prediction" % \
+        #                           amount_of_features
+        title_feature_importance = "The importance of each feature for the prediction"
+
 
         fig = tools.make_subplots(specs=[[{'rowspan':2, 'colspan': 2}, None, {'colspan': 3}, None, None],
                                          [None, None, {'colspan': 3}, None, None]],
@@ -353,11 +360,12 @@ class Explanation:
 
         fig['layout']['xaxis1'] = dict(fig['layout']['xaxis1'], **feature_importance['layout']['xaxis'])
         fig['layout']['yaxis1'] = dict(fig['layout']['yaxis1'], **feature_importance['layout']['yaxis'])
-        fig['layout']['legend'] = dict(x=0.28,
-                                       y=1.0,
-                                       bgcolor='rgba(255, 255, 255, 0)',
-                                       bordercolor='rgba(255, 255, 255, 0)')
-        fig["layout"]["showlegend"] = True
+        # fig['layout']['legend'] = dict(x=0.28,
+        #                                y=1.0,
+        #                                bgcolor='rgba(255, 255, 255, 0)',
+        #                                bordercolor='rgba(255, 255, 255, 0)')
+        # fig["layout"]["showlegend"] = True
+        fig["layout"]["showlegend"] = False
 
         fig['layout']['xaxis2'] = dict(fig['layout']['xaxis2'], **table_in_support['layout']['xaxis'])
         fig['layout']['yaxis2'] = dict(fig['layout']['yaxis2'], **table_in_support['layout']['yaxis'])

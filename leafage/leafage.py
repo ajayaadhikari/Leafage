@@ -113,12 +113,12 @@ class LeafageBinary:
                                  i=self.i)
 
         # Get the closest instances
-        indices_examples_in_support, _ = \
+        indices_examples_in_support, a = \
             local_model.neighbourhood.get_examples_in_support(amount_of_examples,
                                                               local_model.distances.get_final_distance,
                                                               self.training_data.scaled_feature_vector,
                                                               self.predicted_labels)
-        indices_examples_against, _ = \
+        indices_examples_against, b = \
             local_model.neighbourhood.get_examples_against(amount_of_examples,
                                                            local_model.distances.get_final_distance,
                                                            self.training_data.scaled_feature_vector,

@@ -249,7 +249,7 @@ class Neighbourhood:
     @staticmethod
     def __get_closest_instances(target_instances, distance_function, amount, source):
         # From the filtered instances get the closest instances
-        distances = map(lambda x: distance_function(source, x), target_instances)
+        distances = map(lambda x: distance_function(x, source), target_instances)
         sort_index = np.argsort(distances)[:amount]
 
         return sort_index, np.array(target_instances[sort_index])
