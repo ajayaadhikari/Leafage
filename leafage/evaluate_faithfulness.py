@@ -280,4 +280,4 @@ def housing_from_file():
 
 
 if __name__ == "__main__":
-    faithfulness_data_sets_parallel()
+    housing_from_use_cases()
