@@ -13,10 +13,6 @@ class HousingDataSet(Data):
         target_vector = self.split(original_df["SalePrice"].values)
         df = original_df.drop(columns=["SalePrice"])
 
-        # Remove rows with "medium"
-        df = df[target_vector!="Medium"]
-        target_vector = target_vector[target_vector!="Medium"]
-
         # Convert null values to string "NA"
         df.fillna("NA", inplace=True)
 
@@ -39,9 +35,6 @@ class HousingDataSet(Data):
         # Change column names to make them more readable
         df.rename(columns=useful_numerical_columns, inplace=True)
         df.rename(columns=useful_categorical_columns, inplace=True)
-
-        # Only keep final columns
-        df = df[final_columns]
 
         feature_vector = df.values
 

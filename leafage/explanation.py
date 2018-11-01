@@ -25,24 +25,10 @@ class Explanation:
         self.feature_names = feature_names
         self.original_order_test_instance = pd.Series(test_instance, index=feature_names)
 
-        # TODO remove later
-        self.original_test = test_instance
-        self.original_in_support = examples_in_support
-        self.original_against = examples_against
-
         self.local_model = local_model
         self.__sort_columns_according_to_importance()
         self.notebook_initialized = False
         self.plotly_imports_set = False
-
-        # TODO remove later
-        self.format_living_area()
-
-    def format_living_area(self):
-        get_both_measure = lambda feet_square: "%s m<sup>2</sup> (%s ft<sup>2</sup>)" % (int(feet_square * 0.09290304), feet_square)
-        self.original_order_test_instance["Living Area"] = get_both_measure(self.original_order_test_instance["Living Area"])
-        self.examples_in_support["Living Area"] = self.examples_in_support["Living Area"].apply(get_both_measure)
-        self.examples_against["Living Area"] = self.examples_against["Living Area"].apply(get_both_measure)
 
     def visualize_feature_importance(self, amount_of_features=5, target="write_to_file", path=None, show_values=False):
         """
@@ -265,22 +251,9 @@ class Explanation:
                                                             self.color_examples_in_support)
         table_against = self.__visualize_table_ff(amount_of_features, self.examples_against,
                                                      self.color_examples_against)
-        fact_class = self.fact_class
-        foil_class = self.foil_class
 
-        if self.fact_class == "High":
-            table_in_support = self.__visualize_table_ff(amount_of_features, self.examples_against,
-                                                         self.color_examples_in_support)
-            table_against = self.__visualize_table_ff(amount_of_features, self.examples_in_support,
-                                                                self.color_examples_against)
-            fact_class = self.foil_class
-            foil_class = self.fact_class
-
-        #title_in_support = 'Examples in support of prediction <b>%s</b>' % self.fact_class
-        #title_against = 'Most relevant counter-examples from class <b>%s</b>' % self.foil_class
-
-        title_in_support = 'Most similar houses with value %s' % fact_class
-        title_against = 'Most similar houses with value %s' % foil_class
+        title_in_support = 'Examples in support of prediction <b>%s</b>' % self.fact_class
+        title_against = 'Most relevant counter-examples from class <b>%s</b>' % self.foil_class
 
         fig = tools.make_subplots(rows=2,
                                   cols=1,
@@ -316,23 +289,9 @@ class Explanation:
                                                                  show_values=show_values,
                                                                  as_sub_figure=True)
 
-        fact_class = self.fact_class
-        foil_class = self.foil_class
-
-        if self.fact_class == "High":
-            table_in_support = self.__visualize_table_ff(amount_of_features, self.examples_against,
-                                                         self.color_examples_in_support)
-            table_against = self.__visualize_table_ff(amount_of_features, self.examples_in_support,
-                                                                self.color_examples_against)
-            fact_class = self.foil_class
-            foil_class = self.fact_class
-
-        title_in_support = 'Most similar houses with value %s' % fact_class
-        title_against = 'Most similar houses with value %s' % foil_class
-        #title_feature_importance = "The %s most important features for the prediction" % \
-        #                           amount_of_features
-        title_feature_importance = "The importance of each feature for the prediction"
-
+        title_in_support = 'Most similar houses with value %s' % self.fact_class
+        title_against = 'Most similar houses with value %s' % self.foil_class
+        title_feature_importance = "The %s most important features for the prediction" % amount_of_features
 
         fig = tools.make_subplots(specs=[[{'rowspan':2, 'colspan': 2}, None, {'colspan': 3}, None, None],
                                          [None, None, {'colspan': 3}, None, None]],
@@ -360,11 +319,6 @@ class Explanation:
 
         fig['layout']['xaxis1'] = dict(fig['layout']['xaxis1'], **feature_importance['layout']['xaxis'])
         fig['layout']['yaxis1'] = dict(fig['layout']['yaxis1'], **feature_importance['layout']['yaxis'])
-        # fig['layout']['legend'] = dict(x=0.28,
-        #                                y=1.0,
-        #                                bgcolor='rgba(255, 255, 255, 0)',
-        #                                bordercolor='rgba(255, 255, 255, 0)')
-        # fig["layout"]["showlegend"] = True
         fig["layout"]["showlegend"] = False
 
         fig['layout']['xaxis2'] = dict(fig['layout']['xaxis2'], **table_in_support['layout']['xaxis'])
@@ -482,8 +436,6 @@ class Explanation:
     @staticmethod
     def visualize_png(figure, path):
         py.image.save_as(figure, filename=path)
-        # pip install psutil
-        #pio.write_image(figure, path)
         print("Image saved as %s" % path)
 
 

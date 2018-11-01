@@ -104,7 +104,7 @@ class LinearModel:
         local_model_predictions = []
         for instance in instances:
             regression_value = np.dot(np.array(self.coefficients), np.array(instance)) + self.original_intercept
-            prediction = self.classes[self.classes[1] if regression_value > self.threshold else self.classes[0]]
+            prediction = self.classes[1 if regression_value > self.threshold else 0]
             local_model_predictions.append(prediction)
 
         return local_model_predictions
