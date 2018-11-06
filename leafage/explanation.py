@@ -30,7 +30,7 @@ class Explanation:
         self.notebook_initialized = False
         self.plotly_imports_set = False
 
-    def visualize_feature_importance(self, amount_of_features=5, target="write_to_file", path=None, show_values=False):
+    def visualize_feature_importance(self, amount_of_features=5, target="notebook", path=None, show_values=False):
         """
         Visualize a bar plot which contains the most important features for the classification of self.test_instance
         :param amount_of_features: Amount of top features to include in the bar plot
@@ -42,7 +42,7 @@ class Explanation:
         figure = self.__visualize_feature_importance(amount_of_features, show_values=show_values)
         self.__export(figure, target, path)
 
-    def visualize_examples(self, amount_of_features=5, target="write_to_file", path=None,
+    def visualize_examples(self, amount_of_features=5, target="nootbook", path=None,
                            type="examples_in_support"):
         """
         Visualize the closest examples from the training-set
@@ -63,7 +63,7 @@ class Explanation:
 
         self.__export(figure, target, path)
 
-    def visualize_leafage(self, amount_of_features=5, target="write_to_file", path=None, show_values=False):
+    def visualize_leafage(self, amount_of_features=5, target="notebook", path=None, show_values=False):
         """
         Visualize closest examples and the feature importance from the training-set
         :param amount_of_features: Amount of top features to include per example
@@ -75,17 +75,17 @@ class Explanation:
         figure = self.__visualize_all(amount_of_features, show_values=show_values)
         self.__export(figure, target, path)
 
-    def visualize_instance(self, target="write_to_file", path=None):
+    def visualize_instance(self, target="notebook", path=None):
         """
         Visualize the instance being explained
         :param target: Denotes how to export the image. Should be either "notebook" or "write_to_file"
         :param path: If target="write_to_file", this parameter denotes where to save the image e.g. "../output/test.png"
         """
         self.__set_plotly_imports()
-        figure = self.visualize_instance_one_line(self.original_order_test_instance)
+        figure = self.__visualize_instance_multiple_lines(self.original_order_test_instance)
         self.__export(figure, target, path)
 
-    def visualize_prediction(self, target="write_to_file", path=None):
+    def visualize_prediction(self, target="notebook", path=None):
         """
         Visualize the prediction of the instance being explained
         :param target: Denotes how to export the image. Should be either "notebook" or "write_to_file"
@@ -113,7 +113,7 @@ class Explanation:
         else:
             raise ValueError("%s not supported" % target)
 
-    def __sort_columns_according_to_importance(self, sort=False):
+    def __sort_columns_according_to_importance(self, sort=True):
         if sort is True:
             sort_index = sorted(range(len(self.coefficients)), key=lambda i: abs(self.coefficients[i]), reverse=True)
         else:
@@ -126,14 +126,7 @@ class Explanation:
         self.examples_against = pd.DataFrame(self.examples_against[:, sort_index], columns=self.feature_names)
 
     def __visualize_feature_importance(self, amount_of_features, show_values=False, as_sub_figure=False):
-
-        color_examples_in_support = self.color_examples_in_support
-        color_examples_against = self.color_examples_against
         color = "rgb(189,88,44,1)"
-
-        if self.fact_class == "High":
-            color_examples_in_support = self.color_examples_against
-            color_examples_against = self.color_examples_in_support
 
         feature_names = self.feature_names[:amount_of_features]
         feature_values = self.test_instance.values[:amount_of_features]
@@ -149,18 +142,15 @@ class Explanation:
 
         trace_positive = go.Bar(x=x_values[indices_positive],
                                 y=coefficients[indices_positive],
-                                #
                                 marker=dict(color=color),
                                 name="Supports %s" % self.fact_class)
         trace_negative = go.Bar(x=x_values[indices_negative],
                                 y=coefficients[indices_negative],
-                                #
                                 marker=dict(color=color),
                                 name="Supports %s" % self.foil_class)
 
         main_title = "Prediction: %s" % self.fact_class
-        #sub_title = "The top %s most important features for the classification" % amount_of_features
-        sub_title = "The importance of each feature for the prediction"
+        sub_title = "The top %s most important features for the classification" % amount_of_features
 
         if as_sub_figure:
             data = [trace_positive, trace_negative]
@@ -230,10 +220,10 @@ class Explanation:
 
         df = df.astype(str)
         columns = list(df)
-        max_amount = 135/len(columns)
+        max_amount = 115/len(columns)
         shorten = lambda row: [i[:max_amount - 4] + "..." if len(i) > max_amount else i for i in row]
 
-        df.apply(shorten)
+        df = df.apply(shorten)
         df.columns = shorten(columns)
 
         color_scale = [[0, header_background_color], [.5, uneven_cell_color], [1, even_cell_color]]
@@ -356,6 +346,16 @@ class Explanation:
         header_background_color = "rgb(47, 80, 135, 1)"
         cell_background_color = "rgb(182, 187, 196, 1)"
 
+        pd_series = pd_series.astype(str)
+
+
+        max_amount = 21
+        shorten = lambda row: [i[:max_amount - 4] + ".." if len(i) > max_amount else i for i in row]
+
+        listt = shorten(pd_series)
+        index = shorten(pd_series.index)
+        pd_series = pd.Series(listt, index=index)
+
         num_columns = 7
         d = len(pd_series)
         num_rows = int(np.ceil(d/float(num_columns)))
@@ -388,10 +388,12 @@ class Explanation:
                                    height=30
                                    )
                         )
-        layout = go.Layout(title="A house in the market",
+
+        height = 32*4 + 32*num_rows*2
+        layout = go.Layout(title="<b>Instance being explained</b>",
                            width=1300,
-                           height=800,
-                           margin=dict(t=100, l=50, r=50, b=100))
+                           height=height,
+                           margin=dict(t=50, l=50, r=50, b=50))
         figure = go.Figure(data=[trace], layout=layout)
         return figure
 

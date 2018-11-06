@@ -23,8 +23,9 @@ class Scenario:
         It contains code to prepare the data such that it can be fed to leafage.Leafage.
         It is possible to load data in three ways namely from file, from the module use_cases and directly by providing
         an instance of the class utils.data.Data
-        :param dataset_source: Either "read_from_file" or "load_from_use_cases" or "data_object"
-        :param dataset: if dataset_source="load_from_file" then dataset is the path to the file
+        :param dataset_source: Either "load_from_file" or "load_from_use_cases" or "data_object"
+        :param dataset: if dataset_source="load_from_file" then dataset is the path to the file, the last column should
+                                           be the target vector and the rest the feature vector
                         if dataset_source="load_from_use_cases" then dataset should be in use_cases.all_use_cases.different_data_sets
                         if dataset_source="data_object" then dataset should be an object of utils.data.Data
         :param classifier_name: Short name of the classifier, should be in $leafage.utils.Classifiers
@@ -63,8 +64,10 @@ class Scenario:
             return all_data_sets[dataset]()
         elif self.dataset_source == "data_object":
             return dataset
-        else:
+        elif self.dataset_source == "load_from_file":
             return FileDataSet(dataset)
+        else:
+            raise ValueError("Scenario does not support mode %s" % self.dataset_source)
 
     def __get_classifier(self):
         # Train the classifier
