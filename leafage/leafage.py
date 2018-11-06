@@ -53,24 +53,29 @@ class Leafage:
         """
         return np.array([target_label if x == target_label else -1 for x in predicted_labels])
 
-    def get_one_vs_one(self, fact_class, foil_class):
+    def get_one_vs_one(self, fact_class, foil_class, i=None):
         indices_fact_foil = np.where(np.logical_or(self.predicted_labels == fact_class, self.predicted_labels == foil_class))
         new_feature_vector = self.training_data.feature_vector[indices_fact_foil]
         new_real_labels = self.training_data.target_vector[indices_fact_foil]
         new_predicted_labels = self.predicted_labels[indices_fact_foil]
         return LeafageBinary(self.training_data.copy(new_feature_vector, new_real_labels),
-                             new_predicted_labels, self.random_state, self.neighbourhood_sampling_strategy)
+                             new_predicted_labels, self.random_state, self.neighbourhood_sampling_strategy, i)
+
+    def get_foil_vs_rest(self, fact_class, foil_class, i=None):
+        new_predicted_labels = np.array([foil_class if x == foil_class else fact_class for x in self.predicted_labels])
+        return LeafageBinary(self.training_data, new_predicted_labels, self.random_state,
+                             self.neighbourhood_sampling_strategy, i)
 
     def is_binary(self):
         return len(self.labels) == 2
 
-    def explain(self, test_instance, amount_of_examples, type="contrastive"):
+    def explain(self, test_instance, amount_of_examples, type="contrastive", i=None):
         if type=="contrastive" or self.is_binary():
             probabilities_per_class = self.classifier.predict_proba([test_instance])[0]
             sorted_indices = np.argsort(probabilities_per_class)
             fact_class = sorted_indices[-1]
             foil_class = sorted_indices[-2]
-            leafage_binary = self.get_one_vs_one(fact_class, foil_class)
+            leafage_binary = self.get_foil_vs_rest(fact_class, foil_class, i)
             return leafage_binary.explain(test_instance, fact_class, amount_of_examples)
         else:
             fact_class = self.classifier.predict([test_instance])[0]
@@ -94,12 +99,9 @@ class LeafageBinary:
     def explain(self, test_instance, test_instance_prediction, amount_of_examples=10):
         test_instance = np.array(test_instance)
         pre_process = lambda X: self.training_data.pre_process(X, scale=True)
-        #pre_process = lambda X: self.training_data.pre_process(X, scale=False)
 
         scaled_training_set = self.training_data.scaled_feature_vector
         scaled_test_instance = pre_process([test_instance])[0]
-        #scaled_training_set = self.training_data.feature_vector
-        #scaled_test_instance = test_instance
 
         np.random.seed(self.random_state)
         local_model = LocalModel(scaled_test_instance,
@@ -111,16 +113,16 @@ class LeafageBinary:
                                  i=self.i)
 
         # Get the closest instances
-        indices_examples_in_support, _ = \
+        indices_examples_in_support, a = \
             local_model.neighbourhood.get_examples_in_support(amount_of_examples,
                                                               local_model.distances.get_final_distance,
                                                               self.training_data.scaled_feature_vector,
-                                                              self.training_data.target_vector)
-        indices_examples_against, _ = \
+                                                              self.predicted_labels)
+        indices_examples_against, b = \
             local_model.neighbourhood.get_examples_against(amount_of_examples,
                                                            local_model.distances.get_final_distance,
                                                            self.training_data.scaled_feature_vector,
-                                                           self.training_data.target_vector)
+                                                           self.predicted_labels)
         examples_in_support = self.training_data.feature_vector[indices_examples_in_support]
         examples_against = self.training_data.feature_vector[indices_examples_against]
 
@@ -128,9 +130,13 @@ class LeafageBinary:
         enemy_class = local_model.neighbourhood.enemy_class
         fact_class = inverse_transform_label(test_instance_prediction)
         foil_class = inverse_transform_label(enemy_class)
-        coefficients = self.normalize(self.filter_coefficients(local_model.linear_model.coefficients, scaled_test_instance))
+        raw_coefficients = local_model.linear_model.coefficients * scaled_test_instance
+
+        filtered_coefs = self.filter_coefficients(raw_coefficients, scaled_test_instance)
+        coefficients = self.normalize(filtered_coefs)
 
         classes = local_model.linear_model.classes
+
         if test_instance_prediction == classes[0]:
             coefficients = coefficients*-1
 
@@ -159,7 +165,7 @@ class LeafageBinary:
             categorical_features = self.training_data.pre_process_object.categorical_features
             for new_value, index in zip(coefficients_categorical_features, categorical_features):
                 result.insert(index, new_value)
-            return result
+            return np.array(result)
         else:
             return one_hot_encoded_coefficients
 

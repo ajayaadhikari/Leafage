@@ -4,6 +4,7 @@ import numpy as np
 import warnings
 warnings.filterwarnings(action='ignore', category=DeprecationWarning)
 
+
 class InvertibleOneHotEncoder(OneHotEncoder):
     # feature_vector should be an np.array with dtype=object if categorical features are present
     def __init__(self, X, categorical_features):
@@ -172,6 +173,18 @@ class Data:
                     target_vector_encoder=self.target_vector_encoder,
                     pre_process_object=self.pre_process_object)
 
+    def get_one_hot_encoded_feature_names(self):
+        result = []
+        categorical_features_indices = self.pre_process_object.categorical_features
+
+        for i in range(len(self.feature_names)):
+            if i in categorical_features_indices:
+                names = ["%s_%s" % (self.feature_names[i], c) for c in self.pre_process_object.label_encoder.encoders[i].classes_]
+                result.extend(names)
+            else:
+                result.append(self.feature_names[i])
+        return result
+
     def __len__(self):
         return len(self.feature_vector)
 
@@ -184,4 +197,6 @@ if __name__ == "__main__":
     new_instances = [[7.8, "a", "i", 9], [8, "u", "i", 7]]
     transformed = pre_process.transform(new_instances)
     inverse_transformed = pre_process.inverse_transform(transformed)
-    t = 9
+
+    data = Data(feature_vector, np.array([0,1]), ["f1", "f2", "f3", "f4"])
+    print(data.get_one_hot_encoded_feature_names())

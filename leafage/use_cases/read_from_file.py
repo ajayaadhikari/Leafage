@@ -13,10 +13,10 @@ class FileDataSet(Data):
         # Read data from file
         df = pd.read_csv(path)
 
-        # Add all columns as feature vector expect the sale price
+        # Add all columns as feature vector expect the target vector
         feature_vector = df.iloc[:, 0:-1].values
 
-        # Make the sale price discrete as ["low", "medium", "high"]
+        # Get the last column as target vector
         target_vector = df.iloc[:, -1].values
 
         # Set the column names as the feature names

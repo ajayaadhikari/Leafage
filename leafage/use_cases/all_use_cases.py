@@ -19,5 +19,5 @@ all_data_sets = {"iris": IrisDataSet,
                  "diabetes": Diabetes}
 
 if __name__ == "__main__":
-    a = BankNote()
+    a = HousingDataSet()
     b = 2
